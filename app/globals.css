@@ -1,0 +1,312 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f7f9ff;
+  --surface: #ffffff;
+  --surface-alt: #eef2ff;
+  --line: #ccd5f3;
+  --text: #061b73;
+  --text-muted: #4d5c8d;
+  --accent: #061b73;
+  --accent-hover: #0b2a9c;
+  --brand-red: #ed1c24;
+  --brand-blue: #061b73;
+  --success: #2d8f5f;
+  --focus-ring: color-mix(in srgb, var(--accent) 22%, transparent);
+  --shadow-soft: 0 12px 32px rgba(45, 38, 134, 0.08);
+  --shadow-panel: 0 20px 60px rgba(45, 38, 134, 0.12);
+}
+
+[data-theme="stone"] {
+  --background: #f7f4ee;
+  --surface: #fffdfc;
+  --surface-alt: #efe7dc;
+  --line: #d8cec2;
+  --text: #2f2a26;
+  --text-muted: #5f574f;
+  --accent: #8a6a4a;
+  --accent-hover: #a88662;
+  --success: #6f8a6a;
+}
+
+[data-theme="kmd"] {
+  --background: #f7f9ff;
+  --surface: #ffffff;
+  --surface-alt: #eef2ff;
+  --line: #ccd5f3;
+  --text: #061b73;
+  --text-muted: #4d5c8d;
+  --accent: #061b73;
+  --accent-hover: #0b2a9c;
+  --brand-red: #ed1c24;
+  --brand-blue: #061b73;
+  --success: #2d8f5f;
+}
+
+[data-theme="sage"] {
+  --background: #f4f7f0;
+  --surface: #fffef9;
+  --surface-alt: #e7eedf;
+  --line: #cbd8c4;
+  --text: #283027;
+  --text-muted: #586453;
+  --accent: #5f7f62;
+  --accent-hover: #6f936f;
+  --success: #4f8158;
+}
+
+[data-theme="sky"] {
+  --background: #f3f7f8;
+  --surface: #fffdf9;
+  --surface-alt: #e4eef2;
+  --line: #c7d6dc;
+  --text: #263039;
+  --text-muted: #53636d;
+  --accent: #426f92;
+  --accent-hover: #5684a8;
+  --success: #4f816d;
+}
+
+[data-theme="clay"] {
+  --background: #f8f2ed;
+  --surface: #fffdfa;
+  --surface-alt: #f0dfd3;
+  --line: #dcc8ba;
+  --text: #332a25;
+  --text-muted: #6a584f;
+  --accent: #a15f45;
+  --accent-hover: #b87356;
+  --success: #6f8253;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page-shell {
+  min-height: 100vh;
+}
+
+.section-shell {
+  @apply mx-auto max-w-screen-2xl px-4 py-16 md:px-6 lg:py-20 xl:px-10;
+}
+
+.commerce-band {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-alt) 70%, white) 0%, var(--background) 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.content-shell {
+  @apply mx-auto max-w-screen-2xl px-4 md:px-6 xl:px-10;
+}
+
+.eyebrow {
+  @apply mb-4 text-xs uppercase tracking-[0.32em];
+  color: var(--text-muted);
+}
+
+.section-title {
+  @apply font-serif text-3xl leading-tight md:text-5xl;
+  color: var(--text);
+}
+
+.section-copy {
+  @apply max-w-2xl text-base leading-7 md:text-lg;
+  color: var(--text-muted);
+}
+
+.surface-card {
+  @apply rounded-lg;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.action-primary {
+  @apply inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold text-sand-50 transition;
+  background: var(--accent);
+}
+
+.action-commerce {
+  @apply inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold text-white transition;
+  background: var(--brand-red, var(--accent));
+}
+
+.action-commerce:hover {
+  background: color-mix(in srgb, var(--brand-red, var(--accent)) 86%, black);
+}
+
+.promo-chip {
+  @apply inline-flex items-center rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-white;
+  background: var(--brand-red, var(--accent));
+}
+
+.action-secondary {
+  @apply inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold transition;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.action-primary:hover {
+  background: var(--accent-hover);
+}
+
+.action-secondary:hover {
+  border-color: var(--accent-hover);
+  color: var(--accent-hover);
+}
+
+.control-label {
+  @apply grid gap-2 text-sm font-medium;
+  color: var(--text-muted);
+}
+
+.field,
+.select-field,
+.textarea-field {
+  @apply w-full rounded-md px-4 py-3 text-sm outline-none transition;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.field::placeholder,
+.textarea-field::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+}
+
+.field:focus,
+.select-field:focus,
+.textarea-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.select-field {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+}
+
+.textarea-field {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.search-group {
+  @apply grid overflow-hidden rounded-lg;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.search-group:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring), var(--shadow-soft);
+}
+
+.search-group .field,
+.search-group .select-field {
+  border: 0;
+  box-shadow: none;
+}
+
+.search-group .field:focus,
+.search-group .select-field:focus {
+  box-shadow: none;
+}
+
+.filter-checkbox {
+  accent-color: var(--accent);
+  height: 1rem;
+  width: 1rem;
+}
+
+.panel-shadow {
+  box-shadow: var(--shadow-panel);
+}
+
+.bg-bronze-500,
+.bg-bronze-600 {
+  background-color: var(--accent) !important;
+}
+
+.bg-brand-red {
+  background-color: var(--brand-red, var(--accent)) !important;
+}
+
+.text-brand-red {
+  color: var(--brand-red, var(--accent)) !important;
+}
+
+.text-bronze-500,
+.text-bronze-600 {
+  color: var(--accent) !important;
+}
+
+.border-bronze-500,
+.border-bronze-600 {
+  border-color: var(--accent) !important;
+}
+
+.hover\:bg-bronze-600:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+.hover\:text-bronze-500:hover,
+.hover\:text-bronze-600:hover {
+  color: var(--accent-hover) !important;
+}
+
+.hover\:border-bronze-500:hover,
+.hover\:border-bronze-600:hover {
+  border-color: var(--accent-hover) !important;
+}
+
+.bg-sand-50 {
+  background-color: var(--surface) !important;
+}
+
+.bg-sand-100,
+.bg-sand-200 {
+  background-color: var(--surface-alt) !important;
+}
+
+.border-sand-400 {
+  border-color: var(--line) !important;
+}
+
+.text-ink-900 {
+  color: var(--text) !important;
+}
+
+.text-ink-700 {
+  color: var(--text-muted) !important;
+}

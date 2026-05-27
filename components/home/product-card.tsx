@@ -1,3 +1,6 @@
+"use client";
+
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { ProductItem } from "@/lib/homepage-data";
 
 type ProductCardProps = {
@@ -72,9 +75,17 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           </div>
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
-          <a className="action-commerce min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={primaryHref}>
-            {primaryAction}
-          </a>
+          {needsQuote || product.stockStatus === "Low stock" ? (
+            <a className="action-commerce min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={primaryHref}>
+              {primaryAction}
+            </a>
+          ) : (
+            <AddToCartButton
+              className="action-commerce min-h-10 gap-1.5 whitespace-nowrap px-3 py-2 text-xs"
+              compact
+              product={product}
+            />
+          )}
           <a className="action-secondary min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={secondaryHref}>
             {secondaryAction}
           </a>

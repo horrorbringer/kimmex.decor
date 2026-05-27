@@ -88,6 +88,10 @@ export function MarketplaceHomeSection() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bronze-500">Project-first shopping</p>
               <h2 className="mt-1 font-serif text-3xl text-ink-900">Project Packages</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-700">
+                Material + service support bundles for customers who know the project goal but need help with products,
+                quantities, delivery, and quote direction.
+              </p>
             </div>
             <a className="w-fit text-sm font-semibold text-bronze-500" href="/contact">
               Request package quote
@@ -109,7 +113,7 @@ export function MarketplaceHomeSection() {
                     ))}
                   </div>
                   <a className="action-secondary mt-5 w-full" href={item.href}>
-                    Build Package
+                    Request Package Quote
                   </a>
                 </div>
               </article>

@@ -1,8 +1,10 @@
 "use client";
 
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ProductCard } from "@/components/home/product-card";
+import { ImageSearchButton } from "@/components/search/image-search-button";
 import type { ProductItem, UseCaseItem } from "@/lib/homepage-data";
-import { ArrowRight, Grid3X3, List, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, Camera, Grid3X3, List, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -136,6 +138,21 @@ export function ProductCatalog({ products, categories, brands, availability, use
 
   return (
     <section className="section-shell pt-10" id="catalog">
+      <div className="mb-6 grid gap-4 rounded-lg border border-sand-400 bg-sand-100 p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="flex items-start gap-4">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-white text-brand-red">
+            <Camera className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="font-serif text-3xl leading-tight text-ink-900">Not sure what the material is?</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-700">
+              Upload a room, ceiling, wall, fixture, or material photo to get suggested products and a quote path.
+            </p>
+          </div>
+        </div>
+        <ImageSearchButton className="action-commerce w-full lg:w-auto" />
+      </div>
+
       <div className="surface-card mb-8 grid gap-4 p-4 lg:grid-cols-[1fr_auto_auto_auto] lg:items-end">
         <label className="control-label">
           Search catalog
@@ -402,9 +419,13 @@ function ProductListRow({ product }: { product: ProductItem }) {
           <div className="text-2xl font-semibold text-brand-red">${product.price.toFixed(2)}</div>
           <div className="text-sm text-ink-700">/ {product.unit}</div>
         </div>
-        <a className="action-commerce min-h-10 px-3 py-2 text-xs" href={primaryHref}>
-          {primaryAction}
-        </a>
+        {needsQuote || product.stockStatus === "Low stock" ? (
+          <a className="action-commerce min-h-10 px-3 py-2 text-xs" href={primaryHref}>
+            {primaryAction}
+          </a>
+        ) : (
+          <AddToCartButton className="action-commerce min-h-10 gap-1.5 px-3 py-2 text-xs" compact product={product} />
+        )}
         <a className="action-secondary min-h-10 px-3 py-2 text-xs" href={product.href}>
           Details
         </a>

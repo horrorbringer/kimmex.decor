@@ -35,7 +35,6 @@ export function SiteFooter() {
             <a href="/packages">Project Packages</a>
             <a href="/services">Services</a>
             <a href="/portfolio">Portfolio</a>
-            <a href="/brands">Brands</a>
           </div>
         </div>
         <div>

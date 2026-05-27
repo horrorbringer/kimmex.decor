@@ -4,38 +4,29 @@ import Image from "next/image";
 import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { readCart } from "@/lib/cart-store";
 import { shopCategories } from "@/lib/homepage-data";
 import kmdLogo from "@/resource/kmd-logo.png";
+import { ImageSearchButton } from "@/components/search/image-search-button";
 
 const mainNav = [
   { label: "Products", href: "/products" },
   { label: "Services", href: "/services" },
-  { label: "Packages", href: "/packages" },
-  { label: "Brands", href: "/brands" },
+  { label: "Project Packages", href: "/packages" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Resources", href: "/resources" },
   { label: "Contact", href: "/contact" }
 ];
 
 const navPanels: Record<string, { title: string; links: Array<{ label: string; href: string }>; cta?: { label: string; href: string } }> = {
-  Packages: {
+  "Project Packages": {
     title: "Project packages",
     links: [
       { label: "Ceiling Installation Package", href: "/packages" },
       { label: "Partition Wall Package", href: "/packages" },
       { label: "Bathroom Upgrade Package", href: "/packages" }
     ],
-    cta: { label: "Build Package", href: "/packages" }
-  },
-  Brands: {
-    title: "Featured brands",
-    links: [
-      { label: "Zeit", href: "/brands" },
-      { label: "ISI Steel", href: "/brands" },
-      { label: "Arrow", href: "/brands" },
-      { label: "Multi-brand Supply", href: "/brands" }
-    ],
-    cta: { label: "View Brands", href: "/brands" }
+    cta: { label: "Request Package Quote", href: "/packages" }
   },
   Resources: {
     title: "Buying help",
@@ -75,21 +66,25 @@ const serviceMegaGroups = [
   {
     title: "Finished Ceiling Decor",
     description: "Stretch, moisture, reflect, eco-block, PVC, AK wood, and LED ceiling options.",
+    href: "/services/ceiling",
     links: ["Stretch ceiling", "Moisture ceiling", "Reflect ceiling", "LED ceiling"]
   },
   {
     title: "Partition & Wall Decor",
     description: "Room division, wall finish, and smart board systems for residential and commercial interiors.",
+    href: "/services/partition",
     links: ["Smart board", "Sound-control board", "Partition room", "Wall finishing"]
   },
   {
     title: "Furniture Decor",
     description: "Built-in and custom interior furniture work connected to material supply.",
+    href: "/services/furniture",
     links: ["Door", "Counter", "Cabinet", "Desk and shelf"]
   },
   {
     title: "Smart Home & Materials",
     description: "Smart access, control products, and selected building material support.",
+    href: "/services/smart-home",
     links: ["Smart lock", "Smart home control", "ATS / MDB", "Duct"]
   }
 ];
@@ -97,6 +92,7 @@ const serviceMegaGroups = [
 export function SiteHeader() {
   const [showUtilityBar, setShowUtilityBar] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -107,6 +103,21 @@ export function SiteHeader() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const syncCartCount = () => {
+      setCartCount(readCart().reduce((count, item) => count + item.quantity, 0));
+    };
+
+    syncCartCount();
+    window.addEventListener("kmd-cart-updated", syncCartCount);
+    window.addEventListener("storage", syncCartCount);
+
+    return () => {
+      window.removeEventListener("kmd-cart-updated", syncCartCount);
+      window.removeEventListener("storage", syncCartCount);
+    };
   }, []);
 
   return (
@@ -138,7 +149,7 @@ export function SiteHeader() {
           </div>
         </a>
 
-        <form action="/products" className="search-group grid-cols-1 md:grid-cols-[170px_1fr_auto]">
+        <form action="/products" className="search-group grid-cols-1 md:grid-cols-[170px_1fr_auto_auto]">
           <select className="select-field rounded-none border-0 border-b border-sand-400 bg-sand-100 md:border-b-0 md:border-r" name="category">
             <option>All Categories</option>
             {shopCategories.map((category) => (
@@ -146,6 +157,11 @@ export function SiteHeader() {
             ))}
           </select>
           <input className="field min-w-0 rounded-none border-0" name="q" placeholder="Search product, SKU, brand, material..." type="search" />
+          <ImageSearchButton
+            compact
+            className="flex min-h-11 items-center justify-center gap-2 border-y border-sand-400 bg-sand-50 px-4 py-3 text-sm font-semibold text-ink-900 transition hover:text-brand-red md:border-x md:border-y-0"
+            label="Search by photo"
+          />
           <button className="flex items-center justify-center gap-2 bg-brand-red px-6 py-3 text-sm font-semibold text-white transition" type="submit">
             <Search size={16} strokeWidth={2.2} />
             <span>Search</span>
@@ -186,7 +202,7 @@ export function SiteHeader() {
             <ShoppingCart size={20} strokeWidth={2.2} />
             <span>Cart</span>
             <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full border border-sand-50 bg-sand-50 px-1 text-xs font-semibold text-brand-red">
-              0
+              {cartCount}
             </span>
           </a>
         </div>
@@ -298,7 +314,7 @@ export function SiteHeader() {
                                   <a
                                     key={link}
                                     className="rounded-md py-1.5 text-sm font-medium text-ink-900 transition hover:text-brand-red"
-                                    href="/services"
+                                    href={group.href}
                                   >
                                     {link}
                                   </a>
@@ -371,9 +387,12 @@ export function SiteHeader() {
             <div className="grid gap-5 overflow-y-auto p-4">
               <form action="/products" className="grid gap-3">
                 <input className="field" name="q" placeholder="Search products..." type="search" />
-                <button className="action-commerce" type="submit">
-                  Search Catalog
-                </button>
+                <div className="grid grid-cols-[1fr_auto] gap-2">
+                  <button className="action-commerce" type="submit">
+                    Search Catalog
+                  </button>
+                  <ImageSearchButton compact label="Search by photo" />
+                </div>
               </form>
               <nav className="grid gap-1">
                 {mainNav.map((item) => (
@@ -397,7 +416,7 @@ export function SiteHeader() {
                   Saved Products
                 </a>
                 <a className="action-commerce" href="/cart" onClick={() => setMobileMenuOpen(false)}>
-                  View Cart
+                  View Cart{cartCount > 0 ? ` (${cartCount})` : ""}
                 </a>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
+import { ProductDetailActions } from "@/components/cart/product-detail-actions";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { products } from "@/lib/homepage-data";
 import { ArrowLeft, CheckCircle2, ClipboardCheck, PackageCheck, Truck } from "lucide-react";
@@ -46,8 +47,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     .filter((item): item is (typeof products)[number] => Boolean(item));
   const relatedProducts = compatibleProducts.length > 0 ? compatibleProducts : products.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 3);
   const needsQuote = product.quoteRecommended || product.stockStatus !== "In stock";
-  const primaryAction = needsQuote ? "Request Product Quote" : "Add to Cart";
-  const primaryHref = needsQuote ? "/contact" : "/cart";
   const advisorHref = `/contact?product=${encodeURIComponent(product.id)}`;
   const galleryImages = product.galleryImages.length > 0 ? product.galleryImages : [product.imageUrl];
   const technicalSpecs = [
@@ -156,21 +155,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               <InfoTile label="Delivery" value={product.delivery} />
             </div>
 
-            <form action={primaryHref} className="mt-6 grid gap-4" method="get">
-              <input name="product" type="hidden" value={product.id} />
-              <label className="control-label">
-                Quantity
-                <input className="field" defaultValue="1" min="1" name="qty" type="number" />
-              </label>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button className="action-commerce" formAction={primaryHref} type="submit">
-                  {primaryAction}
-                </button>
-                <button className="action-secondary" formAction="/contact" type="submit">
-                  Ask Advisor
-                </button>
-              </div>
-            </form>
+            <ProductDetailActions advisorHref={advisorHref} needsQuote={needsQuote} product={product} />
 
             <div className="mt-6 grid gap-3 text-sm text-ink-700">
               <Benefit icon={PackageCheck} text="KMD can confirm product fit before order." />

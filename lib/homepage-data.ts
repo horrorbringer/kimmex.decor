@@ -85,7 +85,7 @@ export const services: ServiceItem[] = [
     id: "ceiling",
     title: "Finished Ceiling Decor",
     description: "Stretch, reflective, and feature ceilings for residential and commercial interiors.",
-    href: "/services",
+    href: "/services/ceiling",
     imageUrl:
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
   },
@@ -93,7 +93,7 @@ export const services: ServiceItem[] = [
     id: "partition",
     title: "Partition and Wall Decor",
     description: "Wall systems and partition solutions designed for durability, acoustics, and finish quality.",
-    href: "/services",
+    href: "/services/partition",
     imageUrl:
       "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80"
   },
@@ -101,7 +101,7 @@ export const services: ServiceItem[] = [
     id: "furniture",
     title: "Furniture Decor",
     description: "Built-in counters, cabinets, shelving, and finish carpentry for project-ready spaces.",
-    href: "/services",
+    href: "/services/furniture",
     imageUrl:
       "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80"
   },
@@ -109,7 +109,7 @@ export const services: ServiceItem[] = [
     id: "smart-home",
     title: "Smart Home Control",
     description: "Integrated controls for lighting, locks, and convenience features in modern interiors.",
-    href: "/services",
+    href: "/services/smart-home",
     imageUrl:
       "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80"
   }

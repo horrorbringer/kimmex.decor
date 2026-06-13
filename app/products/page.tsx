@@ -1,7 +1,7 @@
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { ProductCatalog } from "@/components/products/product-catalog";
-import { products, shopCategories, useCases } from "@/lib/homepage-data";
+import { products, shopCategories } from "@/lib/homepage-data";
 import type { ProductItem } from "@/lib/homepage-data";
 import { ArrowRight } from "lucide-react";
 
@@ -13,32 +13,25 @@ export default function ProductsPage() {
     <main className="page-shell">
       <SiteHeader />
       <section className="commerce-band">
-        <div className="content-shell py-10 lg:py-12">
-          <div className="surface-card relative overflow-hidden p-6 md:p-8">
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-bl-[5rem] bg-brand-red/10" />
-            <p className="promo-chip w-fit">KMD product marketplace</p>
-            <h1 className="mt-5 max-w-4xl font-serif text-4xl leading-tight text-ink-900 md:text-6xl">
-              Shop construction materials with contractor quote support.
+        <div className="content-shell grid gap-6 py-10 lg:grid-cols-[1fr_auto] lg:items-end lg:py-12">
+          <div>
+            <p className="eyebrow">Products</p>
+            <h1 className="max-w-4xl font-serif text-4xl leading-tight text-ink-900 md:text-5xl">
+              Construction and interior materials for your project.
             </h1>
-            <p className="section-copy mt-5">
-              Browse Kimmex Decor materials by category, availability, and brand. Add fixed-price items to cart or request
-              a quote for quantity, delivery, and installation scope.
+            <p className="mt-4 max-w-2xl text-base leading-7 text-ink-700">
+              Browse products by category, brand, and availability. Order standard items online or request pricing for
+              project quantities.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a className="action-secondary" href="#catalog">
-                Browse Products
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-              <a className="action-commerce" href="/contact">
-                Request Quote
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </div>
           </div>
+          <a className="action-commerce w-fit" href="/contact">
+            Request Project Pricing
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </div>
       </section>
 
-      <ProductCatalog availability={availability} brands={brands} categories={shopCategories} products={products} useCases={useCases} />
+      <ProductCatalog availability={availability} brands={brands} categories={shopCategories} products={products} />
 
       <SiteFooter />
     </main>

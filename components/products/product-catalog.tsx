@@ -2,9 +2,8 @@
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ProductCard } from "@/components/home/product-card";
-import { ImageSearchButton } from "@/components/search/image-search-button";
-import type { ProductItem, UseCaseItem } from "@/lib/homepage-data";
-import { ArrowRight, Camera, Grid3X3, List, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
+import type { ProductItem } from "@/lib/homepage-data";
+import { Grid3X3, List, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -16,13 +15,12 @@ type ProductCatalogProps = {
   categories: string[];
   brands: string[];
   availability: ProductItem["stockStatus"][];
-  useCases: UseCaseItem[];
 };
 
-const productBatchSize = 6;
+const productBatchSize = 9;
 const sortModes: SortMode[] = ["Featured", "Price: low to high", "Price: high to low", "Best rated"];
 
-export function ProductCatalog({ products, categories, brands, availability, useCases }: ProductCatalogProps) {
+export function ProductCatalog({ products, categories, brands, availability }: ProductCatalogProps) {
   const [hasHydrated, setHasHydrated] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All categories");
@@ -31,6 +29,7 @@ export function ProductCatalog({ products, categories, brands, availability, use
   const [visibleCount, setVisibleCount] = useState(productBatchSize);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = useState<ProductItem["stockStatus"][]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -137,44 +136,39 @@ export function ProductCatalog({ products, categories, brands, availability, use
   };
 
   return (
-    <section className="section-shell pt-10" id="catalog">
-      <div className="mb-6 grid gap-4 rounded-lg border border-sand-400 bg-sand-100 p-5 lg:grid-cols-[1fr_auto] lg:items-center">
-        <div className="flex items-start gap-4">
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-white text-brand-red">
-            <Camera className="h-5 w-5" />
-          </div>
-          <div>
-            <h2 className="font-serif text-3xl leading-tight text-ink-900">Not sure what the material is?</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-ink-700">
-              Upload a room, ceiling, wall, fixture, or material photo to get suggested products and a quote path.
-            </p>
-          </div>
+    <section className="section-shell pt-8" id="catalog">
+      <div className="mb-6 overflow-x-auto pb-2">
+        <div className="flex min-w-max gap-2">
+          {["All categories", ...categories].map((item) => (
+            <button
+              key={item}
+              className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                category === item
+                  ? "border-brand-red bg-brand-red text-white"
+                  : "border-sand-400 bg-white text-ink-700 hover:border-brand-red hover:text-brand-red"
+              }`}
+              onClick={() => setCategory(item)}
+              type="button"
+            >
+              {item}
+            </button>
+          ))}
         </div>
-        <ImageSearchButton className="action-commerce w-full lg:w-auto" />
       </div>
 
-      <div className="surface-card mb-8 grid gap-4 p-4 lg:grid-cols-[1fr_auto_auto_auto] lg:items-end">
+      <div className="surface-card mb-6 grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-end">
         <label className="control-label">
-          Search catalog
+          Search products
           <span className="search-group grid-cols-[auto_1fr] items-center px-4">
             <Search className="h-4 w-4 text-ink-700" />
             <input
               className="field"
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search gypsum, frame, sanitary ware..."
+              placeholder="Product, brand, or SKU..."
               type="search"
               value={query}
             />
           </span>
-        </label>
-        <label className="control-label">
-          Category
-          <select className="select-field" onChange={(event) => setCategory(event.target.value)} value={category}>
-            <option>All categories</option>
-            {categories.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
         </label>
         <label className="control-label">
           Sort
@@ -184,47 +178,22 @@ export function ProductCatalog({ products, categories, brands, availability, use
             ))}
           </select>
         </label>
-        <button className="action-secondary h-[46px]" onClick={resetFilters} type="button">
-          <RotateCcw className="mr-2 h-4 w-4" />
-          Reset
-        </button>
+        <div className="flex gap-2">
+          <button className="action-secondary h-[46px] flex-1 lg:hidden" onClick={() => setFiltersOpen((open) => !open)} type="button">
+            <SlidersHorizontal className="mr-2 h-4 w-4" />
+            Filters
+            {selectedBrands.length + selectedAvailability.length > 0 ? ` (${selectedBrands.length + selectedAvailability.length})` : ""}
+          </button>
+          {activeFilters.length > 0 ? (
+            <button aria-label="Reset filters" className="action-secondary h-[46px] px-4" onClick={resetFilters} type="button">
+              <RotateCcw className="h-4 w-4" />
+            </button>
+          ) : null}
+        </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        <aside className="grid gap-5 self-start">
-          <div className="surface-card overflow-hidden">
-            <div className="bg-sand-100 p-5">
-              <div className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-900">Departments</div>
-              <p className="mt-2 text-sm leading-6 text-ink-700">Choose by construction material family.</p>
-            </div>
-            <div className="mt-4 grid gap-2">
-              <button
-                className={`mx-3 flex items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
-                  category === "All categories" ? "bg-sand-200 text-ink-900" : "text-ink-700 hover:bg-sand-200 hover:text-ink-900"
-                }`}
-                onClick={() => setCategory("All categories")}
-                type="button"
-              >
-                <span>All departments</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-              {categories.map((item) => (
-                <button
-                  key={item}
-                  className={`mx-3 flex items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
-                    category === item ? "bg-sand-200 text-ink-900" : "text-ink-700 hover:bg-sand-200 hover:text-ink-900"
-                  }`}
-                  onClick={() => setCategory(item)}
-                  type="button"
-                >
-                  <span>{item}</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              ))}
-            </div>
-            <div className="p-3" />
-          </div>
-
+      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <aside className={`${filtersOpen ? "grid" : "hidden"} gap-4 self-start lg:grid`}>
           <FilterGroup title="Brands">
             {brands.map((brand) => (
               <label key={brand} className="flex items-center gap-2 text-sm text-ink-700">
@@ -248,40 +217,23 @@ export function ProductCatalog({ products, categories, brands, availability, use
             ))}
           </FilterGroup>
 
-          <div className="surface-card p-5">
-            <div className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-900">Shop by use</div>
-            <div className="mt-4 grid gap-3">
-              {useCases.map((item) => (
-                <button
-                  key={item.id}
-                  className="text-left text-sm font-semibold text-bronze-500 hover:text-bronze-600"
-                  onClick={() => setCategory(item.categories[0] ?? "All categories")}
-                  type="button"
-                >
-                  {item.title}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="surface-card bg-sand-100 p-5">
-            <p className="promo-chip w-fit">Need help?</p>
-            <h2 className="mt-4 font-serif text-2xl text-ink-900">Send a BOQ or material list.</h2>
-            <p className="mt-2 text-sm leading-6 text-ink-700">KMD can quote product quantity, delivery, and service scope before checkout.</p>
+          <div className="rounded-lg bg-ink-900 p-5 text-white">
+            <h2 className="font-serif text-2xl">Buying for a project?</h2>
+            <p className="mt-2 text-sm leading-6 text-white/75">Send your quantity or material list for delivery and bulk pricing.</p>
             <a className="action-commerce mt-4 w-full" href="/contact">
-              Get Project Quote
+              Request Pricing
             </a>
           </div>
         </aside>
 
         <div>
-          <div className="mb-5 rounded-lg border border-sand-400 bg-sand-100 p-4">
+          <div className="mb-5 border-b border-sand-400 pb-4">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <div className="text-sm font-semibold text-ink-900">
-                  Showing {filteredProducts.length} of {products.length} project-ready products
+                  {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
                 </div>
-                <div className="mt-1 text-sm text-ink-700">Prices are visible for quick order. Use quote for bulk and installation.</div>
+                <div className="mt-1 text-sm text-ink-700">Standard items can be ordered online. Project quantities can be quoted.</div>
               </div>
               <div className="flex w-fit overflow-hidden rounded-md border border-sand-400 bg-white p-1">
                 <button
@@ -312,7 +264,7 @@ export function ProductCatalog({ products, categories, brands, availability, use
                 {activeFilters.map((filter) => (
                   <button
                     key={`${filter.type}-${filter.value}`}
-                    className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-ink-700 transition hover:text-brand-red"
+                    className="inline-flex items-center gap-2 rounded-full border border-sand-400 bg-white px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-red hover:text-brand-red"
                     onClick={() => removeFilter(filter)}
                     type="button"
                   >

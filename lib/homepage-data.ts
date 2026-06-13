@@ -504,7 +504,7 @@ export const projects: ProjectItem[] = [
     title: "Private Residence Ceiling Upgrade",
     projectType: "Residential",
     caption: "Warm reflective finishes with clean line detailing for a modern family living area.",
-    href: "/portfolio",
+    href: "/portfolio/residential-suite",
     imageUrl:
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
   },
@@ -513,7 +513,7 @@ export const projects: ProjectItem[] = [
     title: "Commercial Workspace Fit-Out",
     projectType: "Commercial",
     caption: "Partition systems and acoustic material planning for a focused office environment.",
-    href: "/portfolio",
+    href: "/portfolio/workspace-fitout",
     imageUrl:
       "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
   },
@@ -522,7 +522,7 @@ export const projects: ProjectItem[] = [
     title: "Smart Living Upgrade",
     projectType: "Smart Home",
     caption: "Integrated control points and finish coordination for a cleaner daily experience.",
-    href: "/portfolio",
+    href: "/portfolio/smart-home",
     imageUrl:
       "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80"
   }

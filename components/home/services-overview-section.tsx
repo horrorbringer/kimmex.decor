@@ -1,44 +1,49 @@
+import { ArrowRight } from "lucide-react";
 import { services } from "@/lib/homepage-data";
 
 export function ServicesOverviewSection() {
   return (
-    <section id="services" className="section-shell">
-      <p className="eyebrow">Services</p>
-      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h2 className="section-title">Services that turn product selection into finished project work.</h2>
-          <p className="section-copy mt-4">
-            Use this section to connect shoppers from materials into consultation, quotation, installation guidance,
-            and finish planning.
-          </p>
+    <section className="bg-sand-200/55" id="services">
+      <div className="section-shell">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="eyebrow">Service Showcase</p>
+            <h2 className="section-title max-w-3xl">Interior services from planning through finishing.</h2>
+            <p className="section-copy mt-4">
+              KMD connects material selection with practical interior solutions for homes, offices, and commercial spaces.
+            </p>
+          </div>
+          <a className="action-primary w-fit" href="/services">
+            View All Services
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </div>
-        <a className="action-commerce w-fit" href="#contact">
-          Start an Inquiry
-        </a>
-      </div>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {services.map((service) => (
-          <article key={service.id} className="surface-card overflow-hidden transition hover:-translate-y-0.5 hover:border-bronze-500 hover:shadow-panel">
-            <div className="relative">
-              <img alt={service.title} className="h-64 w-full object-cover" src={service.imageUrl} />
-              <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink-900">
-                Service
-              </span>
-            </div>
-            <div className="p-6">
-              <h3 className="font-serif text-2xl text-ink-900">{service.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-ink-700">{service.description}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <a className="action-secondary" href={service.href}>
-                  Learn More
-                </a>
-                <a className="inline-flex items-center text-sm font-semibold text-bronze-500 transition hover:text-bronze-600" href="#contact">
-                  Ask for quote
-                </a>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {services.map((service) => (
+            <a
+              key={service.id}
+              className="group relative min-h-[380px] overflow-hidden rounded-lg border border-sand-400 bg-ink-900 shadow-soft"
+              href={service.href}
+            >
+              <img
+                alt={service.title}
+                className="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-65"
+                src={service.imageUrl}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">KMD Service</p>
+                <h3 className="mt-2 font-serif text-3xl leading-tight">{service.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/80">{service.description}</p>
+                <span className="mt-5 inline-flex items-center text-sm font-semibold">
+                  Explore service
+                  <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                </span>
               </div>
-            </div>
-          </article>
-        ))}
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

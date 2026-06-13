@@ -20,7 +20,7 @@ export type ServiceDetail = {
 export const serviceDetails: Record<string, ServiceDetail> = {
   ceiling: {
     overview:
-      "Transforming your ceiling with a finished decor service can elevate the entire aesthetic of a room, adding elegance and architectural interest. Hand-painted finishes, decorative medallions, coffered designs, and custom ceiling tiles are among the top choices for high-impact interior upgrades. These services often include custom finishes to match existing fixtures and can be tailored to both traditional and modern spaces.",
+      "Finished ceiling decor brings board, profile, lighting, and feature details into one coordinated plan. The service can support gypsum, eco-block, reflective, and LED ceiling directions for residential or commercial spaces, with material and installation needs reviewed around the room condition and intended finish.",
     photoCta: "Send ceiling photos",
     quotePrep: ["Ceiling or room photos", "Approximate room size", "Preferred ceiling style", "Supply-only or install"],
     scope: ["Finished ceiling layout", "Board and profile selection", "Lighting and detail coordination"],
@@ -55,14 +55,14 @@ export const serviceDetails: Record<string, ServiceDetail> = {
         answer: "Send room photos, approximate size, ceiling reference style, location, and whether you need supply-only or installation."
       },
       {
-        question: "Can KMD recommend materials before installation?",
-        answer: "Yes. KMD can suggest boards, profiles, and accessories based on the ceiling type and project condition."
+        question: "Can Decor recommend materials before installation?",
+        answer: "Yes. The team can suggest boards, profiles, and accessories based on the ceiling type and project condition."
       }
     ]
   },
   partition: {
     overview:
-      "Partition and wall decor services help divide rooms, improve privacy, and create cleaner interior zones without losing the overall design direction of the space. KMD can help customers think through frame systems, board selection, acoustic needs, wall finishing, and delivery planning for residential, retail, and commercial interiors.",
+      "Partition and wall decor services help divide rooms, improve privacy, and create cleaner interior zones without losing the overall design direction of the space. The planning covers frame systems, board selection, acoustic needs, wall finishing, and delivery requirements for residential, retail, and commercial interiors.",
     photoCta: "Send wall dimensions",
     quotePrep: ["Wall area photos", "Length and height", "Sound-control needs", "Delivery or install access"],
     scope: ["Room division planning", "Wall finish recommendation", "Sound-control options"],
@@ -93,7 +93,7 @@ export const serviceDetails: Record<string, ServiceDetail> = {
     relatedProductIds: ["partition-frame-stick", "acoustic-board", "gypsum-board", "installation-kit"],
     faqs: [
       {
-        question: "Can KMD help with sound-control partitions?",
+        question: "Can Decor help with sound-control partitions?",
         answer: "Yes. Share the room use and wall target so acoustic board and frame options can be reviewed."
       },
       {
@@ -104,7 +104,7 @@ export const serviceDetails: Record<string, ServiceDetail> = {
   },
   furniture: {
     overview:
-      "Furniture decor service supports built-in cabinets, counters, shelving, display areas, and custom interior features where material choice has a direct impact on the final look and durability. KMD can help review finish references, board type, thickness, hardware needs, and installation expectations before preparing a quote direction.",
+      "Furniture decor service supports built-in cabinets, counters, shelving, display areas, and custom interior features where material choice has a direct impact on the final look and durability. The review connects finish references with board type, thickness, hardware needs, and installation expectations before defining a quote direction.",
     photoCta: "Send cabinet reference",
     quotePrep: ["Reference photo or sketch", "Approximate dimensions", "Board finish preference", "Hardware or install needs"],
     scope: ["Built-in cabinet planning", "Counter and shelving support", "Decor board selection"],
@@ -146,7 +146,7 @@ export const serviceDetails: Record<string, ServiceDetail> = {
   },
   "smart-home": {
     overview:
-      "Smart home control services focus on practical upgrades such as smart locks, access control, and convenience features that need compatibility review before purchase. KMD can help check door type, lock condition, hardware requirements, and installation needs so customers avoid choosing products that do not fit the site.",
+      "Smart home control services focus on practical upgrades such as smart locks, access control, and convenience features that need compatibility review before purchase. Door type, lock condition, hardware requirements, and installation needs are checked so the selected products fit the site.",
     photoCta: "Send door photo",
     quotePrep: ["Door and lock photos", "Door thickness or type", "Access-control needs", "Installation preference"],
     scope: ["Smart lock and access planning", "Control point recommendation", "Compatibility check"],

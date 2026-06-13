@@ -1,51 +1,24 @@
-import { InquirySection } from "@/components/home/inquiry-section";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { projects } from "@/lib/homepage-data";
-import { ArrowRight, Building2, CheckCircle2, ClipboardCheck, Home, Lightbulb, Ruler, Sparkles } from "lucide-react";
+import { projectDetails } from "@/lib/project-data";
+import { ArrowRight, Camera, CheckCircle2, ClipboardCheck, Ruler } from "lucide-react";
 
-const portfolioStats = [
-  { value: "3", label: "Project types" },
-  { value: "B2B", label: "Commercial support" },
-  { value: "Quote", label: "Material planning" }
-];
-
-const projectDetails = {
-  "residential-suite": {
-    Icon: Home,
-    scope: ["Ceiling finish", "Lighting detail", "Reflective surface planning"],
-    result: "A cleaner residential ceiling direction with material choices organized before quote review.",
-    cta: "/contact?project=residential-suite"
+const planningSteps = [
+  {
+    Icon: Camera,
+    title: "Share a reference",
+    copy: "Send photos of your space and examples of the style or result you prefer."
   },
-  "workspace-fitout": {
-    Icon: Building2,
-    scope: ["Partition planning", "Acoustic material direction", "Workspace finish coordination"],
-    result: "A practical office fit-out direction focused on room division, sound comfort, and delivery planning.",
-    cta: "/contact?project=workspace-fitout"
-  },
-  "smart-home": {
-    Icon: Lightbulb,
-    scope: ["Smart access", "Control point planning", "Finish compatibility review"],
-    result: "A smart-living upgrade path that connects device selection with installation and finish requirements.",
-    cta: "/contact?project=smart-home"
-  }
-};
-
-const planningNotes = [
   {
     Icon: Ruler,
-    title: "Start with size",
-    copy: "Send room dimensions, floor plans, or rough measurements so KMD can estimate material direction."
+    title: "Confirm dimensions",
+    copy: "Provide approximate measurements, location, and site access information."
   },
   {
     Icon: ClipboardCheck,
-    title: "Confirm scope",
-    copy: "Clarify supply-only, installation support, delivery, finish quality, and timeline before final quote."
-  },
-  {
-    Icon: Sparkles,
-    title: "Match finish",
-    copy: "Use project references to choose ceiling style, partition finish, smart controls, and accessory needs."
+    title: "Define the work",
+    copy: "Clarify materials, installation needs, finish level, timeline, and budget direction."
   }
 ];
 
@@ -55,84 +28,77 @@ export default function PortfolioPage() {
       <SiteHeader />
 
       <section className="commerce-band">
-        <div className="content-shell grid gap-8 py-12 lg:grid-cols-[1fr_420px] lg:items-center">
+        <div className="content-shell grid gap-8 py-10 lg:grid-cols-[1fr_auto] lg:items-end lg:py-14">
           <div>
             <p className="eyebrow">Portfolio</p>
             <h1 className="max-w-4xl font-serif text-5xl leading-tight text-ink-900 md:text-6xl">
-              Project references for interiors, fit-outs, and smart living upgrades.
+              Interior references for residential and commercial projects.
             </h1>
-            <p className="section-copy mt-6">
-              Review project directions by space type, scope, and finish need before requesting a material or service
-              quote from KMD Decor.
+            <p className="mt-5 max-w-2xl text-base leading-7 text-ink-700 md:text-lg">
+              Explore ceiling, partition, fit-out, and smart-living directions to help define your own project.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a className="action-commerce" href="#project-gallery">
-                View Projects
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-              <a className="action-secondary" href="/contact?topic=portfolio-reference">
-                Discuss Similar Project
-              </a>
-            </div>
           </div>
-
-          <aside className="surface-card overflow-hidden">
-            <img alt="Interior project reference" className="h-64 w-full object-cover" src={projects[0].imageUrl} />
-            <div className="grid grid-cols-3 border-t border-sand-400">
-              {portfolioStats.map((stat) => (
-                <div key={stat.label} className="border-r border-sand-400 p-4 last:border-r-0">
-                  <div className="font-serif text-3xl text-ink-900">{stat.value}</div>
-                  <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink-700">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </aside>
+          <a className="action-commerce w-fit" href="/contact?topic=portfolio-reference">
+            Discuss Your Project
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </div>
       </section>
 
-      <section className="section-shell" id="project-gallery">
-        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <section className="section-shell pt-10" id="project-gallery">
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="eyebrow">Project Gallery</p>
-            <h2 className="section-title">Reference work by project goal.</h2>
+            <h2 className="section-title">Case studies organized by space and project goal.</h2>
           </div>
-          <a className="w-fit text-sm font-semibold text-bronze-500" href="/services">
-            Match with services
+          <a className="text-sm font-semibold text-ink-900 transition hover:text-brand-red" href="/services">
+            Explore our services
+            <ArrowRight className="ml-2 inline h-4 w-4" />
           </a>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {projects.map((project) => {
-            const detail = projectDetails[project.id as keyof typeof projectDetails];
-            const Icon = detail.Icon;
+        <div className="grid gap-6 lg:grid-cols-2">
+          {projects.map((project, index) => {
+            const detail = projectDetails[project.id];
 
             return (
-              <article key={project.id} className="surface-card overflow-hidden transition hover:-translate-y-0.5 hover:border-bronze-500 hover:shadow-panel">
-                <div className="relative">
-                  <img alt={project.title} className="h-80 w-full object-cover" src={project.imageUrl} />
-                  <div className="absolute left-4 top-4 flex items-center gap-2 rounded-md bg-white/95 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-ink-900">
-                    <Icon className="h-4 w-4 text-brand-red" />
-                    {project.projectType}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h2 className="font-serif text-3xl text-ink-900">{project.title}</h2>
-                  <p className="mt-3 text-sm leading-7 text-ink-700">{project.caption}</p>
-                  <div className="mt-5 grid gap-2">
-                    {detail.scope.map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-sm text-ink-700">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-red" />
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-5 rounded-md border border-sand-400 bg-sand-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-red">Project direction</p>
-                    <p className="mt-2 text-sm leading-6 text-ink-700">{detail.result}</p>
-                  </div>
-                  <a className="action-secondary mt-6 w-full" href={detail.cta}>
-                    Plan Similar Work
+              <article
+                key={project.id}
+                className={`group overflow-hidden rounded-lg border border-sand-400 bg-white transition hover:-translate-y-1 hover:shadow-panel ${
+                  index === 0 ? "lg:col-span-2" : ""
+                }`}
+              >
+                <div className={index === 0 ? "grid lg:grid-cols-[1.35fr_0.65fr]" : ""}>
+                  <a className="relative block min-h-[360px] overflow-hidden md:min-h-[440px]" href={project.href}>
+                    <img
+                      alt={project.title}
+                      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      src={project.imageUrl}
+                    />
+                    <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-ink-900">
+                      {project.projectType}
+                    </span>
                   </a>
+                  <div className="flex flex-col justify-center p-6 md:p-8">
+                    <h2 className={`font-serif leading-tight text-ink-900 ${index === 0 ? "text-4xl md:text-5xl" : "text-3xl"}`}>
+                      <a className="transition hover:text-brand-red" href={project.href}>
+                        {project.title}
+                      </a>
+                    </h2>
+                    <p className="mt-4 text-sm leading-7 text-ink-700">{project.caption}</p>
+                    <div className="mt-6 grid gap-3 border-t border-sand-400 pt-5">
+                      {detail.scope.slice(0, 3).map((item) => (
+                        <div key={item} className="flex items-center gap-3 text-sm font-medium text-ink-900">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-red" />
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                    <a className="mt-7 inline-flex items-center text-sm font-semibold text-brand-red" href={project.href}>
+                      View Case Study
+                      <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                    </a>
+                  </div>
                 </div>
               </article>
             );
@@ -140,46 +106,45 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      <section className="bg-sand-200/60">
+      <section className="bg-sand-200/55">
         <div className="section-shell">
-          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+          <div className="grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
             <div>
-              <p className="eyebrow">Before Quote</p>
-              <h2 className="section-title">Turn a reference into a clear scope.</h2>
-              <p className="section-copy mt-4">
-                A portfolio photo is only the starting point. KMD can recommend materials more accurately when the
-                space, measurement, and service expectation are clear.
+              <p className="eyebrow">From Reference to Plan</p>
+              <h2 className="section-title">Use inspiration to define a practical scope.</h2>
+              <p className="mt-4 text-sm leading-7 text-ink-700">
+                A reference image is a starting point. Site details determine the right materials, service, and budget.
               </p>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {planningNotes.map(({ Icon, copy, title }) => (
-                <article key={title} className="surface-card p-5">
-                  <Icon className="h-6 w-6 text-brand-red" />
-                  <h3 className="mt-4 font-serif text-2xl text-ink-900">{title}</h3>
+            <div className="grid overflow-hidden rounded-lg border border-sand-400 bg-white md:grid-cols-3">
+              {planningSteps.map(({ Icon, copy, title }) => (
+                <div key={title} className="border-b border-sand-400 p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+                  <Icon className="h-5 w-5 text-brand-red" />
+                  <h3 className="mt-5 font-serif text-2xl text-ink-900">{title}</h3>
                   <p className="mt-3 text-sm leading-6 text-ink-700">{copy}</p>
-                </article>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-shell">
-        <div className="surface-card grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-center">
+      <section className="content-shell py-12 lg:py-16">
+        <div className="grid gap-6 rounded-lg bg-ink-900 p-7 text-white md:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <h2 className="font-serif text-3xl text-ink-900">Have a photo or reference style?</h2>
-            <p className="mt-3 text-sm leading-7 text-ink-700">
-              Send the image with approximate size, location, deadline, and whether you need supply-only or service
-              support. KMD can suggest the closest material and package direction.
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/65">Your Project</p>
+            <h2 className="mt-3 max-w-3xl font-serif text-4xl leading-tight">Have a space or reference you want to develop?</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/75">
+              Send the image, approximate size, location, and expected timeline for service and material guidance.
             </p>
           </div>
-          <a className="action-commerce" href="/contact?topic=portfolio-reference">
-            Send Reference
+          <a className="action-commerce w-fit whitespace-nowrap" href="/contact?topic=portfolio-reference">
+            Send Your Reference
+            <ArrowRight className="ml-2 h-4 w-4" />
           </a>
         </div>
       </section>
 
-      <InquirySection />
       <SiteFooter />
     </main>
   );

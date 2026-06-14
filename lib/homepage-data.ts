@@ -119,7 +119,7 @@ export const products: ProductItem[] = [
   {
     id: "gypsum-board",
     name: "Gypsum Board (Zeit) STD Size",
-    descriptor: "Standard interior gypsum board for ceiling and partition work in residential or commercial rooms.",
+    descriptor: "A smooth, practical gypsum board for interior ceilings and partition walls. Suitable for homes, offices, and renovation projects when you need a clean surface that is easy to frame, finish, and paint.",
     brand: "Zeit",
     category: "Gypsum Board",
     sku: "ZTG-STD-1220",
@@ -151,7 +151,7 @@ export const products: ProductItem[] = [
   {
     id: "partition-frame-stick",
     name: "Partition Frame Stick 4M",
-    descriptor: "Four-meter steel framing profile for partition wall structure and project installation teams.",
+    descriptor: "A 4-meter steel profile used to create the supporting structure for gypsum and acoustic partition walls. Designed for straight, stable framing in residential rooms, offices, and commercial fit-outs.",
     brand: "ISI Steel",
     category: "Cline & Partition Frame",
     sku: "ISI-PF-4M",
@@ -182,7 +182,7 @@ export const products: ProductItem[] = [
   {
     id: "cline-4m",
     name: "Cline 4M",
-    descriptor: "Four-meter cline profile for ceiling edge, ceiling line work, and clean perimeter finishing.",
+    descriptor: "A 4-meter ceiling profile that helps form straight perimeter lines and neat edge details. Use it with ceiling boards and framing accessories to achieve a cleaner, more consistent finish.",
     brand: "Multi-brand",
     category: "Cline & Partition Frame",
     sku: "KMD-CLN-4M",
@@ -213,7 +213,7 @@ export const products: ProductItem[] = [
   {
     id: "decor-board",
     name: "Decor Materials Board",
-    descriptor: "Decor board selection covering MDF, WPC, and plywood options for cabinets, counters, and wall finishes.",
+    descriptor: "A flexible selection of MDF, WPC, and plywood panels for cabinets, counters, shelving, and feature walls. Choose the material, thickness, color, and finish according to the room style and moisture conditions.",
     brand: "Multi-brand",
     category: "Decor Materials",
     sku: "KMD-BOARD-MIX",
@@ -245,7 +245,7 @@ export const products: ProductItem[] = [
   {
     id: "sanitary",
     name: "Sanitary Ware",
-    descriptor: "Bathroom fixture range for renovation and project supply, with quote support for matching sets.",
+    descriptor: "A coordinated range of bathroom fixtures for new construction, renovation, and replacement work. Select individual pieces or request a matching set based on your bathroom layout, preferred style, and available stock.",
     brand: "Arrow",
     category: "Sanitary Ware",
     sku: "ARW-SAN-COL",
@@ -278,7 +278,7 @@ export const products: ProductItem[] = [
   {
     id: "smart-lock",
     name: "Smart Lock Set",
-    descriptor: "Smart lock set for modern door access with convenient control options for homes and small projects.",
+    descriptor: "A modern door-locking solution that adds convenient, keyless access to homes, rental units, and small offices. Door type and dimensions should be confirmed before ordering to ensure correct installation.",
     brand: "KMD Smart",
     category: "Smart Home",
     sku: "KMD-SL-100",
@@ -310,7 +310,7 @@ export const products: ProductItem[] = [
   {
     id: "acoustic-board",
     name: "Acoustic Smart Board",
-    descriptor: "Acoustic wall board for partitions and rooms that need better sound control and cleaner finishes.",
+    descriptor: "An acoustic wall panel for partitions and interior spaces where improved sound control is important. A practical choice for bedrooms, meeting rooms, offices, and other areas that need a clean finish with reduced noise transfer.",
     brand: "Multi-brand",
     category: "Wall Systems",
     sku: "KMD-ACB-2440",
@@ -341,7 +341,7 @@ export const products: ProductItem[] = [
   {
     id: "eco-block-ceiling-board",
     name: "Eco Block Ceiling Board",
-    descriptor: "Eco block ceiling board for reflective ceiling, LED ceiling, and interior feature ceiling work.",
+    descriptor: "A decorative ceiling board for eco-block patterns, reflected ceiling details, and integrated LED designs. Best suited to feature ceilings where the final layout, lighting, framing, and installation need to be planned together.",
     brand: "KMD Supply",
     category: "Eco Block Ceiling Board",
     sku: "KMD-ECO-CL",
@@ -373,7 +373,7 @@ export const products: ProductItem[] = [
   {
     id: "cabinet-board",
     name: "Cabinet Decor Board",
-    descriptor: "Furniture-grade decor panel for cabinets, shelving, counters, and built-in interior work.",
+    descriptor: "A furniture-grade decorative panel for cabinet doors, shelving, counters, and custom built-ins. Confirm the thickness, surface color, edge finish, and available quantity before starting fabrication.",
     brand: "An Cuong",
     category: "Furniture Decor",
     sku: "ACG-CAB-18",
@@ -405,7 +405,7 @@ export const products: ProductItem[] = [
   {
     id: "installation-kit",
     name: "Ceiling Install Kit",
-    descriptor: "Basic ceiling installation accessory kit for fixing, support, and small project preparation.",
+    descriptor: "A convenient set of basic fixing accessories for ceiling installation, repair, and small renovation work. Pair it with the selected board and frame system, and confirm the required quantity from the project area.",
     brand: "KMD",
     category: "Installation Tools",
     sku: "KMD-KIT-CL",

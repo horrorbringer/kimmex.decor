@@ -3,7 +3,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kimmex Decor",
+  title: "KMD Decor",
   description: "Construction decor, premium materials, and smart living solutions."
 };
 

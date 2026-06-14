@@ -326,3 +326,286 @@ a {
 .text-ink-700 {
   color: var(--text-muted) !important;
 }
+
+.checkout-heading {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.checkout-trust-row {
+  @apply mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold;
+  color: var(--text-muted);
+}
+
+.checkout-trust-row span {
+  @apply inline-flex items-center gap-2;
+}
+
+.checkout-trust-row svg {
+  @apply h-4 w-4;
+  color: var(--success);
+}
+
+.checkout-section {
+  @apply py-8 lg:py-12;
+}
+
+.checkout-layout {
+  @apply grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start;
+}
+
+.checkout-panel,
+.checkout-summary,
+.checkout-success {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+}
+
+.checkout-progress {
+  @apply grid grid-cols-3 border-b;
+  border-color: var(--line);
+}
+
+.checkout-progress-step {
+  @apply flex min-w-0 items-center justify-center gap-2 px-2 py-4 text-left text-xs transition md:px-4 md:text-sm;
+  color: var(--text-muted);
+  border-right: 1px solid var(--line);
+}
+
+.checkout-progress-step:last-child {
+  border-right: 0;
+}
+
+.checkout-progress-step > span {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold;
+  background: var(--surface-alt);
+}
+
+.checkout-progress-step strong {
+  @apply hidden font-semibold sm:block;
+}
+
+.checkout-progress-step.is-active {
+  color: var(--text);
+  box-shadow: inset 0 -3px 0 var(--brand-red);
+}
+
+.checkout-progress-step.is-active > span {
+  background: var(--brand-red);
+  color: white;
+}
+
+.checkout-progress-step.is-complete > span {
+  background: var(--success);
+  color: white;
+}
+
+.checkout-form-body {
+  @apply min-h-[480px] p-5 md:p-8;
+}
+
+.checkout-actions {
+  @apply flex items-center justify-between gap-3 border-t p-4 md:px-8 md:py-5;
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface-alt) 45%, var(--surface));
+}
+
+.control-label > span:first-child {
+  @apply flex items-center justify-between gap-3;
+}
+
+.control-label em {
+  @apply text-[10px] font-semibold not-italic uppercase;
+  color: var(--brand-red);
+}
+
+.control-label.has-error .field,
+.control-label.has-error .textarea-field {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-red) 12%, transparent);
+}
+
+.field-error-summary {
+  @apply rounded-md px-4 py-3 text-sm font-semibold;
+  color: var(--brand-red);
+  background: color-mix(in srgb, var(--brand-red) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--brand-red) 28%, transparent);
+}
+
+.option-grid {
+  @apply grid gap-3;
+}
+
+.checkout-option {
+  @apply relative flex min-h-[92px] items-center gap-3 rounded-md p-4 text-left transition;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.checkout-option:hover {
+  border-color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.checkout-option.is-selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--surface-alt) 75%, white);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.checkout-option-icon {
+  @apply grid h-10 w-10 shrink-0 place-items-center rounded-md;
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.checkout-option-icon svg {
+  @apply h-5 w-5;
+}
+
+.checkout-option strong,
+.checkout-option small {
+  @apply block;
+}
+
+.checkout-option strong {
+  @apply text-sm;
+}
+
+.checkout-option small {
+  @apply mt-1 text-xs font-normal leading-4;
+  color: var(--text-muted);
+}
+
+.checkout-option-check {
+  @apply absolute right-3 top-3 h-4 w-4;
+  color: var(--success);
+}
+
+.checkout-note {
+  @apply flex items-start gap-3 rounded-md p-4 text-sm leading-6;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+}
+
+.checkout-note svg {
+  @apply mt-0.5 shrink-0;
+  color: var(--success);
+}
+
+.review-grid {
+  @apply grid gap-3 md:grid-cols-2;
+}
+
+.review-block {
+  @apply rounded-md p-4;
+  border: 1px solid var(--line);
+}
+
+.review-block > div {
+  @apply flex items-center justify-between gap-3;
+}
+
+.review-block p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.review-block button {
+  @apply text-xs font-semibold underline;
+  color: var(--accent);
+}
+
+.review-block section {
+  @apply mt-3 grid gap-1 text-sm leading-6;
+}
+
+.review-block section span {
+  color: var(--text-muted);
+}
+
+.checkout-summary {
+  @apply p-5 lg:sticky lg:top-28;
+}
+
+.checkout-summary-items {
+  @apply my-5 grid max-h-[350px] gap-4 overflow-y-auto border-y py-5;
+  border-color: var(--line);
+}
+
+.checkout-summary-item {
+  @apply grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-3;
+}
+
+.checkout-summary-item img {
+  @apply rounded-md object-cover;
+  height: 52px;
+  width: 52px;
+  border: 1px solid var(--line);
+}
+
+.checkout-summary-item strong,
+.checkout-summary-item span {
+  @apply block;
+}
+
+.checkout-summary-item strong {
+  @apply line-clamp-2 text-sm leading-5;
+}
+
+.checkout-summary-item span {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.checkout-summary-item b {
+  @apply text-sm;
+}
+
+.checkout-total {
+  @apply flex items-center justify-between gap-4;
+}
+
+.checkout-total span {
+  @apply text-sm font-semibold;
+}
+
+.checkout-total strong {
+  @apply text-2xl;
+  color: var(--brand-red);
+}
+
+.checkout-summary-note {
+  @apply mt-4 flex items-start gap-2 rounded-md p-3 text-xs leading-5;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+}
+
+.checkout-summary-note svg {
+  @apply mt-0.5 shrink-0;
+  color: var(--success);
+}
+
+.checkout-success {
+  @apply p-8 text-center md:p-14;
+}
+
+.checkout-success-icon {
+  @apply mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full;
+  background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  color: var(--success);
+}
+
+.checkout-success-icon svg {
+  @apply h-8 w-8;
+}
+
+@media (max-width: 640px) {
+  .checkout-actions .action-commerce,
+  .checkout-actions .action-secondary {
+    @apply min-w-0 flex-1 px-3;
+  }
+}

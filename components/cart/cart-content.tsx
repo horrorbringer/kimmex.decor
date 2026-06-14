@@ -55,12 +55,12 @@ export function CartContent() {
             </div>
           ))}
         </div>
-        <div className="flex flex-wrap justify-center gap-3">
-          <a className="action-commerce gap-2" href="/products">
+        <div className="grid gap-3 sm:flex sm:flex-wrap sm:justify-center">
+          <a className="action-commerce w-full gap-2 sm:w-auto" href="/products">
             <ShoppingBag className="h-4 w-4" />
             Browse Products
           </a>
-          <a className="action-secondary" href="/contact?type=order-request">
+          <a className="action-secondary w-full sm:w-auto" href="/contact?type=order-request">
             Request Quote
           </a>
         </div>
@@ -69,13 +69,13 @@ export function CartContent() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
       <div className="surface-card overflow-hidden">
         <div className="border-b border-sand-400 bg-sand-50 p-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-red">Cart Items</p>
-              <h2 className="mt-1 font-serif text-3xl text-ink-900">Confirm materials and quantities.</h2>
+              <h2 className="mt-1 font-serif text-2xl text-ink-900 sm:text-3xl">Confirm materials and quantities.</h2>
             </div>
             <a className="resource-action w-fit" href="/products">
               Continue Shopping
@@ -83,9 +83,9 @@ export function CartContent() {
           </div>
         </div>
         {items.map((item) => (
-          <article key={item.id} className="grid gap-4 border-b border-sand-400 p-4 last:border-b-0 md:grid-cols-[112px_1fr_184px] md:items-center">
+          <article key={item.id} className="grid gap-4 border-b border-sand-400 p-4 last:border-b-0 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center md:grid-cols-[112px_minmax(0,1fr)_184px]">
             <a className="block overflow-hidden rounded-md border border-sand-400 bg-sand-50" href={item.href}>
-              <img alt={item.name} className="h-28 w-full object-cover transition hover:scale-105" src={item.imageUrl} />
+              <img alt={item.name} className="h-40 w-full object-cover transition hover:scale-105 sm:h-24 md:h-28" src={item.imageUrl} />
             </a>
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">
@@ -99,7 +99,7 @@ export function CartContent() {
                 <span className="rounded-md border border-sand-400 bg-sand-50 px-2.5 py-1">KMD confirmation</span>
               </div>
             </div>
-            <div className="grid gap-3">
+            <div className="grid gap-3 sm:col-span-2 md:col-span-1">
               <div className="flex items-center justify-between overflow-hidden rounded-md border border-sand-400 bg-sand-50">
                 <button
                   aria-label={`Decrease ${item.name} quantity`}
@@ -137,7 +137,7 @@ export function CartContent() {
         ))}
       </div>
 
-      <aside className="surface-card p-6 lg:sticky lg:top-6">
+      <aside className="surface-card p-5 sm:p-6 xl:sticky xl:top-6">
         <div className="flex items-start gap-3">
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-brand-red/10 text-brand-red">
             <ClipboardCheck className="h-5 w-5" />

@@ -13,6 +13,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { LanguageSwitcher, useLanguage } from "@/components/language-provider";
 import { readCart } from "@/lib/cart-store";
 import kmdLogo from "@/resource/kmd-logo.png";
 
@@ -23,13 +24,22 @@ const mainNav = [
   { label: "About", href: "/about" }
 ];
 
+const khmerNav: Record<string, string> = {
+  Products: "ផលិតផល",
+  Services: "សេវាកម្ម",
+  Portfolio: "ស្នាដៃ",
+  About: "អំពីយើង"
+};
+
 function isCurrentRoute(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function SiteHeader() {
+  const { text } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
   const closeCart = useCallback(() => setCartOpen(false), []);
@@ -52,6 +62,7 @@ export function SiteHeader() {
   useEffect(() => {
     setMobileMenuOpen(false);
     setCartOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -71,16 +82,25 @@ export function SiteHeader() {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!searchOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSearchOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [searchOpen]);
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-sand-400/80 border-t-[3px] border-t-[var(--brand-red)] bg-sand-50/95 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[72px] max-w-screen-2xl items-center gap-4 px-4 md:px-6 lg:gap-5 xl:px-10">
+      <div className="mx-auto flex min-h-[68px] max-w-screen-2xl items-center gap-3 px-4 md:px-6 xl:px-10">
         <a className="group flex shrink-0 items-center gap-3" href="/" aria-label="Decor home">
           <Image alt="Decor logo" className="h-9 w-auto object-contain transition group-hover:opacity-80" priority src={kmdLogo} />
-          <div className="hidden border-l border-sand-400 pl-3 sm:block">
-            <span className="block font-serif text-lg leading-none text-ink-900">Decor</span>
+          <div className="hidden border-l border-sand-400 pl-3 sm:block lg:hidden xl:block">
+            <span className="block font-serif text-lg leading-none text-ink-900">{text("Decor", "តុបតែង")}</span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-700 xl:block">
-              Products &amp; interiors
+              {text("Products & interiors", "ផលិតផល និងការតុបតែងផ្ទៃក្នុង")}
             </span>
           </div>
         </a>
@@ -100,7 +120,7 @@ export function SiteHeader() {
                 }`}
                 href={item.href}
               >
-                {item.label}
+                {text(item.label, khmerNav[item.label] || item.label)}
                 {isActive ? (
                   <span className="absolute bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-red" />
                 ) : null}
@@ -109,54 +129,44 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1.5 lg:ml-0">
-          <form action="/products" className="search-group hidden h-11 w-44 grid-cols-[minmax(0,1fr)_44px] rounded-full shadow-none lg:grid xl:w-64">
-            <label className="sr-only" htmlFor="desktop-product-search">
-              Search products
-            </label>
-            <input
-              className="field min-w-0 rounded-none border-0 bg-transparent py-2.5 pl-4 pr-1"
-              id="desktop-product-search"
-              name="q"
-              placeholder="Search products"
-              type="search"
-            />
-            <button aria-label="Search products" className="flex items-center justify-center text-ink-700 transition hover:text-brand-red" type="submit">
-              <Search size={18} strokeWidth={2.1} />
-            </button>
-          </form>
-
-          <a className="action-commerce hidden gap-2 whitespace-nowrap px-4 lg:inline-flex" href="/contact">
-            Request Quote
+        <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
+          <a className="action-commerce hidden gap-2 whitespace-nowrap px-4 xl:inline-flex" href="/contact">
+            {text("Request Quote", "ស្នើសុំតម្លៃ")}
             <ArrowUpRight size={16} strokeWidth={2.2} />
           </a>
 
+          <button
+            aria-expanded={searchOpen}
+            aria-label={text("Search products", "ស្វែងរកផលិតផល")}
+            className={`header-tool-button ${searchOpen ? "is-active" : ""}`}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setSearchOpen((current) => !current);
+            }}
+            title={text("Search", "ស្វែងរក")}
+            type="button"
+          >
+            <Search size={19} strokeWidth={2.1} />
+          </button>
+          <div className="hidden lg:block"><LanguageSwitcher /></div>
           <a
-            aria-label="Account and orders"
-            className="hidden h-11 w-11 items-center justify-center rounded-full text-ink-700 transition hover:bg-sand-100 hover:text-ink-900 lg:flex"
+            aria-label={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
+            className="header-tool-button hidden lg:flex"
             href="/account"
-            title="Account and orders"
+            title={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
           >
             <UserRound size={19} strokeWidth={2} />
           </a>
-          <a
-            aria-label="Wishlist"
-            className="hidden h-11 w-11 items-center justify-center rounded-full text-ink-700 transition hover:bg-sand-100 hover:text-brand-red lg:flex"
-            href="/wishlist"
-            title="Wishlist"
-          >
-            <Heart size={19} strokeWidth={2} />
-          </a>
           <button
-            aria-label={cartCount > 0 ? `Cart with ${cartCount} items` : "Cart"}
+            aria-label={cartCount > 0 ? text(`Cart with ${cartCount} items`, `កន្ត្រកមានទំនិញ ${cartCount} មុខ`) : text("Cart", "កន្ត្រក")}
             aria-expanded={cartOpen}
             aria-haspopup="dialog"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full text-ink-900 transition hover:bg-sand-100 hover:text-brand-red"
+            className="header-tool-button relative"
             onClick={() => {
               setMobileMenuOpen(false);
               setCartOpen(true);
             }}
-            title="Cart"
+            title={text("Cart", "កន្ត្រក")}
             type="button"
           >
             <ShoppingBag size={20} strokeWidth={2.1} />
@@ -168,7 +178,7 @@ export function SiteHeader() {
           </button>
           <button
             aria-expanded={mobileMenuOpen}
-            aria-label="Open navigation"
+            aria-label={text("Open navigation", "បើកម៉ឺនុយ")}
             className="flex h-11 w-11 items-center justify-center rounded-full border border-sand-400 text-ink-900 transition hover:bg-sand-100 lg:hidden"
             onClick={() => setMobileMenuOpen(true)}
             type="button"
@@ -178,23 +188,17 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="border-t border-sand-400/70 px-4 pb-3 pt-2 md:px-6 lg:hidden">
-        <form action="/products" className="search-group mx-auto grid max-w-2xl grid-cols-[minmax(0,1fr)_48px] rounded-full shadow-none">
-          <label className="sr-only" htmlFor="mobile-product-search">
-            Search products
-          </label>
-          <input
-            className="field min-w-0 rounded-none border-0 bg-transparent py-2.5 pl-4 pr-1"
-            id="mobile-product-search"
-            name="q"
-            placeholder="Search products, materials..."
-            type="search"
-          />
-          <button aria-label="Search products" className="flex items-center justify-center text-brand-red" type="submit">
-            <Search size={18} strokeWidth={2.2} />
-          </button>
-        </form>
-      </div>
+      {searchOpen ? (
+        <div className="header-search-panel">
+          <form action="/products" className="header-search-form">
+            <Search />
+            <label className="sr-only" htmlFor="header-product-search">{text("Search products", "ស្វែងរកផលិតផល")}</label>
+            <input autoFocus id="header-product-search" name="q" placeholder={text("Search products, materials, or brands", "ស្វែងរកផលិតផល សម្ភារៈ ឬម៉ាក")} type="search" />
+            <button type="submit">{text("Search", "ស្វែងរក")}</button>
+            <button aria-label={text("Close search", "បិទការស្វែងរក")} className="header-search-close" onClick={() => setSearchOpen(false)} type="button"><X /></button>
+          </form>
+        </div>
+      ) : null}
 
       </header>
 
@@ -214,10 +218,10 @@ export function SiteHeader() {
             <div className="flex items-center justify-between border-b border-sand-400 px-5 py-4">
               <a className="flex items-center gap-3" href="/" onClick={() => setMobileMenuOpen(false)}>
                 <Image alt="Decor logo" className="h-9 w-auto object-contain" src={kmdLogo} />
-                <span className="border-l border-sand-400 pl-3 font-serif text-lg text-ink-900">Decor</span>
+                <span className="border-l border-sand-400 pl-3 font-serif text-lg text-ink-900">{text("Decor", "តុបតែង")}</span>
               </a>
               <button
-                aria-label="Close navigation"
+                aria-label={text("Close navigation", "បិទម៉ឺនុយ")}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-sand-400 text-ink-900 transition hover:bg-sand-100"
                 onClick={() => setMobileMenuOpen(false)}
                 type="button"
@@ -226,8 +230,12 @@ export function SiteHeader() {
               </button>
             </div>
 
+            <div className="border-b border-sand-400 px-5 py-4">
+              <LanguageSwitcher variant="panel" />
+            </div>
+
             <div className="flex-1 overflow-y-auto px-5 py-6">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-700">Explore</p>
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-700">{text("Explore", "ស្វែងយល់")}</p>
               <nav className="grid" aria-label="Mobile main navigation">
                 {mainNav.map((item, index) => {
                   const isActive = isCurrentRoute(pathname, item.href);
@@ -244,7 +252,7 @@ export function SiteHeader() {
                     >
                       <span className="flex items-center gap-4">
                         <span className="text-[10px] font-semibold tracking-[0.16em] text-ink-700">0{index + 1}</span>
-                        <span className="font-serif text-2xl">{item.label}</span>
+                        <span className="font-serif text-2xl">{text(item.label, khmerNav[item.label] || item.label)}</span>
                       </span>
                       <ArrowUpRight className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" size={18} strokeWidth={1.8} />
                     </a>
@@ -253,23 +261,19 @@ export function SiteHeader() {
               </nav>
 
               <div className="mt-7 rounded-lg bg-[var(--text)] p-5 text-white">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Planning a project?</p>
-                <p className="mt-2 font-serif text-xl leading-snug">Get product and installation guidance from our team.</p>
-                <a className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white" href="/contact" onClick={() => setMobileMenuOpen(false)}>
-                  Request Quote
-                  <ArrowUpRight size={16} strokeWidth={2.2} />
-                </a>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">{text("Planning a project?", "កំពុងរៀបចំគម្រោង?")}</p>
+                <p className="mt-2 font-serif text-xl leading-snug">{text("Get product and installation guidance from our team.", "ទទួលការណែនាំអំពីផលិតផល និងការដំឡើងពីក្រុមការងាររបស់យើង។")}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 border-t border-sand-400 bg-sand-100">
               <a className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/account" onClick={() => setMobileMenuOpen(false)}>
                 <UserRound size={17} strokeWidth={2} />
-                Account
+                {text("Account", "គណនី")}
               </a>
               <a className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" href="/wishlist" onClick={() => setMobileMenuOpen(false)}>
                 <Heart size={17} strokeWidth={2} />
-                Wishlist
+                {text("Wishlist", "បញ្ជីចំណូលចិត្ត")}
               </a>
             </div>
           </div>

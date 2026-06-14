@@ -4,6 +4,7 @@ import { addProductToCart } from "@/lib/cart-store";
 import type { ProductItem } from "@/lib/homepage-data";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/components/language-provider";
 
 type AddToCartButtonProps = {
   product: ProductItem;
@@ -13,6 +14,7 @@ type AddToCartButtonProps = {
 };
 
 export function AddToCartButton({ className = "action-commerce gap-1.5", compact = false, product, quantity = 1 }: AddToCartButtonProps) {
+  const { text } = useLanguage();
   const [added, setAdded] = useState(false);
 
   const handleAddToCart = () => {
@@ -24,7 +26,7 @@ export function AddToCartButton({ className = "action-commerce gap-1.5", compact
   return (
     <button className={className} onClick={handleAddToCart} type="button">
       <ShoppingCart className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
-      {added ? "Added" : "Add to Cart"}
+      {added ? text("Added", "បានដាក់ចូល") : text("Add to Cart", "ដាក់ចូលកន្ត្រក")}
     </button>
   );
 }

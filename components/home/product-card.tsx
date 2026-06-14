@@ -2,6 +2,9 @@
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { ProductItem } from "@/lib/homepage-data";
+import { readWishlist, toggleWishlistProduct } from "@/lib/wishlist-store";
+import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type ProductCardProps = {
   product: ProductItem;
@@ -9,12 +12,21 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product, compact = false }: ProductCardProps) {
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setSaved(readWishlist().includes(product.id));
+    sync();
+    window.addEventListener("kmd-wishlist-updated", sync);
+    return () => window.removeEventListener("kmd-wishlist-updated", sync);
+  }, [product.id]);
+
   const needsQuote = product.quoteRecommended || product.stockStatus === "Preorder";
   const primaryAction = product.stockStatus === "Low stock" ? "Check Availability" : needsQuote ? "Get Quote" : "Add to Cart";
   const primaryHref = needsQuote || product.stockStatus === "Low stock" ? "/contact" : "/cart";
 
   return (
-    <article className="surface-card group flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-panel">
+    <article className="surface-card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-panel">
       <a className="relative block overflow-hidden" href={product.href}>
         <img
           alt={product.name}
@@ -30,6 +42,16 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           {product.stockStatus}
         </span>
       </a>
+      <button
+        aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+        aria-pressed={saved}
+        className={`product-save-button ${saved ? "is-saved" : ""}`}
+        onClick={() => setSaved(toggleWishlistProduct(product.id).includes(product.id))}
+        title={saved ? "Remove from wishlist" : "Save to wishlist"}
+        type="button"
+      >
+        <Heart fill={saved ? "currentColor" : "none"} />
+      </button>
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.18em] text-ink-700">
           <span>{product.brand}</span>

@@ -65,7 +65,7 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
       <aside
         aria-label="Shopping cart"
         aria-modal="true"
-        className="ml-auto flex h-full w-[min(94vw,460px)] flex-col bg-sand-50 shadow-2xl"
+        className="ml-auto flex h-full w-full max-w-[460px] flex-col bg-sand-50 shadow-2xl sm:w-[min(94vw,460px)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
@@ -104,15 +104,15 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
           <>
             <div className="flex-1 overflow-y-auto">
               {items.map((item) => (
-                <article className="grid grid-cols-[88px_1fr] gap-4 border-b border-sand-400 p-5 md:p-6" key={item.id}>
+                <article className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 border-b border-sand-400 p-4 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4 sm:p-5 md:p-6" key={item.id}>
                   <a className="overflow-hidden rounded-md border border-sand-400 bg-white" href={item.href} onClick={onClose}>
-                    <img alt={item.name} className="h-24 w-full object-cover" src={item.imageUrl} />
+                    <img alt={item.name} className="h-20 w-full object-cover sm:h-24" src={item.imageUrl} />
                   </a>
                   <div className="min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[10px] font-semibold uppercase tracking-[0.15em] text-ink-700">{item.brand}</p>
-                        <h3 className="mt-1 font-serif text-xl leading-tight text-ink-900">
+                        <h3 className="mt-1 font-serif text-lg leading-tight text-ink-900 sm:text-xl">
                           <a href={item.href} onClick={onClose}>{item.name}</a>
                         </h3>
                       </div>
@@ -126,7 +126,7 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
                       </button>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between gap-3">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
                       <div className="flex items-center overflow-hidden rounded-full border border-sand-400 bg-white">
                         <button
                           aria-label={`Decrease ${item.name} quantity`}
@@ -153,8 +153,8 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
               ))}
             </div>
 
-            <div className="border-t border-sand-400 bg-white p-5 md:p-6">
-              <div className="flex items-end justify-between gap-4">
+            <div className="border-t border-sand-400 bg-white p-4 sm:p-5 md:p-6">
+              <div className="flex flex-wrap items-end justify-between gap-3 sm:gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">Estimated subtotal</p>
                   <p className="mt-1 text-xs text-ink-700">Stock and delivery confirmed later</p>

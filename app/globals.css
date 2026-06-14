@@ -92,6 +92,142 @@ body {
   margin: 0;
 }
 
+html[data-language="km"] body {
+  font-family: "Noto Sans Khmer", "Khmer OS System", Arial, sans-serif;
+}
+
+html[data-language="km"] .font-serif {
+  font-family: "Noto Serif Khmer", "Khmer OS Muol Light", "Noto Sans Khmer", sans-serif;
+  line-height: 1.55;
+}
+
+.language-menu {
+  @apply relative;
+}
+
+.language-menu-trigger {
+  @apply flex h-11 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition;
+  color: var(--text-muted);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.language-menu-trigger:hover,
+.language-menu-trigger[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface-alt);
+}
+
+.language-menu-trigger svg:first-child {
+  @apply h-4 w-4;
+}
+
+.language-menu-trigger svg:last-child {
+  @apply h-3.5 w-3.5 transition;
+}
+
+.language-menu-trigger svg:last-child.is-open {
+  transform: rotate(180deg);
+}
+
+.language-menu-popover {
+  @apply absolute right-0 top-[calc(100%+8px)] z-50 w-56 rounded-lg p-2;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-panel);
+}
+
+.language-menu-popover > p {
+  @apply px-3 pb-2 pt-1 text-[10px] font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.language-menu-popover > button,
+.language-panel-options > button {
+  @apply flex w-full items-center justify-between gap-3 rounded-md px-3 py-2.5 text-left transition;
+  color: var(--text);
+}
+
+.language-menu-popover > button:hover,
+.language-panel-options > button:hover {
+  background: var(--surface-alt);
+}
+
+.language-menu-popover > button.is-active,
+.language-panel-options > button.is-active {
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.language-menu-popover button span,
+.language-menu-popover button strong,
+.language-menu-popover button small,
+.language-panel-options button span,
+.language-panel-options button strong,
+.language-panel-options button small {
+  @apply block;
+}
+
+.language-menu-popover button strong,
+.language-panel-options button strong {
+  @apply text-sm;
+}
+
+.language-menu-popover button small,
+.language-panel-options button small {
+  @apply mt-0.5 text-[10px] font-semibold;
+  color: var(--text-muted);
+}
+
+.language-menu-popover button > svg,
+.language-panel-options button > svg {
+  @apply h-4 w-4 shrink-0;
+  color: var(--success);
+}
+
+.language-panel {
+  @apply grid gap-3;
+}
+
+.language-panel-label {
+  @apply flex items-center gap-3;
+}
+
+.language-panel-label > svg {
+  @apply h-5 w-5 shrink-0;
+  color: var(--accent);
+}
+
+.language-panel-label span,
+.language-panel-label strong,
+.language-panel-label small {
+  @apply block;
+}
+
+.language-panel-label strong {
+  @apply text-sm;
+  color: var(--text);
+}
+
+.language-panel-label small {
+  @apply mt-0.5 text-xs;
+  color: var(--text-muted);
+}
+
+.language-panel-options {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.language-panel-options > button {
+  border: 1px solid var(--line);
+}
+
+.language-panel-options > button.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -107,6 +243,12 @@ a {
 
 .section-shell {
   @apply mx-auto max-w-screen-2xl px-4 py-16 md:px-6 lg:py-20 xl:px-10;
+}
+
+@media (max-width: 639px) {
+  .section-shell {
+    @apply py-10;
+  }
 }
 
 .commerce-band {
@@ -259,6 +401,74 @@ a {
   box-shadow: none;
 }
 
+.header-tool-button {
+  @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition;
+  color: var(--text-muted);
+}
+
+.header-tool-button:hover,
+.header-tool-button.is-active {
+  color: var(--brand-red);
+  background: var(--surface-alt);
+}
+
+.header-search-panel {
+  @apply border-t px-4 py-3 md:px-6 xl:px-10;
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: 0 12px 24px rgba(45, 38, 134, 0.08);
+}
+
+.header-search-form {
+  @apply mx-auto grid max-w-3xl grid-cols-[24px_minmax(0,1fr)_auto_40px] items-center gap-2 rounded-md px-3;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.header-search-form:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.header-search-form > svg {
+  @apply h-4 w-4;
+  color: var(--text-muted);
+}
+
+.header-search-form input {
+  @apply min-w-0 bg-transparent py-3 text-sm outline-none;
+  color: var(--text);
+}
+
+.header-search-form > button[type="submit"] {
+  @apply rounded-md px-4 py-2 text-sm font-semibold text-white;
+  background: var(--brand-red);
+}
+
+.header-search-close {
+  @apply grid h-9 w-9 place-items-center rounded-full transition;
+  color: var(--text-muted);
+}
+
+.header-search-close:hover {
+  color: var(--text);
+  background: var(--surface-alt);
+}
+
+.header-search-close svg {
+  @apply h-4 w-4;
+}
+
+@media (max-width: 520px) {
+  .header-search-form {
+    grid-template-columns: 20px minmax(0, 1fr) 36px;
+  }
+
+  .header-search-form > button[type="submit"] {
+    @apply hidden;
+  }
+}
+
 .filter-checkbox {
   accent-color: var(--accent);
   height: 1rem;
@@ -351,7 +561,7 @@ a {
 }
 
 .checkout-layout {
-  @apply grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start;
+  @apply grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start;
 }
 
 .checkout-panel,
@@ -422,9 +632,56 @@ a {
 }
 
 .control-label.has-error .field,
-.control-label.has-error .textarea-field {
+.control-label.has-error .textarea-field,
+.control-label.has-error .phone-field {
   border-color: var(--brand-red);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-red) 12%, transparent);
+}
+
+.phone-field {
+  @apply flex min-h-[46px] items-stretch overflow-hidden rounded-md transition;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.phone-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.phone-country {
+  @apply flex shrink-0 items-center gap-2 border-r px-3 text-sm font-semibold;
+  border-color: var(--line);
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.phone-country svg {
+  @apply h-4 w-4;
+  color: var(--accent);
+}
+
+.phone-field input {
+  @apply min-w-0 flex-1 bg-transparent px-3 py-3 text-sm font-semibold outline-none;
+  color: var(--text);
+}
+
+.phone-field input::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 65%, transparent);
+}
+
+.phone-valid {
+  @apply mr-3 h-5 w-5 self-center;
+  color: var(--success);
+}
+
+.phone-help {
+  @apply text-xs font-normal leading-5;
+  color: var(--text-muted);
+}
+
+.phone-help.is-error {
+  color: var(--brand-red);
 }
 
 .field-error-summary {
@@ -528,7 +785,7 @@ a {
 }
 
 .checkout-summary {
-  @apply p-5 lg:sticky lg:top-28;
+  @apply p-5 xl:sticky xl:top-28;
 }
 
 .checkout-summary-items {
@@ -604,8 +861,1629 @@ a {
 }
 
 @media (max-width: 640px) {
+  .checkout-form-body {
+    min-height: 0;
+  }
+
   .checkout-actions .action-commerce,
   .checkout-actions .action-secondary {
     @apply min-w-0 flex-1 px-3;
+  }
+
+  .checkout-actions {
+    @apply sticky bottom-0 z-10 bg-white/95 backdrop-blur;
+  }
+
+  .checkout-trust-row {
+    @apply grid grid-cols-1 gap-2;
+  }
+
+  .checkout-option {
+    min-height: 78px;
+  }
+}
+
+.product-save-button {
+  @apply absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/95 transition;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.product-save-button:hover,
+.product-save-button.is-saved {
+  color: var(--brand-red);
+  transform: scale(1.04);
+}
+
+.product-save-button svg {
+  @apply h-5 w-5;
+}
+
+.wishlist-heading {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.wishlist-heading .content-shell {
+  @apply grid gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end;
+}
+
+.wishlist-heading-copy > p:last-child {
+  @apply mt-4 max-w-2xl text-base leading-7;
+  color: var(--text-muted);
+}
+
+.wishlist-benefits {
+  @apply grid gap-2 text-sm font-semibold sm:grid-cols-3 lg:grid-cols-1;
+  color: var(--text-muted);
+}
+
+.wishlist-benefits span {
+  @apply flex items-center gap-2;
+}
+
+.wishlist-benefits svg {
+  @apply h-4 w-4;
+  color: var(--success);
+}
+
+.wishlist-section {
+  @apply py-8 lg:py-12;
+}
+
+.wishlist-loading {
+  @apply h-72 animate-pulse rounded-lg;
+  background: var(--surface-alt);
+}
+
+.wishlist-empty {
+  @apply rounded-lg px-5 py-14 text-center md:py-20;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.wishlist-empty > span {
+  @apply mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full;
+  background: color-mix(in srgb, var(--brand-red) 9%, var(--surface));
+  color: var(--brand-red);
+}
+
+.wishlist-empty > span svg {
+  @apply h-7 w-7;
+}
+
+.wishlist-empty > p:last-of-type {
+  @apply mx-auto mt-3 max-w-lg text-sm leading-7;
+  color: var(--text-muted);
+}
+
+.wishlist-toolbar {
+  @apply grid gap-3 rounded-lg p-4 md:grid-cols-[minmax(260px,1fr)_220px_auto] md:items-center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 900px) {
+  .wishlist-toolbar {
+    grid-template-columns: minmax(0, 1fr) 190px;
+  }
+
+  .wishlist-clear {
+    grid-column: 1 / -1;
+    @apply justify-self-end;
+  }
+}
+
+.wishlist-search {
+  @apply flex min-h-11 items-center gap-3 rounded-md px-3;
+  border: 1px solid var(--line);
+}
+
+.wishlist-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.wishlist-search svg {
+  @apply h-4 w-4 shrink-0;
+  color: var(--text-muted);
+}
+
+.wishlist-search input {
+  @apply min-w-0 flex-1 bg-transparent py-2 text-sm outline-none;
+  color: var(--text);
+}
+
+.wishlist-sort {
+  @apply min-h-11 py-2;
+}
+
+.wishlist-clear {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-3 text-sm font-semibold transition;
+  color: var(--text-muted);
+}
+
+.wishlist-clear:hover {
+  color: var(--brand-red);
+  background: color-mix(in srgb, var(--brand-red) 7%, var(--surface));
+}
+
+.wishlist-clear svg {
+  @apply h-4 w-4;
+}
+
+.wishlist-result-row {
+  @apply my-6 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between;
+  color: var(--text-muted);
+}
+
+.wishlist-result-row strong {
+  color: var(--text);
+}
+
+.wishlist-result-row a {
+  @apply inline-flex items-center gap-2 font-semibold;
+  color: var(--accent);
+}
+
+.wishlist-result-row svg {
+  @apply h-4 w-4;
+}
+
+.wishlist-grid {
+  @apply grid gap-5 xl:grid-cols-2;
+}
+
+.wishlist-card {
+  @apply grid overflow-hidden rounded-lg md:grid-cols-[220px_minmax(0,1fr)];
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.wishlist-card-media {
+  @apply relative min-h-[230px] overflow-hidden;
+  background: var(--surface-alt);
+}
+
+.wishlist-card-media > a,
+.wishlist-card-media img {
+  @apply h-full w-full;
+}
+
+.wishlist-card-media img {
+  @apply object-cover transition duration-300;
+}
+
+.wishlist-card:hover .wishlist-card-media img {
+  transform: scale(1.03);
+}
+
+.wishlist-card-media > button {
+  @apply absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-white transition;
+  color: var(--brand-red);
+  box-shadow: var(--shadow-soft);
+}
+
+.wishlist-card-media > button:hover {
+  transform: scale(1.05);
+}
+
+.wishlist-card-media > button svg {
+  @apply h-5 w-5;
+}
+
+.wishlist-stock {
+  @apply absolute bottom-3 left-3 rounded-md bg-white/95 px-2.5 py-1 text-xs font-semibold;
+  color: var(--brand-red);
+  box-shadow: var(--shadow-soft);
+}
+
+.wishlist-stock.is-available {
+  color: var(--success);
+}
+
+.wishlist-card-body {
+  @apply flex min-w-0 flex-col p-5;
+}
+
+.wishlist-card-meta {
+  @apply flex min-w-0 items-center justify-between gap-3 text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.wishlist-card-meta span {
+  @apply truncate text-right;
+}
+
+.wishlist-card-body h2 {
+  @apply mt-3 font-serif text-2xl leading-tight;
+  color: var(--text);
+}
+
+.wishlist-card-body h2 a:hover {
+  color: var(--brand-red);
+}
+
+.wishlist-description {
+  @apply mt-2 line-clamp-2 text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.wishlist-specs {
+  @apply mt-3 flex flex-wrap gap-2;
+}
+
+.wishlist-specs span {
+  @apply rounded-md px-2 py-1 text-xs;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--line);
+}
+
+.wishlist-card-price {
+  @apply mt-5 flex items-end justify-between gap-3 border-t pt-4;
+  border-color: var(--line);
+}
+
+.wishlist-card-price > div {
+  @apply flex flex-wrap items-baseline gap-x-2;
+}
+
+.wishlist-card-price strong {
+  @apply text-xl;
+  color: var(--brand-red);
+}
+
+.wishlist-card-price span,
+.wishlist-card-price del,
+.wishlist-card-price p {
+  @apply text-xs;
+  color: var(--text-muted);
+}
+
+.wishlist-card-price del {
+  @apply basis-full;
+}
+
+.wishlist-card-price p {
+  @apply flex items-center gap-1 text-right;
+}
+
+.wishlist-card-price p svg {
+  @apply h-4 w-4;
+  color: var(--success);
+}
+
+.wishlist-card-actions {
+  @apply mt-4 grid grid-cols-2 gap-2;
+}
+
+.wishlist-card-actions .action-commerce,
+.wishlist-card-actions .action-secondary {
+  @apply min-h-10 px-3 py-2 text-xs;
+}
+
+.wishlist-card-actions svg {
+  @apply h-3.5 w-3.5;
+}
+
+.wishlist-remove {
+  @apply mt-3 inline-flex w-fit items-center gap-1.5 text-xs font-semibold transition;
+  color: var(--text-muted);
+}
+
+.wishlist-remove:hover {
+  color: var(--brand-red);
+}
+
+.wishlist-remove svg {
+  @apply h-3.5 w-3.5;
+}
+
+.wishlist-no-results {
+  @apply rounded-lg px-5 py-16 text-center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.wishlist-no-results > svg {
+  @apply mx-auto h-7 w-7;
+  color: var(--text-muted);
+}
+
+.wishlist-no-results h2 {
+  @apply mt-4 font-serif text-2xl;
+}
+
+.wishlist-no-results button {
+  @apply mt-4 text-sm font-semibold underline;
+  color: var(--accent);
+}
+
+@media (max-width: 767px) {
+  .wishlist-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-clear {
+    grid-column: auto;
+    @apply w-full justify-center;
+  }
+
+  .wishlist-result-row a {
+    @apply w-fit;
+  }
+
+  .wishlist-card {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-card-media {
+    min-height: 220px;
+    max-height: 280px;
+  }
+
+  .wishlist-card-actions {
+    @apply grid-cols-1;
+  }
+
+  .wishlist-card-actions .action-commerce,
+  .wishlist-card-actions .action-secondary {
+    @apply w-full;
+  }
+}
+
+.account-heading {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.account-heading .content-shell {
+  @apply grid gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end;
+}
+
+.account-trust {
+  @apply grid gap-2 text-sm font-semibold sm:grid-cols-3 lg:grid-cols-1;
+  color: var(--text-muted);
+}
+
+.account-trust span {
+  @apply flex items-center gap-2;
+}
+
+.account-trust svg {
+  @apply h-4 w-4;
+  color: var(--success);
+}
+
+.account-section {
+  @apply py-7 lg:py-10;
+}
+
+.account-loading {
+  @apply h-96 animate-pulse rounded-lg;
+  background: var(--surface-alt);
+}
+
+.account-layout {
+  @apply grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start;
+}
+
+.account-sidebar,
+.account-panel,
+.account-empty {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+}
+
+.account-sidebar {
+  @apply overflow-hidden lg:sticky lg:top-28;
+}
+
+.account-identity {
+  @apply flex items-center gap-3 border-b p-5;
+  border-color: var(--line);
+}
+
+.account-identity > span {
+  @apply grid h-11 w-11 shrink-0 place-items-center rounded-full text-lg font-bold text-white;
+  background: var(--accent);
+}
+
+.account-identity > span svg {
+  @apply h-5 w-5;
+}
+
+.account-identity div {
+  @apply min-w-0;
+}
+
+.account-identity strong,
+.account-identity small {
+  @apply block truncate;
+}
+
+.account-identity strong {
+  @apply text-sm;
+}
+
+.account-identity small {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.account-sidebar nav {
+  @apply grid p-2;
+}
+
+.account-sidebar nav button {
+  @apply flex min-h-11 items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition;
+  color: var(--text-muted);
+}
+
+.account-sidebar nav button:hover {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.account-sidebar nav button.is-active {
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.account-sidebar nav button > svg:first-child {
+  @apply h-4 w-4 shrink-0;
+}
+
+.account-sidebar nav button > span {
+  @apply flex-1;
+}
+
+.account-sidebar nav button > svg:last-child {
+  @apply h-4 w-4;
+}
+
+.account-sidebar nav button b {
+  @apply grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] text-white;
+  background: var(--brand-red);
+}
+
+.account-sidebar-links {
+  @apply grid border-y p-2;
+  border-color: var(--line);
+}
+
+.account-sidebar-links a {
+  @apply flex min-h-10 items-center gap-3 rounded-md px-3 text-sm transition;
+  color: var(--text-muted);
+}
+
+.account-sidebar-links a:hover {
+  color: var(--brand-red);
+}
+
+.account-sidebar-links svg {
+  @apply h-4 w-4;
+}
+
+.account-sidebar-links span {
+  @apply ml-auto text-xs font-semibold;
+}
+
+.account-local-note {
+  @apply p-4 text-xs leading-5;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface-alt) 55%, var(--surface));
+}
+
+.account-main {
+  @apply min-w-0;
+}
+
+.account-view-heading {
+  @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+}
+
+.account-view-heading .eyebrow {
+  @apply mb-2;
+}
+
+.account-view-heading h2 {
+  @apply font-serif text-3xl leading-tight md:text-4xl;
+  color: var(--text);
+}
+
+.account-view-heading > div > span {
+  @apply mt-2 block text-sm;
+  color: var(--text-muted);
+}
+
+.account-view-heading svg,
+.account-next-step .action-commerce svg,
+.account-next-step .action-secondary svg {
+  @apply h-4 w-4;
+}
+
+.account-stat-grid {
+  @apply grid gap-3 md:grid-cols-3;
+}
+
+.account-stat {
+  @apply grid min-h-[128px] grid-cols-[42px_minmax(0,1fr)_18px] items-start gap-3 rounded-lg p-4 text-left transition;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.account-stat:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.account-stat > span {
+  @apply grid h-10 w-10 place-items-center rounded-md;
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.account-stat > span svg,
+.account-stat > svg {
+  @apply h-5 w-5;
+}
+
+.account-stat > svg {
+  @apply mt-1;
+  color: var(--text-muted);
+}
+
+.account-stat p,
+.account-stat strong,
+.account-stat small {
+  @apply block;
+}
+
+.account-stat p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-stat strong {
+  @apply mt-2 text-lg;
+  color: var(--text);
+}
+
+.account-stat small {
+  @apply mt-1 text-xs leading-5;
+  color: var(--text-muted);
+}
+
+.account-panel {
+  @apply p-5 md:p-6;
+}
+
+.account-next-step {
+  @apply mt-5;
+  background: color-mix(in srgb, var(--surface-alt) 45%, var(--surface));
+}
+
+.account-panel-heading {
+  @apply flex items-start justify-between gap-4;
+}
+
+.account-panel-heading p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-panel-heading h3 {
+  @apply mt-1 font-serif text-2xl;
+  color: var(--text);
+}
+
+.account-panel-heading > svg {
+  @apply h-6 w-6 shrink-0;
+  color: var(--accent);
+}
+
+.account-next-step > p,
+.account-panel-copy,
+.account-support > p {
+  @apply mt-4 text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.account-next-step > a {
+  @apply mt-5;
+}
+
+.account-bottom-grid {
+  @apply mt-5 grid gap-5 xl:grid-cols-2;
+}
+
+.account-request-line {
+  @apply mt-5 flex flex-wrap items-center justify-between gap-3 rounded-md p-3 text-xs;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+}
+
+.account-request-line span,
+.account-request-line b {
+  @apply inline-flex items-center gap-2;
+}
+
+.account-request-line svg {
+  @apply h-4 w-4;
+}
+
+.account-request-line b {
+  color: var(--brand-red);
+}
+
+.account-text-action {
+  @apply mt-5 inline-flex items-center gap-2 text-sm font-semibold;
+  color: var(--accent);
+}
+
+.account-text-action svg {
+  @apply h-4 w-4;
+}
+
+.account-support > .eyebrow {
+  @apply mb-2;
+}
+
+.account-support h3 {
+  @apply font-serif text-2xl;
+}
+
+.account-support > div {
+  @apply mt-5 grid gap-2;
+}
+
+.account-support a {
+  @apply flex items-center gap-3 rounded-md p-3 text-sm font-semibold transition;
+  background: var(--surface-alt);
+}
+
+.account-support a:hover {
+  color: var(--brand-red);
+}
+
+.account-support a svg {
+  @apply h-4 w-4;
+  color: var(--accent);
+}
+
+.account-profile-form {
+  @apply max-w-4xl;
+}
+
+.account-profile-form > .grid {
+  @apply mt-7;
+}
+
+.account-profile-actions {
+  @apply mt-6 flex flex-wrap items-center gap-4 border-t pt-5;
+  border-color: var(--line);
+}
+
+.account-profile-actions button svg {
+  @apply h-4 w-4;
+}
+
+.account-profile-actions > span {
+  @apply inline-flex items-center gap-2 text-sm font-semibold;
+  color: var(--success);
+}
+
+.account-profile-actions > span svg {
+  @apply h-4 w-4;
+}
+
+.account-empty {
+  @apply px-5 py-16 text-center;
+}
+
+.account-empty > span {
+  @apply mx-auto grid h-14 w-14 place-items-center rounded-full;
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.account-empty > span svg {
+  @apply h-6 w-6;
+}
+
+.account-empty h3 {
+  @apply mt-5 font-serif text-3xl;
+}
+
+.account-empty p {
+  @apply mx-auto mb-6 mt-3 max-w-lg text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.account-empty a svg {
+  @apply h-4 w-4;
+}
+
+.account-order-detail {
+  @apply overflow-hidden p-0;
+}
+
+.account-order-top {
+  @apply flex flex-col gap-4 border-b p-5 sm:flex-row sm:items-start sm:justify-between md:p-6;
+  border-color: var(--line);
+}
+
+.account-order-top span {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-order-top h3 {
+  @apply mt-2 font-serif text-2xl;
+}
+
+.account-order-top p {
+  @apply mt-2 text-xs;
+  color: var(--text-muted);
+}
+
+.account-order-top > b {
+  @apply inline-flex w-fit items-center gap-2 rounded-md px-3 py-2 text-xs;
+  color: var(--brand-red);
+  background: color-mix(in srgb, var(--brand-red) 8%, var(--surface));
+}
+
+.account-order-top > b svg {
+  @apply h-4 w-4;
+}
+
+.account-order-progress {
+  @apply grid grid-cols-[auto_minmax(20px,1fr)_auto_minmax(20px,1fr)_auto] items-center gap-2 overflow-x-auto border-b p-5 text-xs font-semibold md:p-6;
+  border-color: var(--line);
+  color: var(--text-muted);
+}
+
+.account-order-progress span {
+  @apply flex min-w-max items-center gap-2;
+}
+
+.account-order-progress svg {
+  @apply h-4 w-4;
+}
+
+.account-order-progress i {
+  @apply h-px min-w-5;
+  background: var(--line);
+}
+
+.account-order-progress .is-done {
+  color: var(--success);
+}
+
+.account-order-progress .is-current {
+  color: var(--brand-red);
+}
+
+.account-order-columns {
+  @apply grid lg:grid-cols-2;
+}
+
+.account-order-columns > div {
+  @apply p-5 md:p-6;
+}
+
+.account-order-columns > div:first-child {
+  @apply border-b lg:border-b-0 lg:border-r;
+  border-color: var(--line);
+}
+
+.account-order-columns > div > p {
+  @apply mb-4 text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-order-item {
+  @apply grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 border-b py-3 last:border-b-0;
+  border-color: var(--line);
+}
+
+.account-order-item img {
+  @apply h-12 w-12 rounded-md object-cover;
+  border: 1px solid var(--line);
+}
+
+.account-order-item strong,
+.account-order-item small {
+  @apply block;
+}
+
+.account-order-item strong {
+  @apply line-clamp-1 text-sm;
+}
+
+.account-order-item small {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.account-order-item > b {
+  @apply text-sm;
+}
+
+.account-order-columns dl {
+  @apply grid gap-4;
+}
+
+.account-order-columns dl > div {
+  @apply grid gap-1;
+}
+
+.account-order-columns dt {
+  @apply flex items-center gap-2 text-xs font-semibold;
+  color: var(--text-muted);
+}
+
+.account-order-columns dt svg {
+  @apply h-4 w-4;
+  color: var(--accent);
+}
+
+.account-order-columns dd {
+  @apply ml-6 text-sm leading-6;
+}
+
+.account-muted {
+  @apply text-sm;
+  color: var(--text-muted);
+}
+
+.account-order-total {
+  @apply flex items-center justify-between gap-4 border-t px-5 py-5 md:px-6;
+  border-color: var(--line);
+  background: var(--surface-alt);
+}
+
+.account-order-total span {
+  @apply text-sm font-semibold;
+}
+
+.account-order-total small {
+  @apply mt-1 block text-xs font-normal;
+  color: var(--text-muted);
+}
+
+.account-order-total strong {
+  @apply text-2xl;
+  color: var(--brand-red);
+}
+
+@media (max-width: 1023px) {
+  .account-sidebar nav {
+    @apply grid-cols-3 gap-1;
+  }
+
+  .account-sidebar nav button {
+    @apply justify-center px-2 text-center;
+  }
+
+  .account-sidebar nav button > svg:last-child,
+  .account-sidebar nav button b {
+    @apply hidden;
+  }
+
+  .account-sidebar-links {
+    @apply grid-cols-2;
+  }
+
+  .account-local-note {
+    @apply hidden;
+  }
+}
+
+@media (max-width: 520px) {
+  .account-sidebar nav button {
+    @apply flex-col gap-1 py-2 text-[11px];
+  }
+
+  .account-stat-grid {
+    @apply grid-cols-1;
+  }
+
+  .account-order-progress {
+    grid-template-columns: 1fr;
+  }
+
+  .account-order-progress i {
+    @apply ml-2 h-4 w-px;
+  }
+}
+
+.account-workspace {
+  @apply grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start;
+}
+
+.account-rail {
+  @apply overflow-hidden rounded-lg lg:sticky lg:top-28;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.account-person {
+  @apply flex items-center gap-3 border-b p-4;
+  border-color: var(--line);
+}
+
+.account-person > span {
+  @apply grid h-10 w-10 shrink-0 place-items-center rounded-full text-base font-bold text-white;
+  background: var(--accent);
+}
+
+.account-person > span svg {
+  @apply h-5 w-5;
+}
+
+.account-person div {
+  @apply min-w-0;
+}
+
+.account-person strong,
+.account-person small {
+  @apply block truncate;
+}
+
+.account-person strong {
+  @apply text-sm;
+}
+
+.account-person small {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.account-rail nav {
+  @apply grid gap-1 p-2;
+}
+
+.account-rail nav button,
+.account-rail-cart {
+  @apply flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition;
+  color: var(--text-muted);
+}
+
+.account-rail nav button:hover,
+.account-rail-cart:hover {
+  color: var(--text);
+  background: var(--surface-alt);
+}
+
+.account-rail nav button.is-active {
+  color: var(--accent);
+  background: var(--surface-alt);
+  box-shadow: inset 3px 0 0 var(--brand-red);
+}
+
+.account-rail nav svg,
+.account-rail-cart svg {
+  @apply h-4 w-4 shrink-0;
+}
+
+.account-rail nav button > span,
+.account-rail-cart > span {
+  @apply flex-1;
+}
+
+.account-rail nav button b,
+.account-rail-cart b {
+  @apply grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px];
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.account-rail-cart {
+  @apply mx-2 mb-2 border-t;
+  border-color: var(--line);
+}
+
+.account-rail > p {
+  @apply border-t p-4 text-xs leading-5;
+  border-color: var(--line);
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface-alt) 45%, var(--surface));
+}
+
+.account-content {
+  @apply min-w-0;
+}
+
+.account-content-header {
+  @apply mb-6 flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between;
+  border-color: var(--line);
+}
+
+.account-content-header > div > p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--brand-red);
+}
+
+.account-content-header h2 {
+  @apply mt-1 font-serif text-3xl leading-tight;
+  color: var(--text);
+}
+
+.account-content-header > div > span {
+  @apply mt-2 block text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.account-content-header svg {
+  @apply h-4 w-4;
+}
+
+.account-focus {
+  @apply grid overflow-hidden rounded-lg md:grid-cols-[minmax(0,1fr)_auto];
+  color: white;
+  background: var(--accent);
+}
+
+.account-content-header .action-commerce,
+.account-content-header .action-secondary {
+  @apply shrink-0;
+}
+
+.account-focus-status {
+  @apply flex items-start gap-4 p-5 md:p-7;
+}
+
+.account-focus-status > span {
+  @apply grid h-11 w-11 shrink-0 place-items-center rounded-md bg-white/10;
+}
+
+.account-focus-status svg {
+  @apply h-5 w-5;
+}
+
+.account-focus-status p {
+  @apply text-xs font-semibold uppercase text-white/60;
+}
+
+.account-focus-status h3 {
+  @apply mt-2 font-serif text-2xl leading-snug text-white;
+}
+
+.account-focus-status small {
+  @apply mt-2 block text-sm leading-6 text-white/70;
+}
+
+.account-focus-action {
+  @apply flex items-stretch border-t border-white/15 md:border-l md:border-t-0;
+}
+
+.account-focus-action a,
+.account-focus-action button {
+  @apply flex min-w-48 flex-1 items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-white transition md:px-6;
+}
+
+.account-focus-action a:hover,
+.account-focus-action button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.account-focus-action svg {
+  @apply h-4 w-4;
+}
+
+.account-numbers {
+  @apply mt-5 grid overflow-hidden rounded-lg md:grid-cols-3;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.account-numbers > * {
+  @apply flex min-h-28 flex-col items-start justify-center border-b p-5 text-left transition last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0;
+  border-color: var(--line);
+}
+
+.account-numbers > *:hover {
+  background: var(--surface-alt);
+}
+
+.account-numbers span,
+.account-numbers small {
+  @apply text-xs;
+  color: var(--text-muted);
+}
+
+.account-numbers span {
+  @apply font-semibold uppercase;
+}
+
+.account-numbers strong {
+  @apply mt-2 text-2xl;
+  color: var(--text);
+}
+
+.account-numbers small {
+  @apply mt-1;
+}
+
+.account-overview-grid {
+  @apply mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)];
+}
+
+.account-activity,
+.account-contact-strip,
+.account-profile-sheet,
+.account-order-sheet,
+.account-saved-list {
+  @apply rounded-lg;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.account-section-title {
+  @apply flex items-start justify-between gap-4 border-b p-5;
+  border-color: var(--line);
+}
+
+.account-section-title p,
+.account-contact-strip p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-section-title h3,
+.account-contact-strip h3 {
+  @apply mt-1 font-serif text-xl;
+  color: var(--text);
+}
+
+.account-section-title svg {
+  @apply h-5 w-5;
+  color: var(--accent);
+}
+
+.account-activity-row {
+  @apply grid grid-cols-[minmax(0,1fr)_auto_36px] items-center gap-4 p-5;
+}
+
+.account-activity-row b,
+.account-activity-row span {
+  @apply block;
+}
+
+.account-activity-row b {
+  @apply text-sm;
+}
+
+.account-activity-row span {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.account-activity-row > strong {
+  @apply text-sm;
+  color: var(--brand-red);
+}
+
+.account-activity-row > button {
+  @apply grid h-9 w-9 place-items-center rounded-full transition;
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.account-activity-row > button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.account-activity-row svg {
+  @apply h-4 w-4;
+}
+
+.account-empty-line {
+  @apply flex items-center gap-3 p-5 text-sm;
+  color: var(--text-muted);
+}
+
+.account-empty-line svg {
+  @apply h-4 w-4;
+  color: var(--success);
+}
+
+.account-contact-strip {
+  @apply p-5;
+}
+
+.account-contact-strip > div:first-child > span {
+  @apply mt-2 block text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.account-contact-strip > div:last-child {
+  @apply mt-5 grid gap-2;
+}
+
+.account-contact-strip a {
+  @apply flex items-center gap-3 border-t pt-3 text-sm font-semibold transition;
+  border-color: var(--line);
+}
+
+.account-contact-strip a:hover {
+  color: var(--brand-red);
+}
+
+.account-contact-strip svg {
+  @apply h-4 w-4;
+  color: var(--accent);
+}
+
+.account-saved-list {
+  @apply overflow-hidden;
+}
+
+.account-saved-list article {
+  @apply grid items-center gap-4 border-b p-4 last:border-b-0 sm:grid-cols-[72px_minmax(0,1fr)_auto_auto];
+  border-color: var(--line);
+}
+
+.account-saved-list article > a {
+  @apply overflow-hidden rounded-md;
+}
+
+.account-saved-list img {
+  @apply h-16 w-full object-cover sm:w-16;
+}
+
+.account-saved-list article > div:nth-child(2) {
+  @apply min-w-0;
+}
+
+.account-saved-list p,
+.account-saved-list span,
+.account-saved-list small {
+  @apply text-xs;
+  color: var(--text-muted);
+}
+
+.account-saved-list h3 {
+  @apply mt-1 truncate font-serif text-lg;
+}
+
+.account-saved-list span {
+  @apply mt-1 block;
+}
+
+.account-saved-list article > strong {
+  @apply text-base;
+  color: var(--brand-red);
+}
+
+.account-saved-list article > strong small {
+  @apply ml-1 font-normal;
+}
+
+.account-saved-list .action-commerce,
+.account-saved-list .action-secondary {
+  @apply min-h-10 whitespace-nowrap px-3 py-2 text-xs;
+}
+
+.account-profile-sheet {
+  @apply max-w-4xl overflow-hidden;
+}
+
+.account-profile-intro {
+  @apply flex items-start gap-4 border-b p-5 md:p-6;
+  border-color: var(--line);
+}
+
+.account-profile-intro > span {
+  @apply grid h-11 w-11 shrink-0 place-items-center rounded-full;
+  background: var(--surface-alt);
+  color: var(--accent);
+}
+
+.account-profile-intro svg {
+  @apply h-5 w-5;
+}
+
+.account-profile-intro h3 {
+  @apply font-serif text-xl;
+}
+
+.account-profile-intro p {
+  @apply mt-1 text-sm leading-6;
+  color: var(--text-muted);
+}
+
+.account-profile-fields {
+  @apply grid gap-4 p-5 md:grid-cols-2 md:p-6;
+}
+
+.account-profile-save {
+  @apply flex flex-wrap items-center gap-4 border-t p-5 md:px-6;
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--surface-alt) 45%, var(--surface));
+}
+
+.account-profile-save button svg,
+.account-profile-save span svg {
+  @apply h-4 w-4;
+}
+
+.account-profile-save span {
+  @apply inline-flex items-center gap-2 text-sm font-semibold;
+  color: var(--success);
+}
+
+.account-order-sheet {
+  @apply overflow-hidden;
+}
+
+.account-order-summary {
+  @apply flex flex-col gap-4 border-b p-5 sm:flex-row sm:items-start sm:justify-between md:p-6;
+  border-color: var(--line);
+}
+
+.account-order-summary p {
+  @apply text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-order-summary h3 {
+  @apply mt-2 font-serif text-2xl;
+}
+
+.account-order-summary span {
+  @apply mt-2 block text-xs;
+  color: var(--text-muted);
+}
+
+.account-order-summary > b {
+  @apply inline-flex w-fit items-center gap-2 rounded-md px-3 py-2 text-xs;
+  color: var(--brand-red);
+  background: color-mix(in srgb, var(--brand-red) 8%, var(--surface));
+}
+
+.account-order-summary svg,
+.account-order-timeline svg {
+  @apply h-4 w-4;
+}
+
+.account-order-timeline {
+  @apply grid grid-cols-[auto_minmax(20px,1fr)_auto_minmax(20px,1fr)_auto] items-center gap-2 overflow-x-auto border-b p-5 text-xs font-semibold md:p-6;
+  border-color: var(--line);
+  color: var(--text-muted);
+}
+
+.account-order-timeline span {
+  @apply flex min-w-max items-center gap-2;
+}
+
+.account-order-timeline i {
+  @apply h-px min-w-5;
+  background: var(--line);
+}
+
+.account-order-timeline .is-done {
+  color: var(--success);
+}
+
+.account-order-timeline .is-current {
+  color: var(--brand-red);
+}
+
+.account-order-body {
+  @apply grid lg:grid-cols-2;
+}
+
+.account-order-body > div,
+.account-order-body > dl {
+  @apply p-5 md:p-6;
+}
+
+.account-order-body > div {
+  @apply border-b lg:border-b-0 lg:border-r;
+  border-color: var(--line);
+}
+
+.account-order-body > div > p,
+.account-order-body > dl > p {
+  @apply mb-4 text-xs font-semibold uppercase;
+  color: var(--text-muted);
+}
+
+.account-order-product {
+  @apply grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 border-b py-3 last:border-b-0;
+  border-color: var(--line);
+}
+
+.account-order-product img {
+  @apply h-12 w-12 rounded-md object-cover;
+}
+
+.account-order-product strong,
+.account-order-product small {
+  @apply block;
+}
+
+.account-order-product strong {
+  @apply line-clamp-1 text-sm;
+}
+
+.account-order-product small {
+  @apply mt-1 text-xs;
+  color: var(--text-muted);
+}
+
+.account-order-product > b {
+  @apply text-sm;
+}
+
+.account-order-body dl {
+  @apply grid content-start gap-4;
+}
+
+.account-order-body dl > div {
+  @apply grid gap-1;
+}
+
+.account-order-body dt {
+  @apply flex items-center gap-2 text-xs font-semibold;
+  color: var(--text-muted);
+}
+
+.account-order-body dt svg {
+  @apply h-4 w-4;
+  color: var(--accent);
+}
+
+.account-order-body dd {
+  @apply ml-6 text-sm leading-6;
+}
+
+.account-order-footer {
+  @apply flex items-center justify-between gap-4 border-t p-5 md:px-6;
+  border-color: var(--line);
+  background: var(--surface-alt);
+}
+
+.account-order-footer span {
+  @apply text-sm font-semibold;
+}
+
+.account-order-footer small {
+  @apply mt-1 block text-xs font-normal;
+  color: var(--text-muted);
+}
+
+.account-order-footer strong {
+  @apply text-2xl;
+  color: var(--brand-red);
+}
+
+@media (max-width: 1023px) {
+  .account-rail nav {
+    @apply grid-cols-4 overflow-x-auto;
+  }
+
+  .account-rail nav button {
+    @apply min-w-24 flex-col justify-center gap-1 px-2 py-2 text-center text-xs;
+  }
+
+  .account-rail > p {
+    @apply hidden;
+  }
+
+  .account-rail-cart {
+    @apply mx-2 mb-2 justify-center;
+  }
+
+  .account-content-header {
+    @apply items-start;
+  }
+}
+
+@media (max-width: 639px) {
+  .account-person {
+    @apply hidden;
+  }
+
+  .account-workspace {
+    @apply gap-5;
+  }
+
+  .account-section {
+    @apply py-5;
+  }
+
+  .account-content-header {
+    @apply pb-4;
+  }
+
+  .account-content-header .action-commerce,
+  .account-content-header .action-secondary {
+    @apply w-full;
+  }
+
+  .account-saved-list article {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .account-saved-list article > strong,
+  .account-saved-list article > div:last-child {
+    grid-column: 2;
+  }
+
+  .account-activity-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .account-activity-row > button {
+    @apply hidden;
+  }
+
+  .account-order-timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .account-order-timeline i {
+    @apply ml-2 h-4 w-px;
+  }
+
+  .account-focus-status {
+    @apply p-5;
+  }
+
+  .account-numbers > * {
+    min-height: 96px;
+  }
+
+  .account-order-footer {
+    @apply items-start;
+  }
+
+  .account-order-footer strong {
+    @apply text-xl;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-hero-actions {
+    @apply grid grid-cols-1;
+  }
+
+  .cart-hero-actions .action-commerce,
+  .cart-hero-actions .action-secondary {
+    @apply w-full;
+  }
+
+  .phone-country {
+    @apply px-2;
+  }
+
+  .checkout-progress-step {
+    @apply px-1;
+  }
+
+  .checkout-progress-step > span {
+    @apply h-6 w-6;
+  }
+
+  .account-order-product {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .account-order-product > b {
+    grid-column: 2;
   }
 }

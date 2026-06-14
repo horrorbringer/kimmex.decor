@@ -2,6 +2,7 @@
 
 import { clearCart, getCartSubtotal, readCart } from "@/lib/cart-store";
 import type { CartItem } from "@/lib/cart-store";
+import { formatCambodianPhone, getInternationalCambodianPhone, isValidCambodianPhone } from "@/lib/phone";
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +13,7 @@ import {
   MapPin,
   MessageCircle,
   PackageCheck,
+  Phone,
   ShoppingBag,
   Store,
   Truck
@@ -61,7 +63,7 @@ function buildRequest(details: CheckoutDetails, items: CartItem[], subtotal: num
     "KMD Decor order request",
     "",
     `Customer: ${details.name}`,
-    `Phone: ${details.phone}`,
+    `Phone: ${getInternationalCambodianPhone(details.phone)}`,
     `Email: ${details.email || "Not provided"}`,
     `Method: ${details.deliveryMethod === "delivery" ? "KMD delivery" : "Pickup from KMD"}`,
     `Area: ${details.deliveryMethod === "delivery" ? details.area : "KMD showroom pickup"}`,
@@ -91,7 +93,8 @@ export function CheckoutForm() {
 
   const subtotal = useMemo(() => getCartSubtotal(items), [items]);
   const itemCount = useMemo(() => items.reduce((total, item) => total + item.quantity, 0), [items]);
-  const contactReady = details.name.trim().length > 1 && details.phone.trim().length > 5;
+  const phoneReady = isValidCambodianPhone(details.phone);
+  const contactReady = details.name.trim().length > 1 && phoneReady;
   const locationReady =
     details.deliveryMethod === "pickup" || (details.area.trim().length > 1 && details.address.trim().length > 5);
   const stepReady = contactReady && locationReady;
@@ -183,9 +186,27 @@ export function CheckoutForm() {
                 <Field label="Full name" required error={showErrors && details.name.trim().length < 2}>
                   <input autoComplete="name" className="field" onChange={(event) => update("name", event.target.value)} placeholder="Your name" value={details.name} />
                 </Field>
-                <Field label="Phone number" required error={showErrors && details.phone.trim().length < 6}>
-                  <input autoComplete="tel" className="field" inputMode="tel" onChange={(event) => update("phone", event.target.value)} placeholder="+855 12 345 678" value={details.phone} />
-                </Field>
+                <label className={`control-label ${showErrors && !phoneReady ? "has-error" : ""}`}>
+                  <span>Phone number <em>Required</em></span>
+                  <span className="phone-field">
+                    <span className="phone-country" aria-hidden="true"><Phone /> +855</span>
+                    <input
+                      aria-describedby="checkout-phone-help"
+                      aria-invalid={showErrors && !phoneReady}
+                      autoComplete="tel-national"
+                      inputMode="numeric"
+                      maxLength={18}
+                      onChange={(event) => update("phone", formatCambodianPhone(event.target.value))}
+                      placeholder="12 345 678"
+                      type="tel"
+                      value={details.phone}
+                    />
+                    {phoneReady ? <CheckCircle2 aria-label="Valid phone number" className="phone-valid" /> : null}
+                  </span>
+                  <small className={showErrors && !phoneReady ? "phone-help is-error" : "phone-help"} id="checkout-phone-help">
+                    {showErrors && !phoneReady ? "Enter a valid 8 or 9 digit Cambodian phone number." : "Cambodia number, without the first 0."}
+                  </small>
+                </label>
                 <Field label="Email (optional)">
                   <input autoComplete="email" className="field" onChange={(event) => update("email", event.target.value)} placeholder="name@example.com" type="email" value={details.email} />
                 </Field>
@@ -260,7 +281,7 @@ export function CheckoutForm() {
               </div>
               <div className="review-grid">
                 <ReviewBlock title="Contact" onEdit={() => setStep(0)}>
-                  <strong>{details.name}</strong><span>{details.phone}</span>{details.email ? <span>{details.email}</span> : null}
+                  <strong>{details.name}</strong><span>{getInternationalCambodianPhone(details.phone)}</span>{details.email ? <span>{details.email}</span> : null}
                 </ReviewBlock>
                 <ReviewBlock title={details.deliveryMethod === "delivery" ? "Delivery" : "Pickup"} onEdit={() => setStep(0)}>
                   {details.deliveryMethod === "delivery" ? <><strong>{details.area}</strong><span>{details.address}</span></> : <span>Pickup details will be confirmed by KMD.</span>}

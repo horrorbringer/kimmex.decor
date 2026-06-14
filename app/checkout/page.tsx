@@ -11,7 +11,7 @@ export default function CheckoutPage() {
       <section className="checkout-heading">
         <div className="content-shell py-9 md:py-12">
           <p className="eyebrow">Secure order request</p>
-          <h1 className="max-w-3xl font-serif text-4xl leading-tight text-ink-900 md:text-5xl">A simpler way to finish your order.</h1>
+          <h1 className="max-w-3xl font-serif text-3xl leading-tight text-ink-900 sm:text-4xl md:text-5xl">A simpler way to finish your order.</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-ink-700">
             Tell us where you are and how you want the order. KMD confirms stock, delivery, and final price before you pay.
           </p>

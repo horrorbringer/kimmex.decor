@@ -11,17 +11,17 @@ export default function CartPage() {
       <SiteHeader />
 
       <section className="commerce-band">
-        <div className="content-shell grid gap-8 py-12 lg:grid-cols-[1fr_380px] lg:items-center">
+        <div className="content-shell grid gap-7 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-center xl:grid-cols-[minmax(0,1fr)_380px]">
           <div>
             <p className="eyebrow">Cart</p>
-            <h1 className="max-w-4xl font-serif text-5xl leading-tight text-ink-900 md:text-6xl">
+            <h1 className="max-w-4xl font-serif text-4xl leading-tight text-ink-900 sm:text-5xl lg:text-6xl">
               Review materials before checkout.
             </h1>
             <p className="section-copy mt-6">
               KMD orders can be simple product purchases or quote-first project requests. Use the cart to prepare item
               details, then move to checkout for delivery and confirmation steps.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="cart-hero-actions mt-7 flex flex-wrap gap-3">
               <a className="action-commerce" href="/checkout">
                 Go to Checkout
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -57,11 +57,11 @@ export default function CartPage() {
       </section>
 
       <section className="section-shell pt-0">
-        <div className="surface-card grid gap-5 p-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="surface-card grid gap-5 p-5 sm:p-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3 sm:items-center">
               <PackageCheck className="h-5 w-5 text-brand-red" />
-              <h2 className="font-serif text-3xl text-ink-900">Cart is saved on this device.</h2>
+              <h2 className="font-serif text-2xl text-ink-900 sm:text-3xl">Cart is saved on this device.</h2>
             </div>
             <p className="mt-3 text-sm leading-7 text-ink-700">
               Items are stored locally in the browser. Customers can review quantities here, then send the order request

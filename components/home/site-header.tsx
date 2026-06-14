@@ -130,11 +130,6 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
-          <a className="action-commerce hidden gap-2 whitespace-nowrap px-4 xl:inline-flex" href="/contact">
-            {text("Request Quote", "ស្នើសុំតម្លៃ")}
-            <ArrowUpRight size={16} strokeWidth={2.2} />
-          </a>
-
           <button
             aria-expanded={searchOpen}
             aria-label={text("Search products", "ស្វែងរកផលិតផល")}

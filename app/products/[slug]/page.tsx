@@ -93,7 +93,14 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
       <section className="content-shell py-8 lg:py-12">
         <div className="grid gap-9 lg:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)] lg:items-start xl:gap-14">
-          <ProductGallery badge={product.badge} category={product.category} images={galleryImages} productName={product.name} />
+          <ProductGallery
+            badge={product.badge}
+            category={product.category}
+            images={galleryImages}
+            productName={product.name}
+            sku={product.sku}
+            specs={product.specs}
+          />
 
           <aside className="lg:sticky lg:top-28">
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.17em] text-ink-700">

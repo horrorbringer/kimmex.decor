@@ -115,6 +115,20 @@ export const services: ServiceItem[] = [
   }
 ];
 
+const temporaryProductImages = {
+  gypsumBoard: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1200&q=80",
+  partitionFrame: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
+  ceilingProfile: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1200&q=80",
+  decorBoard: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
+  sanitaryWare: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
+  smartLock: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80",
+  acousticBoard:
+    "https://www.thewoodveneerhub.com/cdn/shop/files/the-wood-veneer-hub-acoustic-wood-wall-panel-luxury-american-oak-acoustic-slat-wood-wall-panels-original-slatpanel-46017818984726.jpg?v=1740079138",
+  ceilingBoard: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1200&q=80",
+  cabinetBoard: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=1200&q=80",
+  installationKit: "https://images.unsplash.com/photo-1607400201889-565b1ee75f8e?auto=format&fit=crop&w=1200&q=80"
+};
+
 export const products: ProductItem[] = [
   {
     id: "gypsum-board",
@@ -140,12 +154,10 @@ export const products: ProductItem[] = [
     applications: ["Ceiling lining", "Partition wall surface", "Residential renovation"],
     materialNotes: ["Standard board size for common ceiling work", "Best ordered with framing and fixing accessories", "Confirm moisture or fire rating before wet-area use"],
     href: "/products/gypsum-board",
-    imageUrl:
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.gypsumBoard,
     galleryImages: [
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80"
+      temporaryProductImages.gypsumBoard,
+      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=80"
     ]
   },
   {
@@ -171,13 +183,8 @@ export const products: ProductItem[] = [
     applications: ["Partition framing", "Room division", "Commercial fit-out"],
     materialNotes: ["Four-meter profile for project installation", "Pair with wall board and fixing kit", "Delivery planning recommended for larger quantities"],
     href: "/products/partition-frame-stick",
-    imageUrl:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=900&q=80"
-    ]
+    imageUrl: temporaryProductImages.partitionFrame,
+    galleryImages: [temporaryProductImages.partitionFrame]
   },
   {
     id: "cline-4m",
@@ -202,13 +209,8 @@ export const products: ProductItem[] = [
     applications: ["Ceiling edge line", "Ceiling perimeter finish", "Interior ceiling detail"],
     materialNotes: ["Confirm ceiling design before ordering", "Best paired with ceiling board and install accessories", "Bulk delivery recommended for project quantities"],
     href: "/products/cline-4m",
-    imageUrl:
-      "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80"
-    ]
+    imageUrl: temporaryProductImages.ceilingProfile,
+    galleryImages: [temporaryProductImages.ceilingProfile]
   },
   {
     id: "decor-board",
@@ -234,10 +236,9 @@ export const products: ProductItem[] = [
     applications: ["Cabinet fabrication", "Feature wall finish", "Counter and shelving work"],
     materialNotes: ["Material selection depends on finish and moisture exposure", "Confirm thickness and surface color before quote", "Best handled through project quote for mixed materials"],
     href: "/products/decor-board",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.decorBoard,
     galleryImages: [
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.decorBoard,
       "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=80"
     ]
@@ -267,10 +268,9 @@ export const products: ProductItem[] = [
     applications: ["Bathroom renovation", "Hotel and apartment supply", "Fixture replacement"],
     materialNotes: ["Confirm model, color, and matching accessories", "Low stock items should be checked before checkout", "Project buyers can request matching fixture sets"],
     href: "/products/sanitary",
-    imageUrl:
-      "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.sanitaryWare,
     galleryImages: [
-      "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.sanitaryWare,
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80"
     ]
@@ -299,10 +299,9 @@ export const products: ProductItem[] = [
     applications: ["Home entrance upgrade", "Rental unit access", "Small office door control"],
     materialNotes: ["Confirm door type and lock compatibility", "Installation advice recommended before purchase", "Useful for smart home starter packages"],
     href: "/products/smart-lock",
-    imageUrl:
-      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.smartLock,
     galleryImages: [
-      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.smartLock,
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=900&q=80"
     ]
@@ -330,10 +329,9 @@ export const products: ProductItem[] = [
     applications: ["Meeting room partition", "Bedroom sound control", "Office acoustic upgrade"],
     materialNotes: ["Preorder timing depends on selected board type", "Confirm acoustic target and wall system", "Best quoted with framing and installation scope"],
     href: "/products/acoustic-board",
-    imageUrl:
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.acousticBoard,
     galleryImages: [
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.acousticBoard,
       "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=900&q=80"
     ]
@@ -362,10 +360,9 @@ export const products: ProductItem[] = [
     applications: ["Reflect ceiling work", "LED ceiling decor", "Interior feature ceiling"],
     materialNotes: ["Confirm ceiling design before quote", "Best paired with KMD ceiling service", "Delivery and installation scope should be checked"],
     href: "/products/eco-block-ceiling-board",
-    imageUrl:
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.ceilingBoard,
     galleryImages: [
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.ceilingBoard,
       "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=80"
     ]
@@ -394,10 +391,9 @@ export const products: ProductItem[] = [
     applications: ["Cabinet doors", "Built-in shelving", "Furniture finish panels"],
     materialNotes: ["Confirm finish color, edge treatment, and thickness", "Low stock should be verified before production planning", "Useful for built-in furniture packages"],
     href: "/products/cabinet-board",
-    imageUrl:
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: temporaryProductImages.cabinetBoard,
     galleryImages: [
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
+      temporaryProductImages.cabinetBoard,
       "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=900&q=80",
       "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?auto=format&fit=crop&w=900&q=80"
     ]
@@ -424,13 +420,8 @@ export const products: ProductItem[] = [
     applications: ["Ceiling repair", "Small installation work", "Accessory preparation"],
     materialNotes: ["Best paired with gypsum board, cline, or partition frame", "Confirm required quantity by room size", "Useful as a starter kit for small jobs"],
     href: "/products/installation-kit",
-    imageUrl:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1581147036324-c1c89c2c8b5c?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1607400201889-565b1ee75f8e?auto=format&fit=crop&w=900&q=80"
-    ]
+    imageUrl: temporaryProductImages.installationKit,
+    galleryImages: [temporaryProductImages.installationKit]
   }
 ];
 

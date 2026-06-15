@@ -116,17 +116,16 @@ export const services: ServiceItem[] = [
 ];
 
 const temporaryProductImages = {
-  gypsumBoard: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1200&q=80",
-  partitionFrame: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
-  ceilingProfile: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=1200&q=80",
-  decorBoard: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
-  sanitaryWare: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
-  smartLock: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80",
-  acousticBoard:
-    "https://www.thewoodveneerhub.com/cdn/shop/files/the-wood-veneer-hub-acoustic-wood-wall-panel-luxury-american-oak-acoustic-slat-wood-wall-panels-original-slatpanel-46017818984726.jpg?v=1740079138",
-  ceilingBoard: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=1200&q=80",
-  cabinetBoard: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=1200&q=80",
-  installationKit: "https://images.unsplash.com/photo-1607400201889-565b1ee75f8e?auto=format&fit=crop&w=1200&q=80"
+  gypsumBoard: "/products/gypsum_board.webp",
+  partitionFrame: "/products/partition.webp",
+  ceilingProfile: "/products/cline.webp",
+  decorBoard: "/products/wood.webp",
+  sanitaryWare: "/products/sanitery_ware.webp",
+  smartLock: "/products/smart_lock_door.webp",
+  acousticBoard: "/products/wood.webp",
+  ceilingBoard: "/products/cline_detail.webp",
+  cabinetBoard: "/products/wood.webp",
+  installationKit: "/products/gypsum_board_cline.webp"
 };
 
 export const products: ProductItem[] = [
@@ -157,7 +156,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.gypsumBoard,
     galleryImages: [
       temporaryProductImages.gypsumBoard,
-      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=80"
+      "/products/gypsum_board_ziet_brand.webp"
     ]
   },
   {
@@ -210,7 +209,7 @@ export const products: ProductItem[] = [
     materialNotes: ["Confirm ceiling design before ordering", "Best paired with ceiling board and install accessories", "Bulk delivery recommended for project quantities"],
     href: "/products/cline-4m",
     imageUrl: temporaryProductImages.ceilingProfile,
-    galleryImages: [temporaryProductImages.ceilingProfile]
+    galleryImages: [temporaryProductImages.ceilingProfile, "/products/cline_detail.webp"]
   },
   {
     id: "decor-board",
@@ -239,8 +238,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.decorBoard,
     galleryImages: [
       temporaryProductImages.decorBoard,
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=80"
+      "/products/wood.webp"
     ]
   },
   {
@@ -271,8 +269,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.sanitaryWare,
     galleryImages: [
       temporaryProductImages.sanitaryWare,
-      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80"
+      "/products/sanitery_ware.webp"
     ]
   },
   {
@@ -302,8 +299,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.smartLock,
     galleryImages: [
       temporaryProductImages.smartLock,
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1560184897-ae75f418493e?auto=format&fit=crop&w=900&q=80"
+      "/products/smart_lock_door.webp"
     ]
   },
   {
@@ -332,8 +328,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.acousticBoard,
     galleryImages: [
       temporaryProductImages.acousticBoard,
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=900&q=80"
+      "/products/wood.webp"
     ]
   },
   {
@@ -363,8 +358,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.ceilingBoard,
     galleryImages: [
       temporaryProductImages.ceilingBoard,
-      "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=80"
+      "/products/cline_detail.webp"
     ]
   },
   {
@@ -394,8 +388,7 @@ export const products: ProductItem[] = [
     imageUrl: temporaryProductImages.cabinetBoard,
     galleryImages: [
       temporaryProductImages.cabinetBoard,
-      "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=900&q=80",
-      "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?auto=format&fit=crop&w=900&q=80"
+      "/products/wood.webp"
     ]
   },
   {
@@ -421,7 +414,7 @@ export const products: ProductItem[] = [
     materialNotes: ["Best paired with gypsum board, cline, or partition frame", "Confirm required quantity by room size", "Useful as a starter kit for small jobs"],
     href: "/products/installation-kit",
     imageUrl: temporaryProductImages.installationKit,
-    galleryImages: [temporaryProductImages.installationKit]
+    galleryImages: [temporaryProductImages.installationKit, "/products/gypsum_board_cline.webp"]
   }
 ];
 

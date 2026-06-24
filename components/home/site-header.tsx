@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowUpRight,
   Heart,
@@ -15,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { LanguageSwitcher, useLanguage } from "@/components/language-provider";
 import { readCart } from "@/lib/cart-store";
+import { useAuth } from "@/lib/auth-context";
 import kmdLogo from "@/resource/kmd-logo.png";
 
 const mainNav = [
@@ -37,12 +39,14 @@ function isCurrentRoute(pathname: string, href: string) {
 
 export function SiteHeader() {
   const { text } = useLanguage();
+  const { user, isAuthenticated, clearAuth } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
   const closeCart = useCallback(() => setCartOpen(false), []);
+  const userInitial = user?.name?.trim().charAt(0).toUpperCase() || user?.email?.trim().charAt(0).toUpperCase() || "U";
 
   useEffect(() => {
     const syncCartCount = () => {
@@ -95,36 +99,36 @@ export function SiteHeader() {
     <>
       <header className="sticky top-0 z-40 border-b border-sand-400/80 border-t-[3px] border-t-[var(--brand-red)] bg-sand-50/95 backdrop-blur-xl">
       <div className="mx-auto flex min-h-[68px] max-w-screen-2xl items-center gap-3 px-4 md:px-6 xl:px-10">
-        <a className="group flex shrink-0 items-center gap-3" href="/" aria-label="Decor home">
-          <Image alt="Decor logo" className="h-9 w-auto object-contain transition group-hover:opacity-80" priority src={kmdLogo} />
+        <Link className="group flex shrink-0 items-center gap-3" href="/" aria-label="Decor home">
+          <Image alt="Decor logo" className="h-9 w-auto object-contain transition group-hover:opacity-80" priority src={kmdLogo} width={36} height={36} />
           <div className="hidden border-l border-sand-400 pl-3 sm:block lg:hidden xl:block">
             <span className="block font-serif text-lg leading-none text-ink-900">{text("Decor", "តុបតែង")}</span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-700 xl:block">
               {text("Products & interiors", "ផលិតផល និងការតុបតែងផ្ទៃក្នុង")}
             </span>
           </div>
-        </a>
+        </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 lg:flex" aria-label="Main navigation">
           {mainNav.map((item) => {
             const isActive = isCurrentRoute(pathname, item.href);
 
             return (
-              <a
-                key={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={`relative rounded-full px-3 py-2.5 text-sm font-semibold transition xl:px-4 ${
-                  isActive
-                    ? "bg-sand-100 text-ink-900"
-                    : "text-ink-700 hover:bg-sand-100 hover:text-ink-900"
-                }`}
-                href={item.href}
-              >
-                {text(item.label, khmerNav[item.label] || item.label)}
-                {isActive ? (
-                  <span className="absolute bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-red" />
-                ) : null}
-              </a>
+              <Link
+                  key={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`relative rounded-full px-3 py-2.5 text-sm font-semibold transition xl:px-4 ${
+                    isActive
+                      ? "bg-sand-100 text-ink-900"
+                      : "text-ink-700 hover:bg-sand-100 hover:text-ink-900"
+                  }`}
+                  href={item.href}
+                >
+                  {text(item.label, khmerNav[item.label] || item.label)}
+                  {isActive ? (
+                    <span className="absolute bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-red" />
+                  ) : null}
+                </Link>
             );
           })}
         </nav>
@@ -144,14 +148,34 @@ export function SiteHeader() {
             <Search size={19} strokeWidth={2.1} />
           </button>
           <div className="hidden lg:block"><LanguageSwitcher /></div>
-          <a
-            aria-label={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
-            className="header-tool-button hidden lg:flex"
-            href="/account"
-            title={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
-          >
-            <UserRound size={19} strokeWidth={2} />
-          </a>
+          {isAuthenticated ? (
+            <Link
+              aria-label={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
+              className="header-account-button hidden lg:flex"
+              href="/account"
+              title={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
+            >
+              <span className="header-account-avatar">{userInitial}</span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-ink-700">
+                  {text("Account", "គណនី")}
+                </span>
+                <span className="mt-0.5 block max-w-[110px] truncate text-sm font-semibold leading-tight text-ink-900">
+                  {user?.name || user?.email}
+                </span>
+              </span>
+            </Link>
+          ) : (
+            <div className="hidden items-center gap-2 lg:flex">
+              <Link className="header-signin-button" href="/login" title={text("Sign in", "ចូល")}>
+                <UserRound size={18} strokeWidth={2} />
+                <span>{text("Sign in", "ចូល")}</span>
+              </Link>
+              <Link className="header-register-button" href="/register">
+                {text("Create account", "បង្កើតគណនី")}
+              </Link>
+            </div>
+          )}
           <button
             aria-label={cartCount > 0 ? text(`Cart with ${cartCount} items`, `កន្ត្រកមានទំនិញ ${cartCount} មុខ`) : text("Cart", "កន្ត្រក")}
             aria-expanded={cartOpen}
@@ -206,15 +230,15 @@ export function SiteHeader() {
           <div
             aria-label="Mobile navigation"
             aria-modal="true"
-            className="panel-shadow ml-auto flex h-full w-[min(90vw,400px)] flex-col bg-sand-50"
+            className="panel-shadow ml-auto flex h-full w-[min(90vw,400px)] flex-col bg-sand-50 animate-slide-in-right"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
           >
             <div className="flex items-center justify-between border-b border-sand-400 px-5 py-4">
-              <a className="flex items-center gap-3" href="/" onClick={() => setMobileMenuOpen(false)}>
-                <Image alt="Decor logo" className="h-9 w-auto object-contain" src={kmdLogo} />
+              <Link className="flex items-center gap-3" href="/" onClick={() => setMobileMenuOpen(false)}>
+                <Image alt="Decor logo" className="h-9 w-auto object-contain" src={kmdLogo} width={36} height={36} />
                 <span className="border-l border-sand-400 pl-3 font-serif text-lg text-ink-900">{text("Decor", "តុបតែង")}</span>
-              </a>
+              </Link>
               <button
                 aria-label={text("Close navigation", "បិទម៉ឺនុយ")}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-sand-400 text-ink-900 transition hover:bg-sand-100"
@@ -236,7 +260,7 @@ export function SiteHeader() {
                   const isActive = isCurrentRoute(pathname, item.href);
 
                   return (
-                    <a
+                    <Link
                       key={item.href}
                       aria-current={isActive ? "page" : undefined}
                       className={`group flex items-center justify-between border-b border-sand-400/70 py-4 transition ${
@@ -250,7 +274,7 @@ export function SiteHeader() {
                         <span className="font-serif text-2xl">{text(item.label, khmerNav[item.label] || item.label)}</span>
                       </span>
                       <ArrowUpRight className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" size={18} strokeWidth={1.8} />
-                    </a>
+                    </Link>
                   );
                 })}
               </nav>
@@ -262,14 +286,27 @@ export function SiteHeader() {
             </div>
 
             <div className="grid grid-cols-2 border-t border-sand-400 bg-sand-100">
-              <a className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/account" onClick={() => setMobileMenuOpen(false)}>
-                <UserRound size={17} strokeWidth={2} />
-                {text("Account", "គណនី")}
-              </a>
-              <a className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" href="/wishlist" onClick={() => setMobileMenuOpen(false)}>
-                <Heart size={17} strokeWidth={2} />
-                {text("Wishlist", "បញ្ជីចំណូលចិត្ត")}
-              </a>
+              {isAuthenticated ? (
+                <>
+                  <Link className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/account" onClick={() => setMobileMenuOpen(false)}>
+                    <UserRound size={17} strokeWidth={2} />
+                    {user?.name ?? text("Account", "គណនី")}
+                  </Link>
+                  <button className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" onClick={() => { clearAuth(); setMobileMenuOpen(false); }}>
+                    {text("Sign out", "ចាកចេញ")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <UserRound size={17} strokeWidth={2} />
+                    {text("Sign in", "ចូល")}
+                  </Link>
+                  <Link className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" href="/register" onClick={() => setMobileMenuOpen(false)}>
+                    {text("Register", "ចុះឈ្មោះ")}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

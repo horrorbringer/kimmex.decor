@@ -2,6 +2,7 @@ export type ServiceItem = {
   id: string;
   title: string;
   description: string;
+  descriptionHtml?: string;
   href: string;
   imageUrl: string;
 };
@@ -10,6 +11,7 @@ export type ProductItem = {
   id: string;
   name: string;
   descriptor: string;
+  descriptionHtml?: string;
   brand: string;
   category: string;
   sku: string;

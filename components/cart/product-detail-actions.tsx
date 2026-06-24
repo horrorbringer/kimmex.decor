@@ -45,7 +45,7 @@ export function ProductDetailActions({ advisorHref, needsQuote, product }: Produ
             </button>
             <input
               aria-label="Product quantity"
-              className="w-full border-x border-sand-400 bg-transparent text-center text-sm font-semibold text-ink-900 outline-none"
+              className="w-full border-x border-sand-400 bg-transparent text-center text-base sm:text-sm font-semibold text-ink-900 outline-none"
               min={minimumQuantity}
               onChange={(event) => updateQuantity(Number(event.target.value))}
               type="number"

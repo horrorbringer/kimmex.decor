@@ -15,6 +15,11 @@ import {
   Wrench
 } from "lucide-react";
 
+export const metadata = {
+  title: "Services",
+  description: "Explore KM Decor's interior design and construction services — from finished ceilings and partitions to built-in furniture and smart access solutions.",
+};
+
 const processSteps = [
   {
     Icon: Camera,

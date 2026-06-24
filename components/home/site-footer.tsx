@@ -37,7 +37,7 @@ export function SiteFooter() {
         <div>
           <a className="inline-flex items-center gap-3" href="/">
             <span className="relative flex h-12 w-20 items-center justify-center rounded-full border border-sand-400 bg-white p-2 shadow-soft">
-              <Image alt="Decor logo" className="object-contain" fill sizes="80px" src={kmdLogo} />
+              <Image alt="Decor logo" className="object-contain" fill loading="lazy" sizes="80px" src={kmdLogo} />
             </span>
             <span className="font-serif text-2xl text-ink-900">{text("Decor", "តុបតែង")}</span>
           </a>

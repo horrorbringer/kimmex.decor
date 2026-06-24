@@ -120,7 +120,7 @@ function InquiryForm({
           <label className="control-label md:col-span-2">
             Photo or BOQ
             <span className="rounded-lg border border-dashed border-sand-400 bg-sand-50 p-4 text-sm text-ink-700">
-              <input accept="image/*,.pdf,.xls,.xlsx" className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-brand-red file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" type="file" />
+              <input accept="image/*,.pdf,.xls,.xlsx" className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-brand-red file:px-4 file:py-2 file:text-base sm:file:text-sm file:font-semibold file:text-white" type="file" />
               <span className="mt-3 block text-xs leading-5">Attach a room photo, material sample, BOQ, drawing, or screenshot for faster recommendations.</span>
             </span>
           </label>

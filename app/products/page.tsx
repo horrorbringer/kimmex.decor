@@ -1,14 +1,23 @@
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { ProductCatalog } from "@/components/products/product-catalog";
-import { products, shopCategories } from "@/lib/homepage-data";
+import { getCatalogCategories, getCatalogProducts } from "@/lib/api-catalog";
 import type { ProductItem } from "@/lib/homepage-data";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-const brands = Array.from(new Set(products.map((product) => product.brand)));
+export const metadata = {
+  title: "Products",
+  description: "Browse construction and interior materials — flooring, tiles, paints, and fixtures for your project. Order online or request project pricing.",
+};
+
 const availability = ["In stock", "Preorder", "Low stock"] satisfies ProductItem["stockStatus"][];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getCatalogProducts();
+  const brands = Array.from(new Set(products.map((product) => product.brand)));
+  const categories = await getCatalogCategories(products);
+
   return (
     <main className="page-shell">
       <SiteHeader />
@@ -24,14 +33,14 @@ export default function ProductsPage() {
               project quantities.
             </p>
           </div>
-          <a className="action-commerce w-fit" href="/contact">
+          <Link className="action-commerce w-fit" href="/contact">
             Request Project Pricing
             <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
+          </Link>
         </div>
       </section>
 
-      <ProductCatalog availability={availability} brands={brands} categories={shopCategories} products={products} />
+      <ProductCatalog availability={availability} brands={brands} categories={categories} products={products} />
 
       <SiteFooter />
     </main>

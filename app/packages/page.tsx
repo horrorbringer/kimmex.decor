@@ -1,6 +1,8 @@
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { projectPackages } from "@/lib/homepage-data";
+import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, ClipboardList, PackageCheck, Sparkles, Truck, Wrench } from "lucide-react";
 
 const packageBenefits = [
@@ -73,9 +75,9 @@ export default function PackagesPage() {
                 View Packages
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
-              <a className="action-secondary" href="/contact?type=package">
+              <Link className="action-secondary" href="/contact?type=package">
                 Ask KMD to Recommend
-              </a>
+              </Link>
             </div>
           </div>
           <div className="surface-card p-5">
@@ -110,9 +112,9 @@ export default function PackagesPage() {
             <p className="eyebrow">Recommended Packages</p>
             <h2 className="section-title">Choose by project need.</h2>
           </div>
-          <a className="w-fit text-sm font-semibold text-bronze-500" href="/contact?type=package">
+          <Link className="w-fit text-sm font-semibold text-bronze-500" href="/contact?type=package">
             Ask for a custom recommendation
-          </a>
+          </Link>
         </div>
         <div className="grid gap-5 lg:grid-cols-3">
           {packageRecommendations.map((item) => (
@@ -138,9 +140,9 @@ export default function PackagesPage() {
                   ))}
                 </div>
               </div>
-              <a className="action-secondary mt-6 w-full" href={`/contact?type=package&package=${encodeURIComponent(item.packageId)}`}>
+              <Link className="action-secondary mt-6 w-full" href={`/contact?type=package&package=${encodeURIComponent(item.packageId)}`}>
                 Request this package
-              </a>
+              </Link>
             </article>
           ))}
         </div>
@@ -152,14 +154,16 @@ export default function PackagesPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-bronze-500">Available Packages</p>
             <h2 className="mt-1 font-serif text-3xl text-ink-900">Choose the closest project goal</h2>
           </div>
-          <a className="w-fit text-sm font-semibold text-bronze-500" href="/contact?type=package">
+          <Link className="w-fit text-sm font-semibold text-bronze-500" href="/contact?type=package">
             Send project details
-          </a>
+          </Link>
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           {projectPackages.map((item) => (
             <article key={item.id} className="surface-card overflow-hidden">
-              <img alt={item.title} className="h-56 w-full object-cover" src={item.imageUrl} />
+              <div className="relative h-56 w-full">
+                <Image alt={item.title} className="object-cover" fill loading="lazy" sizes="(max-width: 1024px) 100vw, 33vw" src={item.imageUrl} />
+              </div>
               <div className="p-6">
                 <p className="promo-chip w-fit">Materials + Service Support</p>
                 <h2 className="font-serif text-3xl text-ink-900">{item.title}</h2>
@@ -173,9 +177,9 @@ export default function PackagesPage() {
                     </span>
                   ))}
                 </div>
-                <a className="action-commerce mt-6 w-full" href={`/contact?type=package&package=${encodeURIComponent(item.id)}`}>
+                <Link className="action-commerce mt-6 w-full" href={`/contact?type=package&package=${encodeURIComponent(item.id)}`}>
                   Request Package Quote
-                </a>
+                </Link>
               </div>
             </article>
           ))}
@@ -213,9 +217,9 @@ export default function PackagesPage() {
               quote path from your material list.
             </p>
           </div>
-          <a className="action-commerce" href="/contact?type=package">
+          <Link className="action-commerce" href="/contact?type=package">
             Ask KMD to Recommend
-          </a>
+          </Link>
         </div>
       </section>
       <SiteFooter />

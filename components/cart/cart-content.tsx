@@ -3,6 +3,8 @@
 import { clearCart, getCartSubtotal, readCart, removeCartItem, updateCartQuantity } from "@/lib/cart-store";
 import type { CartItem } from "@/lib/cart-store";
 import { CheckCircle2, ClipboardCheck, Minus, PackageCheck, Plus, ShoppingBag, Trash2, Truck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 function formatMoney(value: number) {
@@ -77,22 +79,22 @@ export function CartContent() {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-red">Cart Items</p>
               <h2 className="mt-1 font-serif text-2xl text-ink-900 sm:text-3xl">Confirm materials and quantities.</h2>
             </div>
-            <a className="resource-action w-fit" href="/products">
+            <Link className="resource-action w-fit" href="/products">
               Continue Shopping
-            </a>
+            </Link>
           </div>
         </div>
         {items.map((item) => (
           <article key={item.id} className="grid gap-4 border-b border-sand-400 p-4 last:border-b-0 sm:grid-cols-[96px_minmax(0,1fr)] sm:items-center md:grid-cols-[112px_minmax(0,1fr)_184px]">
-            <a className="block overflow-hidden rounded-md border border-sand-400 bg-sand-50" href={item.href}>
-              <img alt={item.name} className="h-40 w-full object-cover transition hover:scale-105 sm:h-24 md:h-28" src={item.imageUrl} />
-            </a>
+            <Link className="block overflow-hidden rounded-md border border-sand-400 bg-sand-50" href={item.href}>
+              <Image alt={item.name} className="h-40 w-full object-cover transition hover:scale-105 sm:h-24 md:h-28" src={item.imageUrl} width={112} height={112} loading="lazy" />
+            </Link>
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">
                 {item.brand} / {item.sku}
               </div>
               <h3 className="mt-2 font-serif text-2xl leading-tight text-ink-900">
-                <a href={item.href}>{item.name}</a>
+                <Link href={item.href}>{item.name}</Link>
               </h3>
               <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-ink-700">
                 <span className="rounded-md border border-sand-400 bg-sand-50 px-2.5 py-1">{formatMoney(item.price)} / {item.unit}</span>
@@ -110,7 +112,7 @@ export function CartContent() {
                   <Minus className="h-4 w-4" />
                 </button>
                 <input
-                  className="h-11 w-16 border-x border-sand-400 bg-white text-center text-sm font-semibold text-ink-900 outline-none"
+                  className="h-11 w-16 border-x border-sand-400 bg-white text-center text-base sm:text-sm font-semibold text-ink-900 outline-none"
                   min="1"
                   onChange={(event) => updateQuantity(item.id, Number(event.target.value) || 1)}
                   type="number"

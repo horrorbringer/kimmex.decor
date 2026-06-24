@@ -1,4 +1,7 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { blurPlaceholder } from "@/lib/blur-placeholder";
+import Image from "next/image";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -14,13 +17,13 @@ export function HeroSection() {
             Decor in Phnom Penh.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a className="action-commerce" href="/products">
+            <Link className="action-commerce" href="/products">
               Browse Products
               <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-            <a className="action-secondary" href="/services">
+            </Link>
+            <Link className="action-secondary" href="/services">
               Explore Services
-            </a>
+            </Link>
           </div>
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-sand-400 pt-6 text-sm font-medium text-ink-700">
             {["Multi-brand supply", "Interior solutions", "Residential and commercial"].map((item) => (
@@ -32,10 +35,15 @@ export function HeroSection() {
           </div>
         </div>
         <div className="relative min-h-[420px] overflow-hidden rounded-lg border border-sand-400 bg-sand-100 shadow-panel md:min-h-[560px]">
-          <img
+          <Image
             alt="Modern interior ceiling and living space"
             className="absolute inset-0 h-full w-full object-cover"
             src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1600&q=85"
+            fill
+            priority
+            placeholder="blur"
+            blurDataURL={blurPlaceholder(1600, 900)}
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-900/80 to-transparent p-6 pt-24 text-white md:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">One connected offering</p>

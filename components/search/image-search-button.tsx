@@ -1,6 +1,8 @@
 "use client";
 
 import { products, services } from "@/lib/homepage-data";
+import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, Camera, Image as ImageIcon, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -96,7 +98,7 @@ export function ImageSearchButton({ className = "", compact = false, label = "Se
                   type="button"
                 >
                   {previewUrl ? (
-                    <img alt="Uploaded search reference" className="h-full max-h-[22rem] w-full object-cover" src={previewUrl} />
+                    <Image alt="Uploaded search reference" className="object-cover" fill sizes="(max-width: 768px) 100vw, 50vw" src={previewUrl} />
                   ) : (
                     <div className="p-8 text-center">
                       <ImageIcon className="mx-auto h-12 w-12 text-brand-red" />
@@ -131,7 +133,9 @@ export function ImageSearchButton({ className = "", compact = false, label = "Se
                   <div className="mt-4 grid gap-3">
                     {suggestedProducts.map((product) => (
                       <a key={product.id} className="grid gap-3 rounded-lg border border-sand-400 bg-white p-3 transition hover:border-brand-red sm:grid-cols-[72px_1fr_auto] sm:items-center" href={product.href}>
-                        <img alt={product.name} className="h-20 w-full rounded-md object-cover sm:h-16 sm:w-16" src={product.imageUrl} />
+                        <div className="relative h-20 w-full sm:h-16 sm:w-16">
+                          <Image alt={product.name} className="rounded-md object-cover" fill sizes="72px" src={product.imageUrl} />
+                        </div>
                         <div>
                           <div className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-700">{product.category}</div>
                           <div className="mt-1 font-semibold leading-5 text-ink-900">{product.name}</div>
@@ -149,9 +153,9 @@ export function ImageSearchButton({ className = "", compact = false, label = "Se
                     <div className="mt-1 font-serif text-2xl text-ink-900">{suggestedService?.title ?? "Project consultation"}</div>
                     <p className="mt-1 text-sm leading-6 text-ink-700">Send the photo with size and location for a material recommendation or quote.</p>
                   </div>
-                  <a className="action-commerce" href="/contact?imageSearch=photo">
+                  <Link className="action-commerce" href="/contact?imageSearch=photo">
                     Request Quote
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

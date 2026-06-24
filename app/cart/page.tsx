@@ -1,7 +1,13 @@
 import { CartContent } from "@/components/cart/cart-content";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, PackageCheck, ShoppingCart } from "lucide-react";
+
+export const metadata = {
+  title: "Cart",
+  description: "Review your selected materials and quantities before proceeding to checkout.",
+};
 
 const cartSteps = ["Review materials", "Confirm quantities", "Prepare delivery details", "Submit order request"];
 
@@ -22,13 +28,13 @@ export default function CartPage() {
               details, then move to checkout for delivery and confirmation steps.
             </p>
             <div className="cart-hero-actions mt-7 flex flex-wrap gap-3">
-              <a className="action-commerce" href="/checkout">
+              <Link className="action-commerce" href="/checkout">
                 Go to Checkout
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-              <a className="action-secondary" href="/products">
+              </Link>
+              <Link className="action-secondary" href="/products">
                 Continue Shopping
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -68,9 +74,9 @@ export default function CartPage() {
               so KMD can confirm stock, delivery, and payment direction.
             </p>
           </div>
-          <a className="action-commerce" href="/contact?type=order-request">
+          <Link className="action-commerce" href="/contact?type=order-request">
             Send Order Request
-          </a>
+          </Link>
         </div>
       </section>
 

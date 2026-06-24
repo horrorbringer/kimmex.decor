@@ -1,15 +1,24 @@
 "use client";
 
+"use client";
+
 import { ArrowRight, CheckCircle2, Paperclip } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
-import { products, projectPackages, projects, services } from "@/lib/homepage-data";
+import { buildInquiryPayload, submitInquiry } from "@/lib/api-inquiries";
+import { useFormValidation } from "@/lib/use-form-validation";
+import { projectPackages, projects, services } from "@/lib/homepage-data";
+import type { ProductItem } from "@/lib/homepage-data";
 
 type RequestContext = {
   label: string | null;
   message: string;
   type: string;
+};
+
+type ContactRequestFormProps = {
+  products: ProductItem[];
 };
 
 const topicLabels: Record<string, string> = {
@@ -18,20 +27,24 @@ const topicLabels: Record<string, string> = {
   "project-advice": "Project advice"
 };
 
-export function ContactRequestForm() {
+function productSlug(product: ProductItem) {
+  return product.href.replace("/products/", "");
+}
+
+export function ContactRequestForm({ products }: ContactRequestFormProps) {
   return (
     <Suspense fallback={<RequestForm context={{ label: null, message: "", type: "project" }} />}>
-      <RequestFormWithParams />
+      <RequestFormWithParams products={products} />
     </Suspense>
   );
 }
 
-function RequestFormWithParams() {
+function RequestFormWithParams({ products }: ContactRequestFormProps) {
   const searchParams = useSearchParams();
-  return <RequestForm context={getRequestContext(searchParams)} />;
+  return <RequestForm context={getRequestContext(searchParams, products)} />;
 }
 
-function getRequestContext(searchParams: URLSearchParams): RequestContext {
+function getRequestContext(searchParams: URLSearchParams, products: ProductItem[]): RequestContext {
   const serviceId = searchParams.get("service");
   const productId = searchParams.get("product");
   const packageId = searchParams.get("package");
@@ -50,7 +63,7 @@ function getRequestContext(searchParams: URLSearchParams): RequestContext {
     };
   }
 
-  const product = products.find((item) => item.id === productId);
+  const product = products.find((item) => item.id === productId || productSlug(item) === productId);
   if (product) {
     return {
       label: product.name,
@@ -113,8 +126,67 @@ function getRequestContext(searchParams: URLSearchParams): RequestContext {
 }
 
 function RequestForm({ context }: { context: RequestContext }) {
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedId, setSubmittedId] = useState("");
+  const { errors, validate, clearError } = useFormValidation({
+    name: { required: true, minLength: 2 },
+    phone: { required: true, pattern: /^\+?[\d\s\-()]{7,}$/, patternMessage: "Enter a valid phone number" },
+    message: { required: true, minLength: 10 },
+  });
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
+    const formData = new FormData(event.currentTarget);
+    if (!validate(formData)) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await submitInquiry(buildInquiryPayload(formData, context.label));
+      setSubmittedId(response.data.id);
+      event.currentTarget.reset();
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "KMD could not receive this request.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submittedId) {
+    return (
+      <div className="overflow-hidden rounded-lg border border-sand-400 bg-white shadow-soft">
+        <div className="grid gap-5 p-6 text-center md:p-8">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-red/10 text-brand-red">
+            <CheckCircle2 className="h-7 w-7" />
+          </span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-red">Request received</p>
+            <h2 className="mt-2 font-serif text-3xl text-ink-900 md:text-4xl">KMD has your inquiry.</h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-ink-700">
+              Reference {submittedId.slice(0, 8)}. The team will review your request and contact details before replying.
+            </p>
+          </div>
+          <div className="mx-auto flex flex-col gap-3 sm:flex-row">
+            <a className="action-commerce gap-2" href="tel:+85516927683">
+              Call KMD
+              <ArrowRight className="h-4 w-4" />
+            </a>
+            <button className="action-secondary" onClick={() => setSubmittedId("")} type="button">
+              Send another request
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form className="overflow-hidden rounded-lg border border-sand-400 bg-white shadow-soft">
+    <form className="overflow-hidden rounded-lg border border-sand-400 bg-white shadow-soft" onSubmit={handleSubmit}>
       <div className="border-b border-sand-400 p-6 md:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -136,13 +208,15 @@ function RequestForm({ context }: { context: RequestContext }) {
       </div>
 
       <div className="grid gap-5 p-6 md:grid-cols-2 md:p-8">
-        <label className="control-label">
+        <label className={`control-label ${errors.name ? "has-error" : ""}`}>
           Name <span className="sr-only">required</span>
-          <input autoComplete="name" className="field" name="name" placeholder="Your name" required type="text" />
+          <input autoComplete="name" className="field" name="name" onChange={() => clearError("name")} placeholder="Your name" required type="text" />
+          {errors.name ? <span className="text-xs font-semibold text-brand-red">{errors.name}</span> : null}
         </label>
-        <label className="control-label">
+        <label className={`control-label ${errors.phone ? "has-error" : ""}`}>
           Phone <span className="sr-only">required</span>
-          <input autoComplete="tel" className="field" name="phone" placeholder="+855..." required type="tel" />
+          <input autoComplete="tel" className="field" name="phone" onChange={() => clearError("phone")} placeholder="+855..." required type="tel" />
+          {errors.phone ? <span className="text-xs font-semibold text-brand-red">{errors.phone}</span> : null}
         </label>
         <label className="control-label">
           Company or organization
@@ -176,15 +250,17 @@ function RequestForm({ context }: { context: RequestContext }) {
           Approximate size or quantity
           <input className="field" name="quantity" placeholder="Example: 80 m² or 20 sheets" type="text" />
         </label>
-        <label className="control-label md:col-span-2">
+        <label className={`control-label md:col-span-2 ${errors.message ? "has-error" : ""}`}>
           What do you need help with? <span className="sr-only">required</span>
           <textarea
             className="textarea-field min-h-40"
             defaultValue={context.message}
             name="message"
+            onChange={() => clearError("message")}
             placeholder="Describe the product, room, service, finish, quantity, or result you need."
             required
           />
+          {errors.message ? <span className="text-xs font-semibold text-brand-red">{errors.message}</span> : null}
         </label>
         <label className="control-label md:col-span-2">
           Photos, drawing, or BOQ
@@ -195,20 +271,23 @@ function RequestForm({ context }: { context: RequestContext }) {
             </span>
             <input
               accept="image/*,.pdf,.xls,.xlsx"
-              className="mt-3 block w-full text-xs text-ink-700 file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-ink-900"
+              className="mt-3 block w-full text-xs text-ink-700 file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-2 file:text-base sm:file:text-xs file:font-semibold file:text-ink-900"
               multiple
               name="attachments"
               type="file"
             />
-            <span className="mt-2 block text-xs leading-5 text-ink-700">Images, PDF, Excel, or a material list can help us understand the request.</span>
+          <span className="mt-2 block text-xs leading-5 text-ink-700">Images, PDF, Excel, or a material list can help us understand the request.</span>
           </span>
         </label>
       </div>
 
       <div className="flex flex-col gap-4 border-t border-sand-400 bg-sand-100/60 px-6 py-5 sm:flex-row sm:items-center sm:justify-between md:px-8">
-        <p className="max-w-md text-xs leading-5 text-ink-700">By submitting, you agree that our team may contact you about this request.</p>
-        <button className="action-commerce shrink-0 gap-2 border-0" type="submit">
-          Send Request
+        <div className="max-w-md text-xs leading-5 text-ink-700">
+          <p>By submitting, you agree that our team may contact you about this request.</p>
+          {error ? <p className="mt-2 font-semibold text-brand-red">{error}</p> : null}
+        </div>
+        <button className="action-commerce shrink-0 gap-2 border-0 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting} type="submit">
+          {submitting ? "Sending..." : "Send Request"}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

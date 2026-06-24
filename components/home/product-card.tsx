@@ -3,7 +3,10 @@
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { ProductItem } from "@/lib/homepage-data";
 import { readWishlist, toggleWishlistProduct } from "@/lib/wishlist-store";
+import { blurPlaceholder } from "@/lib/blur-placeholder";
 import { Heart } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type ProductCardProps = {
@@ -27,21 +30,26 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
   return (
     <article className="surface-card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-panel">
-      <a className="relative block overflow-hidden" href={product.href}>
-        <img
+      <Link className="relative block overflow-hidden" href={product.href}>
+        <Image
           alt={product.name}
           className={`${compact ? "h-48" : "h-56"} w-full object-cover transition duration-300 group-hover:scale-105`}
           src={product.imageUrl}
+          fill
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL={blurPlaceholder()}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
         {product.badge ? (
-          <span className="absolute left-3 top-3 rounded-md bg-brand-red px-3 py-1 text-xs font-semibold text-white shadow-card">
+          <span className="absolute left-3 top-3 rounded-md bg-brand-red px-3 py-1 text-xs font-semibold text-white shadow-card z-10">
             {product.badge}
           </span>
         ) : null}
-        <span className="absolute bottom-3 right-3 rounded-md bg-white/95 px-2.5 py-1 text-xs font-semibold text-ink-900 shadow-soft">
+        <span className="absolute bottom-3 right-3 rounded-md bg-white/95 px-2.5 py-1 text-xs font-semibold text-ink-900 shadow-soft z-10">
           {product.stockStatus}
         </span>
-      </a>
+      </Link>
       <button
         aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
         aria-pressed={saved}
@@ -58,9 +66,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           <span className="truncate">{product.category}</span>
         </div>
         <h3 className="mt-3 font-serif text-2xl leading-tight text-ink-900">
-          <a className="transition hover:text-brand-red" href={product.href}>
+          <Link className="transition hover:text-brand-red" href={product.href}>
             {product.name}
-          </a>
+          </Link>
         </h3>
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-700">{product.descriptor}</p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -85,9 +93,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
           {needsQuote || product.stockStatus === "Low stock" ? (
-            <a className="action-commerce min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={primaryHref}>
+            <Link className="action-commerce min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={primaryHref}>
               {primaryAction}
-            </a>
+            </Link>
           ) : (
             <AddToCartButton
               className="action-commerce min-h-10 gap-1.5 whitespace-nowrap px-3 py-2 text-xs"
@@ -95,9 +103,9 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
               product={product}
             />
           )}
-          <a className="action-secondary min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={product.href}>
+          <Link className="action-secondary min-h-10 whitespace-nowrap px-3 py-2 text-xs" href={product.href}>
             View Details
-          </a>
+          </Link>
         </div>
       </div>
     </article>

@@ -2,7 +2,11 @@
 
 import { clearCart, getCartSubtotal, readCart } from "@/lib/cart-store";
 import type { CartItem } from "@/lib/cart-store";
+import { hasCheckoutApiItems, submitCheckoutRequest } from "@/lib/api-checkout";
+import type { CheckoutApiOrder } from "@/lib/api-checkout";
 import { formatCambodianPhone, getInternationalCambodianPhone, isValidCambodianPhone } from "@/lib/phone";
+import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
@@ -88,6 +92,10 @@ export function CheckoutForm() {
   const [details, setDetails] = useState<CheckoutDetails>(initialDetails);
   const [showErrors, setShowErrors] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [order, setOrder] = useState<CheckoutApiOrder | null>(null);
+  const [sentToApi, setSentToApi] = useState(false);
 
   useEffect(() => setItems(readCart()), []);
 
@@ -101,10 +109,12 @@ export function CheckoutForm() {
   const request = useMemo(() => buildRequest(details, items, subtotal), [details, items, subtotal]);
   const whatsappHref = `https://wa.me/85516927683?text=${encodeURIComponent(request)}`;
   const emailHref = `mailto:hello@kimmexdecor.com?subject=${encodeURIComponent("KMD Decor order request")}&body=${encodeURIComponent(request)}`;
+  const canSubmitToApi = hasCheckoutApiItems(items);
 
   const update = <K extends keyof CheckoutDetails>(field: K, value: CheckoutDetails[K]) => {
     setDetails((current) => ({ ...current, [field]: value }));
     setShowErrors(false);
+    setSubmitError("");
   };
 
   const continueFlow = () => {
@@ -116,37 +126,72 @@ export function CheckoutForm() {
     setStep((current) => Math.min(current + 1, 2));
   };
 
-  const submit = () => {
+  const saveLocalRequest = (apiOrder: CheckoutApiOrder | null = null, apiSubmitted = false) => {
+    window.localStorage.setItem(
+      "kmd-last-checkout-request",
+      JSON.stringify({ createdAt: new Date().toISOString(), details, items, order: apiOrder, sentToApi: apiSubmitted, subtotal })
+    );
+  };
+
+  const submit = async () => {
     if (!stepReady) {
       setStep(0);
       setShowErrors(true);
       return;
     }
-    window.localStorage.setItem(
-      "kmd-last-checkout-request",
-      JSON.stringify({ createdAt: new Date().toISOString(), details, items, subtotal })
-    );
-    setSubmitted(true);
+
+    setSubmitError("");
+    setSubmitting(true);
+
+    if (!canSubmitToApi) {
+      saveLocalRequest();
+      setSentToApi(false);
+      setSubmitted(true);
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await submitCheckoutRequest(details, items);
+      saveLocalRequest(response, true);
+      clearCart();
+      setItems([]);
+      setOrder(response);
+      setSentToApi(true);
+      setSubmitted(true);
+    } catch (error) {
+      saveLocalRequest();
+      setSentToApi(false);
+      setSubmitted(true);
+      setSubmitError(error instanceof Error ? error.message : "KMD could not receive this order request.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
     return (
       <div className="checkout-success">
         <div className="checkout-success-icon"><CheckCircle2 /></div>
-        <p className="eyebrow">Request ready</p>
-        <h2 className="font-serif text-4xl text-ink-900 md:text-5xl">Send it to KMD for confirmation.</h2>
+        <p className="eyebrow">{sentToApi ? "Request submitted" : "Request ready"}</p>
+        <h2 className="font-serif text-4xl text-ink-900 md:text-5xl">
+          {sentToApi ? "KMD received your order request." : "Send it to KMD for confirmation."}
+        </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-700">
-          Your request is saved on this device. Choose WhatsApp for the fastest response, or send it by email.
+          {sentToApi
+            ? `Reference ${order?.order_number || "saved"}. KMD will confirm stock, delivery, and final price before payment.`
+            : "Your request is saved on this device. Choose WhatsApp for the fastest response, or send it by email."}
         </p>
+        {submitError ? <p className="mx-auto mt-4 max-w-xl rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">{submitError}</p> : null}
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
           <a className="action-commerce gap-2" href={whatsappHref} rel="noreferrer" target="_blank">
-            <MessageCircle className="h-4 w-4" /> Send with WhatsApp
+            <MessageCircle className="h-4 w-4" /> {sentToApi ? "Follow up on WhatsApp" : "Send with WhatsApp"}
           </a>
           <a className="action-secondary gap-2" href={emailHref}>
-            <Mail className="h-4 w-4" /> Send by Email
+            <Mail className="h-4 w-4" /> {sentToApi ? "Email a copy" : "Send by Email"}
           </a>
         </div>
-        {items.length > 0 ? (
+        {!sentToApi && items.length > 0 ? (
           <button className="mt-6 text-sm font-semibold text-ink-700 underline" onClick={() => { clearCart(); setItems([]); }} type="button">
             Clear submitted cart
           </button>
@@ -290,14 +335,14 @@ export function CheckoutForm() {
                   <strong className="capitalize">{details.timing}</strong><span className="capitalize">Support: {details.support}</span>{details.preferredDate ? <span>{details.preferredDate}</span> : null}
                 </ReviewBlock>
               </div>
-              <div className="checkout-note"><CheckCircle2 className="h-5 w-5" /> Submitting saves the request, then you choose WhatsApp or email to send it to KMD.</div>
+              <div className="checkout-note"><CheckCircle2 className="h-5 w-5" /> {canSubmitToApi ? "Submitting sends the order request to KMD and keeps a local copy." : "Submitting saves this request locally, then you can send it to KMD by WhatsApp or email."}</div>
             </div>
           ) : null}
         </div>
 
         <div className="checkout-actions">
-          {step > 0 ? <button className="action-secondary gap-2" onClick={() => setStep((current) => current - 1)} type="button"><ArrowLeft className="h-4 w-4" /> Back</button> : <a className="action-secondary gap-2" href="/cart"><ArrowLeft className="h-4 w-4" /> Cart</a>}
-          {step < 2 ? <button className="action-commerce gap-2" onClick={continueFlow} type="button">Continue <ArrowRight className="h-4 w-4" /></button> : <button className="action-commerce gap-2" onClick={submit} type="button"><CheckCircle2 className="h-4 w-4" /> Submit request</button>}
+          {step > 0 ? <button className="action-secondary gap-2" onClick={() => setStep((current) => current - 1)} type="button"><ArrowLeft className="h-4 w-4" /> Back</button> : <Link className="action-secondary gap-2" href="/cart"><ArrowLeft className="h-4 w-4" /> Cart</Link>}
+          {step < 2 ? <button className="action-commerce gap-2" onClick={continueFlow} type="button">Continue <ArrowRight className="h-4 w-4" /></button> : <button className="action-commerce gap-2" disabled={submitting} onClick={submit} type="button"><CheckCircle2 className="h-4 w-4" /> {submitting ? "Submitting..." : "Submit request"}</button>}
         </div>
       </section>
 
@@ -323,11 +368,11 @@ function OrderSummary({ itemCount, items, subtotal }: { itemCount: number; items
     <aside className="checkout-summary">
       <div className="flex items-center justify-between"><div><p className="eyebrow mb-1">Your order</p><h2 className="font-serif text-2xl text-ink-900">{itemCount} {itemCount === 1 ? "item" : "items"}</h2></div><ShoppingBag className="h-6 w-6 text-brand-red" /></div>
       <div className="checkout-summary-items">
-        {items.length ? items.map((item) => <div className="checkout-summary-item" key={item.id}><img alt="" src={item.imageUrl} /><div><strong>{item.name}</strong><span>{item.quantity} x {formatMoney(item.price)}</span></div><b>{formatMoney(item.price * item.quantity)}</b></div>) : <p className="text-sm leading-6 text-ink-700">Your cart is empty. You can still send KMD a general request.</p>}
+        {items.length ? items.map((item) => <div className="checkout-summary-item" key={item.id}><Image alt="" src={item.imageUrl} width={48} height={48} className="h-12 w-12 object-cover" /><div><strong>{item.name}</strong><span>{item.quantity} x {formatMoney(item.price)}</span></div><b>{formatMoney(item.price * item.quantity)}</b></div>) : <p className="text-sm leading-6 text-ink-700">Your cart is empty. You can still send KMD a general request.</p>}
       </div>
       <div className="checkout-total"><span>Estimated subtotal</span><strong>{formatMoney(subtotal)}</strong></div>
       <div className="checkout-summary-note"><Truck className="h-4 w-4" /><span>Delivery fee and final total are confirmed before payment.</span></div>
-      <a className="mt-4 inline-flex text-sm font-semibold text-ink-700 underline" href="/cart">Edit cart</a>
+      <Link className="mt-4 inline-flex text-sm font-semibold text-ink-700 underline" href="/cart">Edit cart</Link>
     </aside>
   );
 }

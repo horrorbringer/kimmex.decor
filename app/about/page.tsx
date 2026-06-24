@@ -13,6 +13,11 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { services } from "@/lib/homepage-data";
 
+export const metadata = {
+  title: "About",
+  description: "Learn about KM Decor — Cambodia-based interior design and construction material supplier serving commercial, residential, and institutional projects since 2020.",
+};
+
 const companyFacts = [
   { value: "2020", label: "Established" },
   { value: "Phnom Penh", label: "Based in" },

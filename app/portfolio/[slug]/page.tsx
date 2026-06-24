@@ -18,6 +18,8 @@ import {
   Target
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type PortfolioDetailPageProps = {
@@ -63,10 +65,10 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
 
       <div className="border-b border-sand-400 bg-sand-50">
         <div className="content-shell flex min-w-0 items-center gap-2 overflow-x-auto py-4 text-xs text-ink-700 sm:text-sm">
-          <a className="inline-flex shrink-0 items-center gap-2 font-semibold transition hover:text-brand-red" href="/portfolio">
+          <Link className="inline-flex shrink-0 items-center gap-2 font-semibold transition hover:text-brand-red" href="/portfolio">
             <ArrowLeft className="h-4 w-4" />
             Portfolio
-          </a>
+          </Link>
           <span className="text-sand-400">/</span>
           <span className="truncate text-ink-900">{project.title}</span>
         </div>
@@ -84,10 +86,10 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
             <p className="mt-5 max-w-2xl text-base leading-8 text-ink-700 md:text-lg">{project.caption}</p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a className="action-commerce gap-2" href={contactHref}>
+              <Link className="action-commerce gap-2" href={contactHref}>
                 Plan Similar Work
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
               <a className="action-secondary gap-2" href="#project-story">
                 Explore Case Study
                 <ArrowRight className="h-4 w-4" />
@@ -102,7 +104,7 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
           </div>
 
           <div className="relative min-h-[470px] overflow-hidden rounded-lg border border-sand-400 bg-sand-100 shadow-panel md:min-h-[620px]">
-            <img alt={project.title} className="absolute inset-0 h-full w-full object-cover" src={detail.gallery[0].imageUrl} />
+            <Image alt={project.title} className="object-cover" fill priority sizes="(max-width: 768px) 100vw, 50vw" src={detail.gallery[0].imageUrl} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Design intention</p>
@@ -196,7 +198,7 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
                   index === 0 ? "lg:row-span-2 lg:min-h-[740px]" : "lg:min-h-[358px]"
                 }`}
               >
-                <img alt={visual.title} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" src={visual.imageUrl} />
+                <Image alt={visual.title} className="object-cover transition duration-500 group-hover:scale-105" fill loading="lazy" sizes="(max-width: 768px) 100vw, 50vw" src={visual.imageUrl} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55">View 0{index + 1}</span>
@@ -221,7 +223,7 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
 
           <div className="grid overflow-hidden rounded-lg border border-sand-400 bg-white sm:grid-cols-2">
             {relatedServices.map((service, index) => (
-              <a
+              <Link
                 key={service.id}
                 className="group border-b border-sand-400 p-6 transition hover:bg-sand-100 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
                 href={service.href}
@@ -236,7 +238,7 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
                   Explore service
                   <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -250,10 +252,10 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
                 <p className="eyebrow">Material Direction</p>
                 <h2 className="font-serif text-3xl text-ink-900 md:text-4xl">Products relevant to this project.</h2>
               </div>
-              <a className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href="/products">
+              <Link className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href="/products">
                 Browse products
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
             </div>
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {relatedProducts.map((product) => (
@@ -272,13 +274,13 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">
               Send photos, approximate dimensions, location, and the parts of this direction you want to explore.
             </p>
-            <a className="action-commerce mt-7 w-fit gap-2" href={contactHref}>
+            <Link className="action-commerce mt-7 w-fit gap-2" href={contactHref}>
               Plan Similar Work
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
-          <a className="group relative min-h-[300px] overflow-hidden border-t border-white/15 lg:border-l lg:border-t-0" href={nextProject.href}>
-            <img alt={nextProject.title} className="absolute inset-0 h-full w-full object-cover opacity-65 transition duration-500 group-hover:scale-105 group-hover:opacity-50" src={nextProject.imageUrl} />
+          <Link className="group relative min-h-[300px] overflow-hidden border-t border-white/15 lg:border-l lg:border-t-0 block" href={nextProject.href}>
+            <Image alt={nextProject.title} className="object-cover opacity-65 transition duration-500 group-hover:scale-105 group-hover:opacity-50" fill loading="lazy" sizes="42vw" src={nextProject.imageUrl} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55">Next project</p>
@@ -288,7 +290,7 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </span>
             </div>
-          </a>
+          </Link>
         </div>
       </section>
 

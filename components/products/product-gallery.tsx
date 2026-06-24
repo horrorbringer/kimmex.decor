@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, ImageOff, Ruler, X, ZoomIn } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type ProductGalleryProps = {
@@ -225,11 +226,14 @@ function GalleryVisual({ compact = false, failed, onError, productName, sku, spe
   }
 
   return (
-    <img
+    <Image
       alt={`${productName}, ${view.label.toLowerCase()} view`}
       className={`h-full w-full ${view.mode === "installed" ? "object-cover" : "object-contain"} ${compact ? "p-1" : "p-5 sm:p-8"}`}
       onError={onError}
       src={view.imageUrl}
+      fill
+      priority={!compact}
+      sizes={compact ? "80px" : "(max-width: 640px) 100vw, 50vw"}
     />
   );
 }

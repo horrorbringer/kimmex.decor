@@ -2,8 +2,11 @@
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ProductCard } from "@/components/home/product-card";
+import { migrateCatalogStorage } from "@/lib/catalog-storage-migration";
 import type { ProductItem } from "@/lib/homepage-data";
 import { Grid3X3, List, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -52,6 +55,10 @@ export function ProductCatalog({ products, categories, brands, availability }: P
     if (availabilityParams.length > 0) setSelectedAvailability(availabilityParams);
     setHasHydrated(true);
   }, [availability, brands, categories]);
+
+  useEffect(() => {
+    migrateCatalogStorage(products);
+  }, [products]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -345,18 +352,18 @@ function ProductListRow({ product }: { product: ProductItem }) {
 
   return (
     <article className="surface-card grid gap-4 p-4 transition hover:-translate-y-0.5 hover:border-bronze-500 hover:shadow-panel lg:grid-cols-[120px_1fr_auto] lg:items-center">
-      <a href={product.href}>
-        <img alt={product.name} className="h-28 w-full rounded-lg object-cover lg:h-24" src={product.imageUrl} />
-      </a>
+      <Link href={product.href}>
+        <Image alt={product.name} className="h-28 w-full rounded-lg object-cover lg:h-24" src={product.imageUrl} width={120} height={96} loading="lazy" />
+      </Link>
       <div>
         <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.16em] text-ink-700">
           <span>{product.category}</span>
           <span>{product.sku}</span>
         </div>
         <h3 className="mt-2 font-serif text-2xl text-ink-900">
-          <a className="transition hover:text-brand-red" href={product.href}>
+          <Link className="transition hover:text-brand-red" href={product.href}>
             {product.name}
-          </a>
+          </Link>
         </h3>
         <p className="mt-1 text-sm leading-6 text-ink-700">{product.descriptor}</p>
         <div className="mt-3 grid gap-2 text-xs text-ink-700 sm:grid-cols-4">
@@ -372,15 +379,15 @@ function ProductListRow({ product }: { product: ProductItem }) {
           <div className="text-sm text-ink-700">/ {product.unit}</div>
         </div>
         {needsQuote || product.stockStatus === "Low stock" ? (
-          <a className="action-commerce min-h-10 px-3 py-2 text-xs" href={primaryHref}>
+          <Link className="action-commerce min-h-10 px-3 py-2 text-xs" href={primaryHref}>
             {primaryAction}
-          </a>
+          </Link>
         ) : (
           <AddToCartButton className="action-commerce min-h-10 gap-1.5 px-3 py-2 text-xs" compact product={product} />
         )}
-        <a className="action-secondary min-h-10 px-3 py-2 text-xs" href={product.href}>
+        <Link className="action-secondary min-h-10 px-3 py-2 text-xs" href={product.href}>
           Details
-        </a>
+        </Link>
       </div>
     </article>
   );

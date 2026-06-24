@@ -3,7 +3,9 @@ import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { ProductGallery } from "@/components/products/product-gallery";
-import { products } from "@/lib/homepage-data";
+import { StructuredData } from "@/components/structured-data";
+import { getCatalogProduct, getCatalogProducts } from "@/lib/api-catalog";
+import { products as fallbackProducts } from "@/lib/homepage-data";
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,14 +25,14 @@ type ProductDetailPageProps = {
 };
 
 export function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.id
+  return fallbackProducts.map((product) => ({
+    slug: product.href.replace("/products/", "")
   }));
 }
 
 export async function generateMetadata({ params }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = products.find((item) => item.id === slug);
+  const product = await getCatalogProduct(slug);
 
   if (!product) {
     return {
@@ -46,20 +48,23 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = products.find((item) => item.id === slug);
+  const [product, products] = await Promise.all([getCatalogProduct(slug), getCatalogProducts()]);
 
   if (!product) notFound();
 
+  const catalogProduct = products.find((item) => item.href === product.href) ?? product;
+  const compatibleProductIds = new Set(catalogProduct.compatibleProductIds);
   const relatedProducts = products
     .filter((item) => item.id !== product.id)
     .sort((first, second) => {
-      const firstScore = product.compatibleProductIds.includes(first.id) ? 2 : first.category === product.category ? 1 : 0;
-      const secondScore = product.compatibleProductIds.includes(second.id) ? 2 : second.category === product.category ? 1 : 0;
+      const firstScore = compatibleProductIds.has(first.id) ? 2 : first.category === product.category ? 1 : 0;
+      const secondScore = compatibleProductIds.has(second.id) ? 2 : second.category === product.category ? 1 : 0;
       return secondScore - firstScore;
     })
     .slice(0, 3);
   const needsQuote = product.quoteRecommended || product.stockStatus !== "In stock";
-  const advisorHref = `/contact?product=${encodeURIComponent(product.id)}`;
+  const productSlug = product.href.replace("/products/", "");
+  const advisorHref = `/contact?product=${encodeURIComponent(productSlug)}`;
   const galleryImages = product.galleryImages.length > 0 ? product.galleryImages : [product.imageUrl];
   const savingPercent = product.comparePrice ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : null;
   const technicalSpecs = [
@@ -74,6 +79,25 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   return (
     <main className="page-shell">
+      <StructuredData
+        data={{
+          type: "product",
+          name: product.name,
+          description: product.descriptor,
+          image: product.imageUrl,
+          sku: product.sku,
+          brand: { "@type": "Brand", name: product.brand },
+          offers: {
+            "@type": "Offer",
+            price: product.price.toFixed(2),
+            priceCurrency: "USD",
+            availability: product.stockStatus === "In stock"
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            url: `https://kmdecor.com${product.href}`,
+          },
+        }}
+      />
       <SiteHeader />
 
       <div className="border-b border-sand-400 bg-sand-50">
@@ -165,6 +189,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             <p className="eyebrow">Product Overview</p>
             <h2 className="font-serif text-4xl leading-tight text-ink-900 md:text-5xl">A practical fit for the work.</h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-ink-700">{product.customerGoal}</p>
+            {product.descriptionHtml ? (
+              <div
+                className="prose prose-sm mt-8 max-w-none text-ink-700"
+                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              />
+            ) : null}
           </div>
 
           <div className="grid overflow-hidden rounded-lg border border-sand-400 bg-white sm:grid-cols-2">

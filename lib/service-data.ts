@@ -1,4 +1,5 @@
-import { products, services } from "@/lib/homepage-data";
+import { services } from "@/lib/homepage-data";
+import type { ProductItem } from "@/lib/homepage-data";
 
 export type ServiceDetail = {
   overview?: string;
@@ -192,13 +193,17 @@ export function getServiceDetail(serviceId: string) {
   return serviceDetails[serviceId];
 }
 
-export function getRelatedServiceProducts(serviceId: string) {
+function productSlug(product: ProductItem) {
+  return product.href.replace("/products/", "");
+}
+
+export function getRelatedServiceProducts(serviceId: string, products: ProductItem[]) {
   const detail = getServiceDetail(serviceId);
   if (!detail) return [];
 
   return detail.relatedProductIds
-    .map((id) => products.find((product) => product.id === id))
-    .filter((product): product is (typeof products)[number] => Boolean(product));
+    .map((id) => products.find((product) => product.id === id || productSlug(product) === id))
+    .filter((product): product is ProductItem => Boolean(product));
 }
 
 export function getServiceBySlug(slug: string) {

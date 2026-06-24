@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/home/site-header";
 import { ServiceFaq } from "@/components/services/service-faq";
 import { getRelatedServiceProducts, getServiceBySlug, getServiceDetail } from "@/lib/service-data";
 import { services } from "@/lib/homepage-data";
+import { getCatalogProducts } from "@/lib/api-catalog";
 import {
   ArrowDown,
   ArrowLeft,
@@ -18,6 +19,8 @@ import {
   Truck
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type ServiceDetailPageProps = {
@@ -57,7 +60,8 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
   if (!service || !detail) notFound();
 
-  const relatedProducts = getRelatedServiceProducts(slug);
+  const products = await getCatalogProducts();
+  const relatedProducts = getRelatedServiceProducts(slug, products);
   const consultationHref = `/contact?service=${encodeURIComponent(service.id)}`;
 
   return (
@@ -66,10 +70,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
       <div className="border-b border-sand-400 bg-sand-50">
         <div className="content-shell flex min-w-0 items-center gap-2 overflow-x-auto py-4 text-xs text-ink-700 sm:text-sm">
-          <a className="inline-flex shrink-0 items-center gap-2 font-semibold transition hover:text-brand-red" href="/services">
+          <Link className="inline-flex shrink-0 items-center gap-2 font-semibold transition hover:text-brand-red" href="/services">
             <ArrowLeft className="h-4 w-4" />
             Services
-          </a>
+          </Link>
           <span className="text-sand-400">/</span>
           <span className="truncate text-ink-900">{service.title}</span>
         </div>
@@ -83,10 +87,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
             <p className="mt-5 max-w-2xl text-base leading-8 text-ink-700 md:text-lg">{service.description}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <a className="action-commerce gap-2" href={consultationHref}>
+              <Link className="action-commerce gap-2" href={consultationHref}>
                 {detail.cta}
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
               <a className="action-secondary gap-2" href="#service-scope">
                 Explore the Scope
                 <ArrowDown className="h-4 w-4" />
@@ -104,7 +108,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
           </div>
 
           <div className="relative min-h-[440px] overflow-hidden rounded-lg border border-sand-400 bg-sand-100 shadow-panel md:min-h-[560px]">
-            <img alt={`${service.title} reference`} className="absolute inset-0 h-full w-full object-cover" src={detail.visuals[0].imageUrl} />
+            <Image alt={`${service.title} reference`} className="object-cover" fill priority sizes="(max-width: 768px) 100vw, 50vw" src={detail.visuals[0].imageUrl} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">Planning note</p>
@@ -131,7 +135,11 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
             <h2 className="font-serif text-4xl leading-tight text-ink-900 md:text-5xl">Designed around the space and the result.</h2>
           </div>
           <div>
-            <p className="text-lg leading-8 text-ink-900 md:text-xl md:leading-9">{detail.overview ?? service.description}</p>
+            {service.descriptionHtml ? (
+              <div className="prose prose-lg max-w-none text-ink-900" dangerouslySetInnerHTML={{ __html: service.descriptionHtml }} />
+            ) : (
+              <p className="text-lg leading-8 text-ink-900 md:text-xl md:leading-9">{detail.overview ?? service.description}</p>
+            )}
             <div className="mt-8 border-t border-sand-400 pt-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-700">A strong fit for</p>
               <div className="mt-4 flex flex-wrap gap-2">
@@ -171,10 +179,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
             <p className="eyebrow">Visual Direction</p>
             <h2 className="font-serif text-4xl leading-tight text-ink-900 md:text-5xl">Use references to communicate the finish.</h2>
           </div>
-          <a className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href={consultationHref}>
+          <Link className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href={consultationHref}>
             {detail.photoCta}
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
@@ -185,7 +193,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
                 index === 0 ? "lg:row-span-2 lg:min-h-[740px]" : "lg:min-h-[358px]"
               }`}
             >
-              <img alt={visual.title} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" src={visual.imageUrl} />
+              <Image alt={visual.title} className="object-cover transition duration-500 group-hover:scale-105" fill loading="lazy" sizes="(max-width: 768px) 100vw, 50vw" src={visual.imageUrl} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55">Reference 0{index + 1}</span>
@@ -234,10 +242,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
               <p className="eyebrow">Related Products</p>
               <h2 className="font-serif text-3xl text-ink-900 md:text-4xl">Material options for this service.</h2>
             </div>
-            <a className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href="/products">
+            <Link className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-brand-red" href="/products">
               Browse all products
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {relatedProducts.map((product) => (
@@ -268,10 +276,10 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
             <h2 className="mt-3 max-w-3xl font-serif text-4xl leading-tight md:text-5xl">Start with a photo, approximate size, and location.</h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70">Exact drawings are useful but not required for the first conversation.</p>
           </div>
-          <a className="action-commerce relative mt-7 w-fit shrink-0 gap-2 whitespace-nowrap lg:mt-0" href={consultationHref}>
+          <Link className="action-commerce relative mt-7 w-fit shrink-0 gap-2 whitespace-nowrap lg:mt-0" href={consultationHref}>
             {detail.cta}
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
       </section>
 

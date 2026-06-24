@@ -3,6 +3,8 @@
 import type { CartItem } from "@/lib/cart-store";
 import { getCartSubtotal, readCart, removeCartItem, updateCartQuantity } from "@/lib/cart-store";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type CartDrawerProps = {
@@ -65,7 +67,7 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
       <aside
         aria-label="Shopping cart"
         aria-modal="true"
-        className="ml-auto flex h-full w-full max-w-[460px] flex-col bg-sand-50 shadow-2xl sm:w-[min(94vw,460px)]"
+        className="ml-auto flex h-full w-full max-w-[460px] flex-col bg-sand-50 shadow-2xl sm:w-[min(94vw,460px)] animate-slide-in-right"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
@@ -95,25 +97,25 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
             <p className="mt-3 max-w-xs text-sm leading-7 text-ink-700">
               Browse materials and add the quantities you want us to review.
             </p>
-            <a className="action-commerce mt-7 gap-2" href="/products" onClick={onClose}>
+            <Link className="action-commerce mt-7 gap-2" href="/products" onClick={onClose}>
               Browse Products
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         ) : (
           <>
             <div className="flex-1 overflow-y-auto">
               {items.map((item) => (
                 <article className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 border-b border-sand-400 p-4 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-4 sm:p-5 md:p-6" key={item.id}>
-                  <a className="overflow-hidden rounded-md border border-sand-400 bg-white" href={item.href} onClick={onClose}>
-                    <img alt={item.name} className="h-20 w-full object-cover sm:h-24" src={item.imageUrl} />
-                  </a>
+                  <Link className="relative block overflow-hidden rounded-md border border-sand-400 bg-white" href={item.href} onClick={onClose}>
+                    <Image alt={item.name} className="h-20 w-full object-cover sm:h-24" src={item.imageUrl} width={88} height={96} loading="lazy" />
+                  </Link>
                   <div className="min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[10px] font-semibold uppercase tracking-[0.15em] text-ink-700">{item.brand}</p>
                         <h3 className="mt-1 font-serif text-lg leading-tight text-ink-900 sm:text-xl">
-                          <a href={item.href} onClick={onClose}>{item.name}</a>
+                          <Link href={item.href} onClick={onClose}>{item.name}</Link>
                         </h3>
                       </div>
                       <button
@@ -161,13 +163,13 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
                 </div>
                 <p className="font-serif text-3xl text-ink-900">{formatMoney(subtotal)}</p>
               </div>
-              <a className="action-commerce mt-5 w-full gap-2" href="/checkout" onClick={onClose}>
+              <Link className="action-commerce mt-5 w-full gap-2" href="/checkout" onClick={onClose}>
                 Continue to Checkout
                 <ArrowRight className="h-4 w-4" />
-              </a>
-              <a className="action-secondary mt-3 w-full" href="/cart" onClick={onClose}>
+              </Link>
+              <Link className="action-secondary mt-3 w-full" href="/cart" onClick={onClose}>
                 Review Full Cart
-              </a>
+              </Link>
             </div>
           </>
         )}

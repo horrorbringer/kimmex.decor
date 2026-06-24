@@ -13,6 +13,12 @@ import {
 import { ContactRequestForm } from "@/components/contact/contact-request-form";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
+import { getCatalogProducts } from "@/lib/api-catalog";
+
+export const metadata = {
+  title: "Contact",
+  description: "Get in touch with KM Decor for product inquiries, interior services, and project consultations in Phnom Penh, Cambodia.",
+};
 
 const requestDetails = [
   {
@@ -32,7 +38,9 @@ const requestDetails = [
   }
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const products = await getCatalogProducts();
+
   return (
     <main className="page-shell">
       <SiteHeader />
@@ -132,7 +140,7 @@ export default function ContactPage() {
             </div>
           </aside>
 
-          <ContactRequestForm />
+          <ContactRequestForm products={products} />
         </div>
       </section>
 

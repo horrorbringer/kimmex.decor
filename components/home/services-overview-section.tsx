@@ -1,7 +1,9 @@
 import { ArrowRight } from "lucide-react";
-import { services } from "@/lib/homepage-data";
+import { getCatalogServices } from "@/lib/api-services";
 
-export function ServicesOverviewSection() {
+export async function ServicesOverviewSection() {
+  const services = await getCatalogServices();
+
   return (
     <section className="bg-sand-200/55" id="services">
       <div className="section-shell">

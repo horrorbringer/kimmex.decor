@@ -185,7 +185,7 @@ export function ResourceDirectory() {
           <label className="relative block">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-700" />
             <input
-              className="w-full rounded-md border border-sand-400 bg-white py-3 pl-10 pr-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-700 focus:border-brand-red"
+              className="w-full rounded-md border border-sand-400 bg-white py-3 pl-10 pr-3 text-base sm:text-sm text-ink-900 outline-none transition placeholder:text-ink-700 focus:border-brand-red"
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search resources"
               type="search"

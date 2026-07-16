@@ -1,6 +1,7 @@
 import { fetchJson } from "@/lib/api-client";
 import { products as fallbackProducts, shopCategories as fallbackCategories } from "@/lib/homepage-data";
 import type { ProductItem } from "@/lib/homepage-data";
+import { reportError } from "@/lib/error-tracking";
 
 type ApiCategory = {
   id: string;
@@ -45,7 +46,18 @@ type ApiProduct = {
   short_description: string;
   short_description_kh?: string | null;
   description?: string | null;
+  description_html?: string | null;
+  description_text?: string | null;
   description_kh?: string | null;
+  description_kh_html?: string | null;
+  description_kh_text?: string | null;
+  customer_goal?: string | null;
+  features?: string[] | null;
+  applications?: string[] | null;
+  material_notes?: string[] | null;
+  lead_time?: string | null;
+  delivery_note?: string | null;
+  compatible_product_slugs?: string[] | null;
   category?: ApiCategory | null;
   brand?: ApiBrand | null;
   price: number;
@@ -101,6 +113,10 @@ function specifications(value: ApiProduct["specifications"], fallback: ProductIt
   return fallback.specs;
 }
 
+function listOrFallback(value: string[] | null | undefined, fallback: string[]) {
+  return Array.isArray(value) && value.length > 0 ? value.map(String).filter(Boolean) : fallback;
+}
+
 function productImages(product: ApiProduct, fallback: ProductItem) {
   const images = product.images ?? [];
   const urls = images.map((image) => image.image_url).filter(Boolean);
@@ -121,7 +137,7 @@ function adaptProduct(product: ApiProduct): ProductItem {
     id: product.id,
     name: product.name,
     descriptor: product.short_description,
-    descriptionHtml: product.description ?? undefined,
+    descriptionHtml: product.description_html ?? product.description ?? undefined,
     brand: product.brand?.name ?? fallback.brand,
     category: product.category?.name ?? fallback.category,
     sku: product.sku,
@@ -134,14 +150,14 @@ function adaptProduct(product: ApiProduct): ProductItem {
     badge: badgeLabel(product.badges) ?? fallback.badge,
     specs: specifications(product.specifications, fallback),
     moq: `${product.min_order_qty} ${product.unit}${product.min_order_qty > 1 ? "s" : ""}`,
-    leadTime: currentStockStatus === "In stock" ? "Ready stock" : currentStockStatus === "Low stock" ? "Check stock" : "Preorder",
-    delivery: fallback.delivery,
+    leadTime: product.lead_time || (currentStockStatus === "In stock" ? "Ready stock" : currentStockStatus === "Low stock" ? "Check stock" : "Preorder"),
+    delivery: product.delivery_note || fallback.delivery,
     quoteRecommended: currentStockStatus !== "In stock" || fallback.quoteRecommended,
-    customerGoal: fallback.customerGoal,
-    keyFeatures: fallback.keyFeatures,
-    compatibleProductIds: fallback.compatibleProductIds,
-    applications: fallback.applications,
-    materialNotes: fallback.materialNotes,
+    customerGoal: product.customer_goal || fallback.customerGoal,
+    keyFeatures: listOrFallback(product.features, fallback.keyFeatures),
+    compatibleProductIds: listOrFallback(product.compatible_product_slugs, fallback.compatibleProductIds),
+    applications: listOrFallback(product.applications, fallback.applications),
+    materialNotes: listOrFallback(product.material_notes, fallback.materialNotes),
     href: `/products/${product.slug}`,
     imageUrl: images.imageUrl,
     galleryImages: images.galleryImages
@@ -161,7 +177,8 @@ export async function getCatalogProducts(): Promise<ProductItem[]> {
   try {
     const response = await fetchJson<ApiCollectionResponse<ApiProduct>>("/products?per_page=100");
     return resolveCompatibleProductIds(response.data.map(adaptProduct));
-  } catch {
+  } catch (error) {
+    reportError(error, { component: "api-catalog", action: "getCatalogProducts" });
     return fallbackProducts;
   }
 }

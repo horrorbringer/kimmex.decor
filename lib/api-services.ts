@@ -1,5 +1,5 @@
 import { fetchJson } from "@/lib/api-client";
-import type { ServiceItem } from "@/lib/homepage-data";
+import { services as fallbackServices, type ServiceItem } from "@/lib/homepage-data";
 
 type ApiService = {
   id: string;
@@ -9,12 +9,17 @@ type ApiService = {
   short_description: string;
   short_description_kh?: string | null;
   description?: string | null;
+  description_html?: string | null;
+  description_text?: string | null;
   description_kh?: string | null;
+  description_kh_html?: string | null;
+  description_kh_text?: string | null;
   category?: any | null;
   inquiry_type: string;
   image_url?: string | null;
   is_featured: boolean;
-  is_published: boolean;
+  is_active?: boolean;
+  is_published?: boolean;
 };
 
 type ApiCollectionResponse<T> = {
@@ -30,7 +35,7 @@ function adaptService(service: ApiService): ServiceItem {
     id: service.slug,
     title: service.name,
     description: service.short_description,
-    descriptionHtml: service.description ?? undefined,
+    descriptionHtml: service.description_html ?? service.description ?? undefined,
     href: `/services/${service.slug}`,
     imageUrl: service.image_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
   };
@@ -39,12 +44,14 @@ function adaptService(service: ApiService): ServiceItem {
 export async function getCatalogServices(): Promise<ServiceItem[]> {
   try {
     const response = await fetchJson<ApiCollectionResponse<ApiService>>("/services");
-    return response.data
-      .filter((s) => s.is_published)
+    const catalogServices = response.data
+      .filter((service) => service.is_published !== false && service.is_active !== false)
       .map(adaptService);
+
+    return catalogServices.length > 0 ? catalogServices : fallbackServices;
   } catch (error) {
     console.error("Failed to fetch services:", error);
-    return [];
+    return fallbackServices;
   }
 }
 

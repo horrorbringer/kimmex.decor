@@ -2,12 +2,14 @@
 
 import { SiteHeader } from "@/components/home/site-header";
 import { SiteFooter } from "@/components/home/site-footer";
+import { clearCustomerCart } from "@/lib/api-customer-storage";
 import { submitCheckout } from "@/lib/api-checkout";
 import { getCartSubtotal, readCart } from "@/lib/cart-store";
 import { useAuth } from "@/lib/auth-context";
 import { ArrowLeft, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import { reportError } from "@/lib/error-tracking";
 import { useRouter } from "next/navigation";
 
 type CheckoutFormData = {
@@ -68,10 +70,14 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           unit_price: item.price
         })),
-        customer_name: formData.customerName,
-        customer_email: formData.customerEmail,
-        customer_phone: formData.customerPhone,
-        delivery_address: formData.deliveryAddress,
+        name: formData.customerName,
+        email: formData.customerEmail,
+        phone: formData.customerPhone,
+        delivery_method: "delivery",
+        area: formData.deliveryAddress,
+        address: formData.deliveryAddress,
+        timing: "standard",
+        support: "none",
         notes: formData.notes
       });
 
@@ -80,6 +86,7 @@ export default function CheckoutPage() {
       
       // Clear cart after successful checkout
       localStorage.removeItem("kmd-cart");
+      clearCustomerCart().catch(() => reportError("clearCustomerCart failed", { component: "CheckoutPage", action: "checkout" }));
       window.dispatchEvent(new CustomEvent("kmd-cart-updated"));
 
       // Redirect to order page after 2 seconds
@@ -153,7 +160,7 @@ export default function CheckoutPage() {
                         value={formData.customerName}
                         onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                         required
-                        className="w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 transition focus:border-brand-red focus:outline-none"
+                        className="form-field"
                         placeholder="John Doe"
                         disabled={isLoading}
                       />
@@ -167,7 +174,7 @@ export default function CheckoutPage() {
                           value={formData.customerEmail}
                           onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
                           required
-                          className="w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 transition focus:border-brand-red focus:outline-none"
+                          className="form-field"
                           placeholder="you@example.com"
                           disabled={isLoading}
                         />
@@ -180,7 +187,7 @@ export default function CheckoutPage() {
                           value={formData.customerPhone}
                           onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
                           required
-                          className="w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 transition focus:border-brand-red focus:outline-none"
+                          className="form-field"
                           placeholder="+855 10 123 456"
                           disabled={isLoading}
                         />
@@ -194,7 +201,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
                         required
                         rows={3}
-                        className="w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 transition focus:border-brand-red focus:outline-none"
+                        className="form-field"
                         placeholder="123 Street Name, District, City"
                         disabled={isLoading}
                       />
@@ -206,7 +213,7 @@ export default function CheckoutPage() {
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         rows={2}
-                        className="w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 transition focus:border-brand-red focus:outline-none"
+                        className="form-field"
                         placeholder="Any special instructions..."
                         disabled={isLoading}
                       />

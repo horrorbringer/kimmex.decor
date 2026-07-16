@@ -1,7 +1,10 @@
 "use client";
 
+import { addCustomerCartItem } from "@/lib/api-customer-storage";
+import { getApiErrorMessage } from "@/lib/api-client";
 import { addProductToCart } from "@/lib/cart-store";
 import type { ProductItem } from "@/lib/homepage-data";
+import { useToast } from "@/components/ui/toast";
 import { ArrowRight, Check, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -12,6 +15,7 @@ type ProductDetailActionsProps = {
 };
 
 export function ProductDetailActions({ advisorHref, needsQuote, product }: ProductDetailActionsProps) {
+  const { addToast } = useToast();
   const minimumQuantity = Math.max(1, Number.parseInt(product.moq, 10) || 1);
   const [quantity, setQuantity] = useState(minimumQuantity);
   const [added, setAdded] = useState(false);
@@ -25,6 +29,13 @@ export function ProductDetailActions({ advisorHref, needsQuote, product }: Produ
 
   const handleAddToCart = () => {
     addProductToCart(product, quantity);
+    addCustomerCartItem(product.id, quantity).catch((error) => {
+      addToast({
+        type: "warning",
+        title: "Saved locally",
+        message: getApiErrorMessage(error, "KMD could not sync this item to your account cart yet.")
+      });
+    });
     setAdded(true);
   };
 

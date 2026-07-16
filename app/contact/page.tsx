@@ -14,6 +14,8 @@ import { ContactRequestForm } from "@/components/contact/contact-request-form";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { getCatalogProducts } from "@/lib/api-catalog";
+import { getPortfolioProjects } from "@/lib/api-portfolio";
+import { getCatalogServices } from "@/lib/api-services";
 
 export const metadata = {
   title: "Contact",
@@ -40,6 +42,8 @@ const requestDetails = [
 
 export default async function ContactPage() {
   const products = await getCatalogProducts();
+  const portfolioProjects = await getPortfolioProjects();
+  const services = await getCatalogServices();
 
   return (
     <main className="page-shell">
@@ -140,7 +144,7 @@ export default async function ContactPage() {
             </div>
           </aside>
 
-          <ContactRequestForm products={products} />
+          <ContactRequestForm portfolioProjects={portfolioProjects} products={products} services={services} />
         </div>
       </section>
 

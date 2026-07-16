@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { reportError } from "@/lib/error-tracking";
+import { useEffect } from "react";
 
 export default function GlobalError({
   error,
@@ -9,6 +11,13 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    reportError(error, {
+      component: "GlobalError",
+      severity: "critical",
+    });
+  }, [error]);
+
   return (
     <div className="min-h-screen bg-sand-50 flex items-center justify-center px-4">
       <div className="text-center max-w-md">

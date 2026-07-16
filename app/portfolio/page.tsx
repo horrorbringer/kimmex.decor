@@ -1,7 +1,11 @@
+import { RichContent } from "@/components/content/rich-content";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
-import { projects } from "@/lib/homepage-data";
+import { PortfolioProjectBrowser } from "@/components/portfolio/portfolio-project-browser";
+import { getPortfolioProjects } from "@/lib/api-portfolio";
 import { projectDetails } from "@/lib/project-data";
+
+export const dynamic = "force-dynamic";
 import {
   ArrowDown,
   ArrowRight,
@@ -30,9 +34,56 @@ const planningSteps = [
   }
 ];
 
-export default function PortfolioPage() {
-  const featuredProject = projects[0];
-  const featuredDetail = projectDetails[featuredProject.id];
+function fallbackDetailForProject(project: Awaited<ReturnType<typeof getPortfolioProjects>>[number]) {
+  return projectDetails[project.id] ?? {
+    overview: project.caption,
+    setting: project.projectType,
+    focus: project.projectType,
+    goal: project.caption,
+    challenge: "",
+    response: "",
+    scope: [],
+    outcomes: [],
+    process: [],
+    gallery: [{ title: project.title, caption: project.caption, imageUrl: project.imageUrl }],
+    serviceIds: [],
+    productIds: [],
+  };
+}
+
+export default async function PortfolioPage() {
+  const projects = await getPortfolioProjects();
+  if (projects.length === 0) {
+    return (
+      <main className="page-shell bg-white">
+        <SiteHeader />
+        <section className="content-shell flex min-h-[60vh] items-center justify-center">
+          <div className="text-center">
+            <h1 className="font-serif text-4xl text-ink-900">Portfolio</h1>
+            <p className="mt-4 text-ink-700">No projects published yet. Check back soon.</p>
+          </div>
+        </section>
+        <SiteFooter />
+      </main>
+    );
+  }
+  const featuredProject = projects[0]!;
+  const featuredDetail = fallbackDetailForProject(featuredProject);
+  const browserProjects = projects.map((project) => {
+    const detail = fallbackDetailForProject(project);
+
+    return {
+      id: project.id,
+      title: project.title,
+      projectType: project.projectType,
+      caption: project.caption,
+      href: project.href,
+      imageUrl: detail.gallery[0]?.imageUrl ?? project.imageUrl,
+      setting: detail.setting,
+      focus: detail.focus,
+      outcomes: detail.outcomes,
+    };
+  });
 
   return (
     <main className="page-shell bg-white">
@@ -97,6 +148,8 @@ export default function PortfolioPage() {
         </div>
       </nav>
 
+      <PortfolioProjectBrowser projects={browserProjects} />
+
       <section className="bg-white">
         <div className="content-shell py-12 lg:py-20">
           <div className="grid gap-5 border-b border-sand-400 pb-9 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
@@ -111,7 +164,7 @@ export default function PortfolioPage() {
 
           <div>
             {projects.map((project, index) => {
-              const detail = projectDetails[project.id];
+              const detail = fallbackDetailForProject(project);
               const imageFirst = index % 2 === 0;
 
               return (
@@ -149,7 +202,11 @@ export default function PortfolioPage() {
                     <h2 className="mt-5 font-serif text-3xl leading-tight text-ink-900 sm:text-4xl xl:text-5xl">
                       {project.title}
                     </h2>
-                    <p className="mt-5 text-sm leading-7 text-ink-700 md:text-base">{detail.overview}</p>
+                    <RichContent
+                      className="mt-5 text-sm text-ink-700 md:text-base"
+                      html={detail.overview}
+                      plainClassName="mt-5 text-sm leading-7 text-ink-700 md:text-base"
+                    />
 
                     <dl className="mt-8 grid grid-cols-2 border-y border-sand-400 py-5">
                       <ProjectFact label="Setting" value={detail.setting} />

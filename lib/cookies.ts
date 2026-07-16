@@ -5,11 +5,11 @@ const COOKIE_KEYS = {
   USER: "kmd_user",
 } as const;
 
-const isDev = process.env.NODE_ENV === "development";
+const isProd = process.env.NODE_ENV === "production";
 
 const COOKIE_OPTIONS: Cookies.CookieAttributes = {
   path: "/",
-  secure: !isDev,
+  secure: isProd,
   sameSite: "lax",
   expires: 7,
 };

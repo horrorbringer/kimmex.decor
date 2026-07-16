@@ -2,12 +2,14 @@
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { ProductItem } from "@/lib/homepage-data";
+import { addCustomerWishlistItem, removeCustomerWishlistItem } from "@/lib/api-customer-storage";
 import { readWishlist, toggleWishlistProduct } from "@/lib/wishlist-store";
 import { blurPlaceholder } from "@/lib/blur-placeholder";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { reportError } from "@/lib/error-tracking";
 
 type ProductCardProps = {
   product: ProductItem;
@@ -16,6 +18,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, compact = false }: ProductCardProps) {
   const [saved, setSaved] = useState(false);
+  const productSlug = product.href.replace("/products/", "");
 
   useEffect(() => {
     const sync = () => setSaved(readWishlist().includes(product.id));
@@ -26,7 +29,13 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
   const needsQuote = product.quoteRecommended || product.stockStatus === "Preorder";
   const primaryAction = product.stockStatus === "Low stock" ? "Check Availability" : needsQuote ? "Get Quote" : "Add to Cart";
-  const primaryHref = needsQuote || product.stockStatus === "Low stock" ? "/contact" : "/cart";
+  const primaryHref = needsQuote || product.stockStatus === "Low stock" ? `/contact?product=${encodeURIComponent(productSlug)}#request-form` : "/cart";
+  const toggleSaved = () => {
+    const nextSaved = toggleWishlistProduct(product.id).includes(product.id);
+    setSaved(nextSaved);
+    const sync = nextSaved ? addCustomerWishlistItem : removeCustomerWishlistItem;
+    sync(product.id).catch(() => reportError("Wishlist sync failed", { component: "ProductCard", action: "toggleWishlist" }));
+  };
 
   return (
     <article className="surface-card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-panel">
@@ -54,7 +63,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
         aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
         aria-pressed={saved}
         className={`product-save-button ${saved ? "is-saved" : ""}`}
-        onClick={() => setSaved(toggleWishlistProduct(product.id).includes(product.id))}
+        onClick={toggleSaved}
         title={saved ? "Remove from wishlist" : "Save to wishlist"}
         type="button"
       >

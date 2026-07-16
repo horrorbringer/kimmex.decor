@@ -1,3 +1,4 @@
+import { RichContent } from "@/components/content/rich-content";
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
@@ -136,7 +137,7 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
           </div>
           <div>
             {service.descriptionHtml ? (
-              <div className="prose prose-lg max-w-none text-ink-900" dangerouslySetInnerHTML={{ __html: service.descriptionHtml }} />
+              <RichContent className="text-lg text-ink-900" html={service.descriptionHtml} />
             ) : (
               <p className="text-lg leading-8 text-ink-900 md:text-xl md:leading-9">{detail.overview ?? service.description}</p>
             )}

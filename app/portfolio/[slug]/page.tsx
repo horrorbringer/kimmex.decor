@@ -1,16 +1,13 @@
+import { RichContent } from "@/components/content/rich-content";
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
-import { projects } from "@/lib/homepage-data";
-import {
-  getProjectBySlug,
-  getProjectDetail,
-  getProjectProducts,
-  getProjectServices
-} from "@/lib/project-data";
+import { getPortfolioProject, getPortfolioProjects } from "@/lib/api-portfolio";
+import type { ProjectDetail } from "@/lib/project-data";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   CheckCircle2,
   ClipboardCheck,
   Layers3,
@@ -28,35 +25,35 @@ type PortfolioDetailPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.id }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PortfolioDetailPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const result = await getPortfolioProject(slug);
 
-  if (!project) {
+  if (!result) {
     return { title: "Project not found | Decor" };
   }
 
   return {
-    title: `${project.title} | Decor Portfolio`,
-    description: project.caption
+    title: `${result.project.title} | Decor Portfolio`,
+    description: result.project.caption
   };
 }
 
 export default async function PortfolioDetailPage({ params }: PortfolioDetailPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  const detail = getProjectDetail(slug);
+  const result = await getPortfolioProject(slug);
 
-  if (!project || !detail) notFound();
+  if (!result) notFound();
 
-  const relatedServices = getProjectServices(slug);
-  const relatedProducts = getProjectProducts(slug);
-  const currentIndex = projects.findIndex((item) => item.id === project.id);
-  const nextProject = projects[(currentIndex + 1) % projects.length];
+  const { project, detail: rawDetail } = result;
+  const detail: ProjectDetail = rawDetail;
+  const relatedServices = result.services;
+  const relatedProducts = result.products;
+  const allProjects = await getPortfolioProjects();
+  const currentIndex = allProjects.findIndex((item) => item.id === project.id);
+  const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
   const contactHref = `/contact?project=${encodeURIComponent(project.id)}`;
 
   return (
@@ -121,7 +118,11 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
             <h2 className="font-serif text-4xl leading-tight text-ink-900 md:text-5xl">From design intention to practical direction.</h2>
           </div>
           <div>
-            <p className="text-xl leading-9 text-ink-900 md:text-2xl md:leading-10">{detail.overview}</p>
+            <RichContent
+              className="text-lg text-ink-900 md:text-xl"
+              html={detail.overview}
+              plainClassName="text-xl leading-9 text-ink-900 md:text-2xl md:leading-10"
+            />
             <div className="mt-9 grid gap-px overflow-hidden rounded-lg bg-sand-400 md:grid-cols-2">
               <StoryPanel Icon={Target} copy={detail.challenge} title="The challenge" />
               <StoryPanel Icon={Lightbulb} copy={detail.response} title="The response" />
@@ -175,7 +176,11 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-red/10 text-xs font-semibold text-brand-red">0{index + 1}</span>
                 <div>
                   <h3 className="font-serif text-2xl text-ink-900">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-ink-700">{step.copy}</p>
+                  <RichContent
+                    className="mt-2 text-sm text-ink-700"
+                    html={step.copy}
+                    plainClassName="mt-2 text-sm leading-7 text-ink-700"
+                  />
                 </div>
               </li>
             ))}
@@ -313,7 +318,11 @@ function StoryPanel({ Icon, copy, title }: { Icon: LucideIcon; copy: string; tit
     <div className="bg-white p-6 md:p-7">
       <Icon className="h-5 w-5 text-brand-red" />
       <h3 className="mt-5 font-serif text-2xl text-ink-900">{title}</h3>
-      <p className="mt-3 text-sm leading-7 text-ink-700">{copy}</p>
+      <RichContent
+        className="mt-3 text-sm text-ink-700"
+        html={copy}
+        plainClassName="mt-3 text-sm leading-7 text-ink-700"
+      />
     </div>
   );
 }

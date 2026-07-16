@@ -36,6 +36,36 @@ type ApiOrder = {
   }>;
 };
 
+type ApiInquiry = {
+  id: string;
+  type: "contact" | "service" | string;
+  status: "new" | "contacted" | "qualified" | "quoted" | "won" | "lost" | string;
+  service?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+  contact: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    company?: string | null;
+  };
+  project: {
+    name?: string | null;
+    location?: string | null;
+    size?: string | null;
+    budget_range?: string | null;
+    preferred_date?: string | null;
+  };
+  message: string;
+  attachments: string[];
+  quoted_price?: number | null;
+  submitted_at: string;
+  contacted_at?: string | null;
+  closed_at?: string | null;
+};
+
 type LaravelUserResponse = {
   id: number | string;
   email: string;
@@ -70,19 +100,7 @@ function adaptUser(laravelUserResponse: LaravelResource<LaravelUserResponse>): A
 }
 
 // Public endpoints
-export async function createCustomerAccount(email: string, password: string, fullName: string, phone?: string): Promise<void> {
-  const body: Record<string, string> = { email, password, password_confirmation: password, name: fullName };
-  if (phone) body.phone = getInternationalCambodianPhone(phone);
-
-  await fetchJson<any>("/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    timeout: 15000
-  });
-}
-
-export async function register(email: string, password: string, fullName: string, phone?: string): Promise<{ token: AuthToken; user: ApiUser }> {
+export async function register(email: string, password: string, fullName: string, phone?: string): Promise<{ token: AuthToken | null; user: ApiUser | null }> {
   const body: Record<string, string> = { email, password, password_confirmation: password, name: fullName };
   if (phone) body.phone = getInternationalCambodianPhone(phone);
 
@@ -94,42 +112,45 @@ export async function register(email: string, password: string, fullName: string
   });
 
   const data = response.data || response;
-  const token = data.token || data.access_token;
+  const token = data.token || data.access_token || null;
   const tokenType = data.token_type || "Bearer";
   const user = data.user ? unwrapResource<LaravelUserResponse>(data.user) : unwrapResource<LaravelUserResponse>(data);
 
-  if (!token || !user?.email) {
-    throw new Error("Registration failed");
+  if (user?.email) {
+    return {
+      token: token
+        ? { access_token: token, token_type: tokenType as "Bearer", expires_in: 0 }
+        : null,
+      user: adaptUser(user)
+    };
   }
 
-  return {
-    token: {
-      access_token: token,
-      token_type: tokenType,
-      expires_in: 0
-    },
-    user: adaptUser(user)
-  };
+  return { token: null, user: null };
 }
 
 export async function login(email: string, password: string): Promise<{ token: AuthToken; user: ApiUser }> {
-  const response = await fetchJson<{ data?: { token: string; token_type: string; user: LaravelResource<LaravelUserResponse> } }>("/login", {
+  const response = await fetchJson<any>("/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
   });
 
-  if (!response.data) {
+  const data = response.data || response;
+  const token = data.token || data.access_token;
+  const tokenType = data.token_type || "Bearer";
+  const user = data.user ? unwrapResource<LaravelUserResponse>(data.user) : unwrapResource<LaravelUserResponse>(data);
+
+  if (!token || !user?.email) {
     throw new Error("Login failed");
   }
 
   return {
     token: {
-      access_token: response.data.token,
-      token_type: response.data.token_type as "Bearer",
+      access_token: token,
+      token_type: tokenType as "Bearer",
       expires_in: 0
     },
-    user: adaptUser(response.data.user)
+    user: adaptUser(user)
   };
 }
 
@@ -177,6 +198,13 @@ export async function getCustomerOrders(token: string): Promise<ApiOrder[]> {
   }));
 }
 
+export async function getCustomerInquiries(token: string): Promise<ApiInquiry[]> {
+  const response = await fetchJson<{ data: ApiInquiry[] }>("/inquiries?per_page=20", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+}
+
 export async function logout(token: string): Promise<void> {
   await fetchJson("/logout", {
     method: "POST",
@@ -208,12 +236,19 @@ export async function fetchCustomerOrders(): Promise<ApiOrder[]> {
   return getCustomerOrders(token);
 }
 
-export async function registerCustomer(data: { name: string; email: string; phone?: string; password: string }): Promise<ApiUser> {
+export async function fetchCustomerInquiries(): Promise<ApiInquiry[]> {
+  const token = readApiToken();
+  if (!token) throw new Error("Not authenticated");
+  return getCustomerInquiries(token);
+}
+
+export async function registerCustomer(data: { name: string; email: string; phone?: string; password: string }): Promise<ApiUser | null> {
   const { token, user } = await register(data.email, data.password, data.name, data.phone);
-  if (typeof window !== "undefined") {
+  if (token && user && typeof window !== "undefined") {
     setAuthCookie(token.access_token, user);
+    return user;
   }
-  return user;
+  return null;
 }
 
 export async function loginCustomer(email: string, password: string): Promise<ApiUser> {
@@ -240,4 +275,4 @@ export async function updateCustomerProfile(updates: Partial<{ name: string; pho
   return updateProfile(token, updates);
 }
 
-export type { AuthToken, ApiUser, ApiOrder };
+export type { AuthToken, ApiUser, ApiOrder, ApiInquiry };

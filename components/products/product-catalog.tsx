@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type SortMode = "Featured" | "Price: low to high" | "Price: high to low" | "Best rated";
 type ViewMode = "grid" | "list";
+type BuyingMode = "All products" | "Ready to order" | "Needs quote" | "Preorder or low stock";
 
 type ProductCatalogProps = {
   products: ProductItem[];
@@ -22,12 +23,14 @@ type ProductCatalogProps = {
 
 const productBatchSize = 9;
 const sortModes: SortMode[] = ["Featured", "Price: low to high", "Price: high to low", "Best rated"];
+const buyingModes: BuyingMode[] = ["All products", "Ready to order", "Needs quote", "Preorder or low stock"];
 
 export function ProductCatalog({ products, categories, brands, availability }: ProductCatalogProps) {
   const [hasHydrated, setHasHydrated] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All categories");
   const [sort, setSort] = useState<SortMode>("Featured");
+  const [buyingMode, setBuyingMode] = useState<BuyingMode>("All products");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [visibleCount, setVisibleCount] = useState(productBatchSize);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -44,6 +47,7 @@ export function ProductCatalog({ products, categories, brands, availability }: P
 
     const queryParam = params.get("q");
     const sortParam = params.get("sort");
+    const modeParam = params.get("mode");
     const brandParams = params.getAll("brand").filter((item) => brands.includes(item));
     const availabilityParams = params
       .getAll("availability")
@@ -51,6 +55,7 @@ export function ProductCatalog({ products, categories, brands, availability }: P
 
     if (queryParam) setQuery(queryParam);
     if (sortParam && sortModes.includes(sortParam as SortMode)) setSort(sortParam as SortMode);
+    if (modeParam && buyingModes.includes(modeParam as BuyingMode)) setBuyingMode(modeParam as BuyingMode);
     if (brandParams.length > 0) setSelectedBrands(brandParams);
     if (availabilityParams.length > 0) setSelectedAvailability(availabilityParams);
     setHasHydrated(true);
@@ -69,12 +74,13 @@ export function ProductCatalog({ products, categories, brands, availability }: P
     if (trimmedQuery) params.set("q", trimmedQuery);
     if (category !== "All categories") params.set("category", category);
     if (sort !== "Featured") params.set("sort", sort);
+    if (buyingMode !== "All products") params.set("mode", buyingMode);
     selectedBrands.forEach((brand) => params.append("brand", brand));
     selectedAvailability.forEach((item) => params.append("availability", item));
 
     const nextUrl = params.toString() ? `${window.location.pathname}?${params.toString()}#catalog` : `${window.location.pathname}#catalog`;
     window.history.replaceState(null, "", nextUrl);
-  }, [category, hasHydrated, query, selectedAvailability, selectedBrands, sort]);
+  }, [buyingMode, category, hasHydrated, query, selectedAvailability, selectedBrands, sort]);
 
   const removeFilter = (filter: ActiveFilter) => {
     if (filter.type === "category") setCategory("All categories");
@@ -84,7 +90,21 @@ export function ProductCatalog({ products, categories, brands, availability }: P
     }
     if (filter.type === "query") setQuery("");
     if (filter.type === "sort") setSort("Featured");
+    if (filter.type === "buyingMode") setBuyingMode("All products");
   };
+
+  const productCounts = useMemo(() => {
+    const readyToOrder = products.filter((product) => product.stockStatus === "In stock" && !product.quoteRecommended).length;
+    const needsQuote = products.filter((product) => product.quoteRecommended || product.stockStatus !== "In stock").length;
+    const preorderOrLowStock = products.filter((product) => product.stockStatus === "Preorder" || product.stockStatus === "Low stock").length;
+
+    return {
+      all: products.length,
+      readyToOrder,
+      needsQuote,
+      preorderOrLowStock
+    };
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -100,8 +120,13 @@ export function ProductCatalog({ products, categories, brands, availability }: P
         const matchesCategory = category === "All categories" || product.category === category;
         const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
         const matchesAvailability = selectedAvailability.length === 0 || selectedAvailability.includes(product.stockStatus);
+        const matchesBuyingMode =
+          buyingMode === "All products" ||
+          (buyingMode === "Ready to order" && product.stockStatus === "In stock" && !product.quoteRecommended) ||
+          (buyingMode === "Needs quote" && (product.quoteRecommended || product.stockStatus !== "In stock")) ||
+          (buyingMode === "Preorder or low stock" && (product.stockStatus === "Preorder" || product.stockStatus === "Low stock"));
 
-        return matchesQuery && matchesCategory && matchesBrand && matchesAvailability;
+        return matchesQuery && matchesCategory && matchesBrand && matchesAvailability && matchesBuyingMode;
       })
       .sort((a, b) => {
         if (sort === "Price: low to high") return a.price - b.price;
@@ -109,16 +134,17 @@ export function ProductCatalog({ products, categories, brands, availability }: P
         if (sort === "Best rated") return b.rating - a.rating;
         return 0;
       });
-  }, [category, products, query, selectedAvailability, selectedBrands, sort]);
+  }, [buyingMode, category, products, query, selectedAvailability, selectedBrands, sort]);
 
   useEffect(() => {
     setVisibleCount(productBatchSize);
-  }, [category, query, selectedAvailability, selectedBrands, sort]);
+  }, [buyingMode, category, query, selectedAvailability, selectedBrands, sort]);
 
   const activeFilters: ActiveFilter[] = [
     category !== "All categories" ? { label: category, type: "category", value: category } : null,
     ...selectedBrands.map((brand) => ({ label: brand, type: "brand" as const, value: brand })),
     ...selectedAvailability.map((item) => ({ label: item, type: "availability" as const, value: item })),
+    buyingMode !== "All products" ? { label: buyingMode, type: "buyingMode", value: buyingMode } : null,
     sort !== "Featured" ? { label: sort, type: "sort", value: sort } : null,
     query.trim() ? { label: `Search: ${query.trim()}`, type: "query", value: query.trim() } : null
   ].filter((filter): filter is ActiveFilter => Boolean(filter));
@@ -127,12 +153,21 @@ export function ProductCatalog({ products, categories, brands, availability }: P
     setQuery("");
     setCategory("All categories");
     setSort("Featured");
+    setBuyingMode("All products");
     setSelectedBrands([]);
     setSelectedAvailability([]);
   };
 
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMoreProducts = visibleCount < filteredProducts.length;
+  const resultSummary =
+    buyingMode === "Ready to order"
+      ? "Ready-stock products can be added to cart now."
+      : buyingMode === "Needs quote"
+        ? "These products should be confirmed with KMD for quantity, stock, or project pricing."
+        : buyingMode === "Preorder or low stock"
+          ? "Check availability before planning delivery or installation."
+          : "Standard items can be ordered online. Project quantities can be quoted.";
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((current) => (current.includes(brand) ? current.filter((item) => item !== brand) : [...current, brand]));
@@ -199,6 +234,37 @@ export function ProductCatalog({ products, categories, brands, availability }: P
         </div>
       </div>
 
+      <div className="mb-6 grid gap-3 md:grid-cols-4">
+        {buyingModes.map((mode) => {
+          const count = mode === "Ready to order"
+            ? productCounts.readyToOrder
+            : mode === "Needs quote"
+              ? productCounts.needsQuote
+              : mode === "Preorder or low stock"
+                ? productCounts.preorderOrLowStock
+                : productCounts.all;
+
+          return (
+            <button
+              key={mode}
+              className={`rounded-lg border p-4 text-left transition ${
+                buyingMode === mode
+                  ? "border-brand-red bg-brand-red text-white shadow-panel"
+                  : "border-sand-400 bg-white text-ink-900 hover:border-brand-red hover:bg-sand-50"
+              }`}
+              onClick={() => setBuyingMode(mode)}
+              type="button"
+            >
+              <span className={`text-xs font-semibold uppercase tracking-[0.16em] ${buyingMode === mode ? "text-white/75" : "text-ink-700"}`}>
+                {mode === "All products" ? "Catalog" : "Quick filter"}
+              </span>
+              <strong className="mt-2 block text-lg">{mode}</strong>
+              <small className={buyingMode === mode ? "text-white/75" : "text-ink-700"}>{count} {count === 1 ? "item" : "items"}</small>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className={`${filtersOpen ? "grid" : "hidden"} gap-4 self-start lg:grid`}>
           <FilterGroup title="Brands">
@@ -240,7 +306,7 @@ export function ProductCatalog({ products, categories, brands, availability }: P
                 <div className="text-sm font-semibold text-ink-900">
                   {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
                 </div>
-                <div className="mt-1 text-sm text-ink-700">Standard items can be ordered online. Project quantities can be quoted.</div>
+                <div className="mt-1 text-sm text-ink-700">{resultSummary}</div>
               </div>
               <div className="flex w-fit overflow-hidden rounded-md border border-sand-400 bg-white p-1">
                 <button
@@ -317,9 +383,14 @@ export function ProductCatalog({ products, categories, brands, availability }: P
                 <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-ink-700">
                   Clear filters or send KMD your material list so the team can recommend alternatives.
                 </p>
-                <button className="action-secondary mt-5" onClick={resetFilters} type="button">
-                  Clear Filters
-                </button>
+                <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+                  <button className="action-secondary" onClick={resetFilters} type="button">
+                    Clear Filters
+                  </button>
+                  <Link className="action-commerce" href="/contact">
+                    Ask KMD for Alternatives
+                  </Link>
+                </div>
               </div>
             </div>
           )}
@@ -333,6 +404,7 @@ type ActiveFilter =
   | { label: string; type: "category"; value: string }
   | { label: string; type: "brand"; value: string }
   | { label: string; type: "availability"; value: ProductItem["stockStatus"] }
+  | { label: string; type: "buyingMode"; value: BuyingMode }
   | { label: string; type: "sort"; value: SortMode }
   | { label: string; type: "query"; value: string };
 

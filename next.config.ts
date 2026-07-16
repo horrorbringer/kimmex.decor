@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiImageHost = apiUrl ? new URL(apiUrl).hostname : "api-kmd.kimmex.com.kh";
+
 const securityHeaders = [
   {
     key: "X-DNS-Prefetch-Control",
@@ -38,6 +41,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: apiImageHost,
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },
@@ -54,15 +65,6 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "no-store, no-cache, must-revalidate",
-          },
-        ],
-      },
-      {
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
           },
         ],
       },

@@ -5,6 +5,7 @@ import type { ApiUser } from "./api-auth";
 import { getCurrentUser, logout } from "./api-auth";
 import { getToken, getUser, setAuthCookie, clearAuthCookies } from "@/lib/cookies";
 import { setOnUnauthorized } from "./api-client";
+import { reportError } from "./error-tracking";
 
 type AuthContextType = {
   user: ApiUser | null;
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const clearAuth = () => {
     const currentToken = token;
     if (currentToken) {
-      logout(currentToken).catch(() => {});
+      logout(currentToken).catch(() => reportError("Logout API call failed", { component: "AuthContext", action: "clearAuth" }));
     }
     setUser(null);
     setToken(null);

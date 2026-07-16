@@ -1,28 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_Khmer, Noto_Serif_Khmer } from "next/font/google";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { LanguageProvider } from "@/components/language-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/components/ui/toast";
+import { PwaServiceWorker } from "@/components/pwa-service-worker";
+import { ErrorTracker } from "@/components/error-tracker";
 import "./globals.css";
 
-const notoSansKhmer = Noto_Sans_Khmer({
-  subsets: ["khmer"],
-  variable: "--font-noto-sans-khmer",
-  display: "swap",
-});
-
-const notoSerifKhmer = Noto_Serif_Khmer({
-  subsets: ["khmer"],
-  variable: "--font-noto-serif-khmer",
-  display: "swap",
-});
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://kmdecor.com").replace(/\/$/, "");
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  themeColor: "#061b73",
 };
 
 export const metadata: Metadata = {
@@ -32,7 +24,6 @@ export const metadata: Metadata = {
   },
   description: "Cambodia interior design and construction material supplier — premium products and professional interior services in Phnom Penh.",
   manifest: "/manifest.json",
-  themeColor: "#061b73",
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
@@ -40,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "KM Decor — Interior Design & Materials",
     description: "Cambodia interior design and construction material supplier — premium products and professional interior services in Phnom Penh.",
-    url: "https://kmdecor.com",
+    url: siteUrl,
     siteName: "KM Decor",
     locale: "en_US",
     type: "website",
@@ -62,13 +53,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <LanguageProvider>
           <AuthProvider>
             <ToastProvider>
               {children}
               <ThemeSwitcher />
+              <ErrorTracker />
+              <PwaServiceWorker />
             </ToastProvider>
           </AuthProvider>
         </LanguageProvider>

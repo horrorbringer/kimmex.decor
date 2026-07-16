@@ -3,7 +3,10 @@
   "short_name": "KM Decor",
   "description": "Cambodia interior design and construction material supplier — premium products and professional interior services in Phnom Penh.",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#f7f9ff",
   "theme_color": "#061b73",
   "orientation": "any",
@@ -23,6 +26,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Products",
+      "short_name": "Products",
+      "description": "Browse KM Decor materials and supplies.",
+      "url": "/products",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Request quote",
+      "short_name": "Quote",
+      "description": "Contact KM Decor for product, delivery, or installation support.",
+      "url": "/contact",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

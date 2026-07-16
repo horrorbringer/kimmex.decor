@@ -2,6 +2,10 @@
 
 import { clearCart, getCartSubtotal, readCart } from "@/lib/cart-store";
 import type { CartItem } from "@/lib/cart-store";
+import { clearCustomerCart, syncCustomerStorage } from "@/lib/api-customer-storage";
+import { getApiErrorMessage } from "@/lib/api-client";
+import { reportError } from "@/lib/error-tracking";
+import { readApiToken } from "@/lib/api-auth";
 import { hasCheckoutApiItems, submitCheckoutRequest } from "@/lib/api-checkout";
 import type { CheckoutApiOrder } from "@/lib/api-checkout";
 import { formatCambodianPhone, getInternationalCambodianPhone, isValidCambodianPhone } from "@/lib/phone";
@@ -96,8 +100,24 @@ export function CheckoutForm() {
   const [submitError, setSubmitError] = useState("");
   const [order, setOrder] = useState<CheckoutApiOrder | null>(null);
   const [sentToApi, setSentToApi] = useState(false);
+  // Empty string on SSR; set to today's ISO date string only after client mount
+  // to avoid server/client hydration mismatch from inline new Date() in JSX.
+  const [todayMin, setTodayMin] = useState("");
 
-  useEffect(() => setItems(readCart()), []);
+  useEffect(() => {
+    const syncCart = () => setItems(readCart());
+
+    syncCart();
+    setTodayMin(new Date().toISOString().slice(0, 10));
+
+    window.addEventListener("kmd-cart-updated", syncCart);
+    window.addEventListener("storage", syncCart);
+
+    return () => {
+      window.removeEventListener("kmd-cart-updated", syncCart);
+      window.removeEventListener("storage", syncCart);
+    };
+  }, []);
 
   const subtotal = useMemo(() => getCartSubtotal(items), [items]);
   const itemCount = useMemo(() => items.reduce((total, item) => total + item.quantity, 0), [items]);
@@ -152,9 +172,15 @@ export function CheckoutForm() {
     }
 
     try {
+      const token = readApiToken();
+      if (token) {
+        await syncCustomerStorage(token);
+      }
+
       const response = await submitCheckoutRequest(details, items);
       saveLocalRequest(response, true);
       clearCart();
+      clearCustomerCart().catch(() => reportError("clearCustomerCart failed", { component: "CheckoutForm", action: "checkout" }));
       setItems([]);
       setOrder(response);
       setSentToApi(true);
@@ -163,7 +189,7 @@ export function CheckoutForm() {
       saveLocalRequest();
       setSentToApi(false);
       setSubmitted(true);
-      setSubmitError(error instanceof Error ? error.message : "KMD could not receive this order request.");
+      setSubmitError(getApiErrorMessage(error, "KMD could not receive this order request."));
     } finally {
       setSubmitting(false);
     }
@@ -192,7 +218,7 @@ export function CheckoutForm() {
           </a>
         </div>
         {!sentToApi && items.length > 0 ? (
-          <button className="mt-6 text-sm font-semibold text-ink-700 underline" onClick={() => { clearCart(); setItems([]); }} type="button">
+          <button className="mt-6 text-sm font-semibold text-ink-700 underline" onClick={() => { clearCart(); setItems([]); clearCustomerCart().catch(() => {}); }} type="button">
             Clear submitted cart
           </button>
         ) : null}
@@ -301,7 +327,7 @@ export function CheckoutForm() {
                 </div>
               </div>
               {details.timing === "scheduled" ? (
-                <Field label="Preferred date" className="max-w-sm"><input className="field" min={new Date().toISOString().slice(0, 10)} onChange={(event) => update("preferredDate", event.target.value)} type="date" value={details.preferredDate} /></Field>
+                <Field label="Preferred date" className="max-w-sm"><input className="field" min={todayMin} onChange={(event) => update("preferredDate", event.target.value)} type="date" value={details.preferredDate} /></Field>
               ) : null}
               <div>
                 <p className="mb-3 text-sm font-semibold text-ink-900">Extra support</p>

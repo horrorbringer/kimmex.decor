@@ -1,8 +1,10 @@
 "use client";
 
 import { login, socialLoginRedirect } from "@/lib/api-auth";
+import { syncCustomerStorage } from "@/lib/api-customer-storage";
 import { resendVerificationEmail } from "@/lib/api-email-verification";
 import { useAuth } from "@/lib/auth-context";
+import { ApiError } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Mail } from "lucide-react";
@@ -25,6 +27,8 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
     const params = new URLSearchParams(window.location.search);
     if (params.get("verified") === "1") {
       setSuccess("Email verified. You can sign in now.");
+    } else if (params.get("registered") === "1") {
+      setSuccess("Account created! Check your email to verify before signing in.");
     }
     const emailParam = params.get("email");
     if (emailParam) {
@@ -50,12 +54,24 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
     try {
       const { token, user } = await login(email, password);
       setAuth(token.access_token, user);
+      await syncCustomerStorage(token.access_token);
       onSuccess?.();
       router.push(getRedirectUrl());
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed";
-      setError(message);
-      setCanResendVerification(message.toLowerCase().includes("verify your email"));
+      if (err instanceof ApiError && err.status === 429) {
+        setError("Too many login attempts. Please wait a moment before trying again.");
+        setCanResendVerification(false);
+      } else if (err instanceof ApiError && err.status >= 500) {
+        setError(err.message || "Server error. Please try again later.");
+        setCanResendVerification(false);
+      } else if (err instanceof TypeError) {
+        setError("Could not connect to the server. Please check your connection.");
+        setCanResendVerification(false);
+      } else {
+        const message = err instanceof Error ? err.message : "Login failed";
+        setError(message);
+        setCanResendVerification(message.toLowerCase().includes("verify your email"));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +144,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 placeholder-ink-600 transition focus:border-brand-red focus:outline-none"
+          className="form-field mt-1"
           placeholder="you@example.com"
           disabled={isLoading}
         />
@@ -144,7 +160,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 placeholder-ink-600 transition focus:border-brand-red focus:outline-none"
+          className="form-field mt-1"
           placeholder="••••••••"
           disabled={isLoading}
         />

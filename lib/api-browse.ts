@@ -32,7 +32,30 @@ type SearchResult = {
   slug: string;
   type: "product" | "service" | "category" | "brand";
   image_url?: string | null;
+  logo_url?: string | null;
   short_description?: string | null;
+  description?: string | null;
+  sku?: string | null;
+  price?: number;
+  currency?: string;
+  brand?: string | null;
+  category?: string | null;
+  category_type?: string | null;
+  url?: string;
+};
+
+type SearchGroupResponse = {
+  data: {
+    products?: SearchResult[];
+    services?: SearchResult[];
+    categories?: SearchResult[];
+    brands?: SearchResult[];
+  };
+  meta?: {
+    query: string;
+    total: number;
+    limit_per_group: number;
+  };
 };
 
 type ApiCollectionResponse<T> = {
@@ -69,8 +92,13 @@ export async function searchCatalog(query: string): Promise<SearchResult[]> {
   if (!query.trim()) return [];
 
   try {
-    const response = await fetchJson<ApiCollectionResponse<SearchResult>>(`/search?q=${encodeURIComponent(query)}`);
-    return response.data.slice(0, 10);
+    const response = await fetchJson<SearchGroupResponse>(`/search?q=${encodeURIComponent(query)}&limit=8`);
+    return [
+      ...(response.data.products ?? []),
+      ...(response.data.services ?? []),
+      ...(response.data.categories ?? []),
+      ...(response.data.brands ?? []),
+    ];
   } catch (error) {
     console.error("Failed to search catalog:", error);
     return [];

@@ -8,7 +8,16 @@ export function CheckoutSummary() {
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    setItems(readCart());
+    const syncCart = () => setItems(readCart());
+
+    syncCart();
+    window.addEventListener("kmd-cart-updated", syncCart);
+    window.addEventListener("storage", syncCart);
+
+    return () => {
+      window.removeEventListener("kmd-cart-updated", syncCart);
+      window.removeEventListener("storage", syncCart);
+    };
   }, []);
 
   const subtotal = useMemo(() => getCartSubtotal(items), [items]);

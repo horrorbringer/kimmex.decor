@@ -1,7 +1,10 @@
 "use client";
 
 import type { CartItem } from "@/lib/cart-store";
+import { removeCustomerCartItem, updateCustomerCartItem } from "@/lib/api-customer-storage";
+import { getApiErrorMessage } from "@/lib/api-client";
 import { getCartSubtotal, readCart, removeCartItem, updateCartQuantity } from "@/lib/cart-store";
+import { useToast } from "@/components/ui/toast";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +20,7 @@ function formatMoney(value: number) {
 }
 
 export function CartDrawer({ onClose, open }: CartDrawerProps) {
+  const { addToast } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -55,11 +59,26 @@ export function CartDrawer({ onClose, open }: CartDrawerProps) {
   if (!open) return null;
 
   const updateQuantity = (productId: string, quantity: number) => {
-    setItems(updateCartQuantity(productId, quantity));
+    const nextItems = updateCartQuantity(productId, quantity);
+    setItems(nextItems);
+    updateCustomerCartItem(productId, Math.max(1, quantity)).catch((error) => {
+      addToast({
+        type: "warning",
+        title: "Cart saved locally",
+        message: getApiErrorMessage(error, "KMD could not sync this quantity yet.")
+      });
+    });
   };
 
   const removeItem = (productId: string) => {
     setItems(removeCartItem(productId));
+    removeCustomerCartItem(productId).catch((error) => {
+      addToast({
+        type: "warning",
+        title: "Removed locally",
+        message: getApiErrorMessage(error, "KMD could not remove this item from your account cart yet.")
+      });
+    });
   };
 
   return (

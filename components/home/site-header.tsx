@@ -4,15 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
+  ChevronDown,
   Heart,
+  LogOut,
   Menu,
+  PackageCheck,
   Search,
   ShoppingBag,
   UserRound,
   X
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { LanguageSwitcher, useLanguage } from "@/components/language-provider";
 import { readCart } from "@/lib/cart-store";
@@ -33,6 +36,8 @@ const khmerNav: Record<string, string> = {
   About: "អំពីយើង"
 };
 
+const searchSuggestions = ["gypsum board", "partition", "ceiling", "smart lock"];
+
 function isCurrentRoute(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -40,13 +45,30 @@ function isCurrentRoute(pathname: string, href: string) {
 export function SiteHeader() {
   const { text } = useLanguage();
   const { user, isAuthenticated, clearAuth } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
   const closeCart = useCallback(() => setCartOpen(false), []);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const userInitial = user?.name?.trim().charAt(0).toUpperCase() || user?.email?.trim().charAt(0).toUpperCase() || "U";
+  const handleSignOut = useCallback(() => {
+    clearAuth();
+    setMobileMenuOpen(false);
+    setAccountMenuOpen(false);
+    setSearchOpen(false);
+
+    if (pathname.startsWith("/account") || pathname.startsWith("/orders") || pathname === "/checkout") {
+      window.location.href = "/login";
+    }
+  }, [clearAuth, pathname]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const syncCartCount = () => {
@@ -65,6 +87,7 @@ export function SiteHeader() {
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    setAccountMenuOpen(false);
     setCartOpen(false);
     setSearchOpen(false);
   }, [pathname]);
@@ -87,13 +110,28 @@ export function SiteHeader() {
   }, [mobileMenuOpen]);
 
   useEffect(() => {
-    if (!searchOpen) return;
+    if (!searchOpen && !accountMenuOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setSearchOpen(false);
+      if (event.key === "Escape") setAccountMenuOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [searchOpen]);
+  }, [accountMenuOpen, searchOpen]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", closeOnOutsideClick);
+
+    return () => window.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [accountMenuOpen]);
 
   return (
     <>
@@ -148,34 +186,72 @@ export function SiteHeader() {
             <Search size={19} strokeWidth={2.1} />
           </button>
           <div className="hidden lg:block"><LanguageSwitcher /></div>
-          {isAuthenticated ? (
-            <Link
-              aria-label={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
-              className="header-account-button hidden lg:flex"
-              href="/account"
-              title={text("Account and orders", "គណនី និងការបញ្ជាទិញ")}
-            >
-              <span className="header-account-avatar">{userInitial}</span>
-              <span className="min-w-0">
-                <span className="block text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-ink-700">
-                  {text("Account", "គណនី")}
-                </span>
-                <span className="mt-0.5 block max-w-[110px] truncate text-sm font-semibold leading-tight text-ink-900">
-                  {user?.name || user?.email}
-                </span>
-              </span>
-            </Link>
-          ) : (
-            <div className="hidden items-center gap-2 lg:flex">
-              <Link className="header-signin-button" href="/login" title={text("Sign in", "ចូល")}>
-                <UserRound size={18} strokeWidth={2} />
-                <span>{text("Sign in", "ចូល")}</span>
-              </Link>
-              <Link className="header-register-button" href="/register">
-                {text("Create account", "បង្កើតគណនី")}
-              </Link>
-            </div>
-          )}
+          <div className="flex items-center gap-2" aria-label={text("Account", "គណនី")}>
+            {mounted && isAuthenticated ? (
+                <div className="header-account-menu hidden lg:block" ref={accountMenuRef}>
+                  <button
+                    aria-expanded={accountMenuOpen}
+                    aria-haspopup="menu"
+                    aria-label={text("Open account menu", "បើកម៉ឺនុយគណនី")}
+                    className="header-account-button"
+                    onClick={() => {
+                      setSearchOpen(false);
+                      setAccountMenuOpen((current) => !current);
+                    }}
+                    type="button"
+                  >
+                    <span className="header-account-avatar">{userInitial}</span>
+                    <span className="min-w-0 text-left">
+                      <span className="block text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-ink-700">
+                        {text("Account", "គណនី")}
+                      </span>
+                      <span className="mt-0.5 block max-w-[120px] truncate text-sm font-semibold leading-tight text-ink-900">
+                        {user?.name || user?.email}
+                      </span>
+                    </span>
+                    <ChevronDown className={accountMenuOpen ? "is-open" : ""} size={16} strokeWidth={2} />
+                  </button>
+                  {accountMenuOpen ? (
+                    <div className="header-account-popover" role="menu">
+                      <div className="header-account-summary">
+                        <span className="header-account-avatar">{userInitial}</span>
+                        <div>
+                          <strong>{user?.name || text("Customer", "អតិថិជន")}</strong>
+                          <small>{user?.email}</small>
+                        </div>
+                      </div>
+                      <Link href="/account" onClick={() => setAccountMenuOpen(false)} role="menuitem">
+                        <UserRound size={17} strokeWidth={2} />
+                        <span>{text("Account dashboard", "ផ្ទាំងគណនី")}</span>
+                      </Link>
+                      <Link href="/orders" onClick={() => setAccountMenuOpen(false)} role="menuitem">
+                        <PackageCheck size={17} strokeWidth={2} />
+                        <span>{text("Orders", "ការបញ្ជាទិញ")}</span>
+                      </Link>
+                      <button onClick={handleSignOut} role="menuitem" type="button">
+                        <LogOut size={17} strokeWidth={2} />
+                        <span>{text("Sign out", "ចាកចេញ")}</span>
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+            ) : (
+                <div className="header-auth-actions hidden lg:flex">
+                  <Link className="header-signin-button" href="/login" title={text("Sign in", "ចូល")}>
+                    <span className="header-signin-icon">
+                      <UserRound size={17} strokeWidth={2} />
+                    </span>
+                    <span className="header-signin-copy">
+                      <span>{text("Sign in", "ចូល")}</span>
+                      <small>{text("Track orders", "តាមដានការបញ្ជាទិញ")}</small>
+                    </span>
+                  </Link>
+                  <Link className="header-register-button" href="/register">
+                    {text("Create account", "បង្កើតគណនី")}
+                  </Link>
+                </div>
+            )}
+          </div>
           <button
             aria-label={cartCount > 0 ? text(`Cart with ${cartCount} items`, `កន្ត្រកមានទំនិញ ${cartCount} មុខ`) : text("Cart", "កន្ត្រក")}
             aria-expanded={cartOpen}
@@ -189,7 +265,7 @@ export function SiteHeader() {
             type="button"
           >
             <ShoppingBag size={20} strokeWidth={2.1} />
-            {cartCount > 0 ? (
+            {mounted && cartCount > 0 ? (
               <span className="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-red px-1 text-[10px] font-bold text-white">
                 {cartCount > 99 ? "99+" : cartCount}
               </span>
@@ -209,13 +285,21 @@ export function SiteHeader() {
 
       {searchOpen ? (
         <div className="header-search-panel">
-          <form action="/products" className="header-search-form">
+          <form action="/search" className="header-search-form">
             <Search />
-            <label className="sr-only" htmlFor="header-product-search">{text("Search products", "ស្វែងរកផលិតផល")}</label>
-            <input autoFocus id="header-product-search" name="q" placeholder={text("Search products, materials, or brands", "ស្វែងរកផលិតផល សម្ភារៈ ឬម៉ាក")} type="search" />
+            <label className="sr-only" htmlFor="header-product-search">{text("Search KM Decor", "ស្វែងរក KM Decor")}</label>
+            <input autoFocus id="header-product-search" name="q" placeholder={text("Search products, services, brands, or materials", "ស្វែងរកផលិតផល សេវាកម្ម ម៉ាក ឬសម្ភារៈ")} type="search" />
             <button type="submit">{text("Search", "ស្វែងរក")}</button>
             <button aria-label={text("Close search", "បិទការស្វែងរក")} className="header-search-close" onClick={() => setSearchOpen(false)} type="button"><X /></button>
           </form>
+          <div className="header-search-suggestions" aria-label={text("Suggested searches", "ការស្វែងរកដែលបានណែនាំ")}>
+            <span>{text("Popular", "ពេញនិយម")}</span>
+            {searchSuggestions.map((suggestion) => (
+              <Link key={suggestion} href={`/search?q=${encodeURIComponent(suggestion)}`} onClick={() => setSearchOpen(false)}>
+                {suggestion}
+              </Link>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -254,6 +338,29 @@ export function SiteHeader() {
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-6">
+              <form action="/search" className="mobile-search-form">
+                <Search />
+                <label className="sr-only" htmlFor="mobile-site-search">{text("Search KM Decor", "ស្វែងរក KM Decor")}</label>
+                <input id="mobile-site-search" name="q" placeholder={text("Search products or services", "ស្វែងរកផលិតផល ឬសេវាកម្ម")} type="search" />
+                <button type="submit">{text("Go", "ស្វែងរក")}</button>
+              </form>
+
+              <div className="mobile-quick-actions">
+                <Link href="/account" onClick={() => setMobileMenuOpen(false)}>
+                  <UserRound />
+                  <span>{text("Account", "គណនី")}</span>
+                </Link>
+                <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)}>
+                  <Heart />
+                  <span>{text("Wishlist", "ចំណូលចិត្ត")}</span>
+                </Link>
+                <button onClick={() => { setMobileMenuOpen(false); setCartOpen(true); }} type="button">
+                  <ShoppingBag />
+                  <span>{text("Cart", "កន្ត្រក")}</span>
+                  {mounted && cartCount > 0 ? <b>{cartCount > 99 ? "99+" : cartCount}</b> : null}
+                </button>
+              </div>
+
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-700">{text("Explore", "ស្វែងយល់")}</p>
               <nav className="grid" aria-label="Mobile main navigation">
                 {mainNav.map((item, index) => {
@@ -292,7 +399,8 @@ export function SiteHeader() {
                     <UserRound size={17} strokeWidth={2} />
                     {user?.name ?? text("Account", "គណនី")}
                   </Link>
-                  <button className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" onClick={() => { clearAuth(); setMobileMenuOpen(false); }}>
+                  <button className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" onClick={handleSignOut} type="button">
+                    <LogOut size={17} strokeWidth={2} />
                     {text("Sign out", "ចាកចេញ")}
                   </button>
                 </>

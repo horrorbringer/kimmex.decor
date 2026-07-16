@@ -1,7 +1,34 @@
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardList, Images, PackageCheck, Search } from "lucide-react";
 import { blurPlaceholder } from "@/lib/blur-placeholder";
 import Image from "next/image";
 import Link from "next/link";
+
+const customerPaths = [
+  {
+    label: "Ready products",
+    copy: "Browse items that can move into cart or order request.",
+    href: "/products?mode=Ready%20to%20order#catalog",
+    icon: PackageCheck,
+  },
+  {
+    label: "Quote items",
+    copy: "Filter products that need stock or project confirmation.",
+    href: "/products?mode=Needs%20quote#catalog",
+    icon: ClipboardList,
+  },
+  {
+    label: "Project references",
+    copy: "See completed interiors before choosing materials.",
+    href: "/portfolio#projects",
+    icon: Images,
+  },
+  {
+    label: "Ask for advice",
+    copy: "Send product, room, or project details to KMD.",
+    href: "/contact?topic=project-advice#request-form",
+    icon: Search,
+  },
+];
 
 export function HeroSection() {
   return (
@@ -17,13 +44,28 @@ export function HeroSection() {
             Decor in Phnom Penh.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link className="action-commerce" href="/products">
+            <Link className="action-commerce" href="/products?mode=Ready%20to%20order#catalog">
               Browse Products
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link className="action-secondary" href="/services">
-              Explore Services
+            <Link className="action-secondary" href="/contact?topic=project-advice#request-form">
+              Request Advice
             </Link>
+          </div>
+          <div className="home-customer-paths mt-8" aria-label="Customer starting points">
+            {customerPaths.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <Link key={item.label} className="home-customer-path" href={item.href}>
+                  <span>
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <strong>{item.label}</strong>
+                  <small>{item.copy}</small>
+                </Link>
+              );
+            })}
           </div>
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-sand-400 pt-6 text-sm font-medium text-ink-700">
             {["Multi-brand supply", "Interior solutions", "Residential and commercial"].map((item) => (

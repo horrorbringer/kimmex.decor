@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://kmdecor.com";
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://kmdecor.com").replace(/\/$/, "");
 
 const staticPages = [
   "",

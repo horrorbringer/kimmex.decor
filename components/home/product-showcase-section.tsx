@@ -1,7 +1,9 @@
-import { ArrowRight } from "lucide-react";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { ArrowRight, ClipboardList, PackageCheck, Search, TriangleAlert } from "lucide-react";
 import type { ProductItem } from "@/lib/homepage-data";
 import { getCatalogCategories } from "@/lib/api-browse";
 import { blurPlaceholder } from "@/lib/blur-placeholder";
+import { richContentToText } from "@/lib/rich-content";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,6 +18,49 @@ const fallbackProductGroups = [
   { label: "Sanitaryware", copy: "Bathroom fixtures and fittings", href: "/products?category=Sanitary%20Ware" }
 ];
 
+const productPaths = [
+  {
+    label: "Ready to order",
+    copy: "In-stock items for faster cart requests.",
+    href: "/products?mode=Ready%20to%20order#catalog",
+    icon: PackageCheck,
+  },
+  {
+    label: "Needs quote",
+    copy: "Confirm stock, quantity, and delivery.",
+    href: "/products?mode=Needs%20quote#catalog",
+    icon: ClipboardList,
+  },
+  {
+    label: "Low stock / preorder",
+    copy: "Plan lead time before ordering.",
+    href: "/products?mode=Preorder%20or%20low%20stock#catalog",
+    icon: TriangleAlert,
+  },
+  {
+    label: "Search catalog",
+    copy: "Find products, categories, and services.",
+    href: "/search",
+    icon: Search,
+  },
+];
+
+function productSlug(product: ProductItem) {
+  return product.href.replace("/products/", "");
+}
+
+function productReadiness(product: ProductItem) {
+  if (product.stockStatus === "In stock" && !product.quoteRecommended) {
+    return { label: "Ready to order", className: "is-ready" };
+  }
+
+  if (product.stockStatus === "Low stock") {
+    return { label: "Check availability", className: "is-warning" };
+  }
+
+  return { label: "Quote recommended", className: "is-quote" };
+}
+
 export async function ProductShowcaseSection({ products }: ProductShowcaseSectionProps) {
   const featuredProducts = products.filter((product) => product.badge === "Best seller" || product.badge === "Featured").slice(0, 4);
   const displayProducts = featuredProducts.length >= 4 ? featuredProducts : products.slice(0, 4);
@@ -26,7 +71,7 @@ export async function ProductShowcaseSection({ products }: ProductShowcaseSectio
     if (categories.length > 0) {
       productGroups = categories.slice(0, 4).map((category) => ({
         label: category.name,
-        copy: category.description || `Browse ${category.name} products`,
+        copy: richContentToText(category.description) || `Browse ${category.name} products`,
         href: `/products?category=${encodeURIComponent(category.slug)}`
       }));
     }
@@ -50,6 +95,22 @@ export async function ProductShowcaseSection({ products }: ProductShowcaseSectio
         </Link>
       </div>
 
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {productPaths.map((path) => {
+          const Icon = path.icon;
+
+          return (
+            <Link key={path.label} className="product-intent-link" href={path.href}>
+              <span>
+                <Icon aria-hidden="true" />
+              </span>
+              <strong>{path.label}</strong>
+              <small>{path.copy}</small>
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="mt-8 grid overflow-hidden rounded-lg border border-sand-400 bg-white sm:grid-cols-2 lg:grid-cols-4">
         {productGroups.map((group) => (
           <Link
@@ -64,42 +125,63 @@ export async function ProductShowcaseSection({ products }: ProductShowcaseSectio
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {displayProducts.map((product) => (
-          <article key={product.id} className="group overflow-hidden rounded-lg border border-sand-400 bg-white transition hover:-translate-y-1 hover:shadow-panel">
-            <Link className="relative block overflow-hidden" href={product.href}>
-              <Image
-                alt={product.name}
-                className="h-56 w-full object-cover transition duration-300 group-hover:scale-105"
-                src={product.imageUrl}
-                fill
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL={blurPlaceholder()}
-                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-              />
-            </Link>
-            <div className="p-5">
-              <div className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink-700">
-                <span>{product.category}</span>
-                <span>{product.stockStatus}</span>
-              </div>
-              <h3 className="mt-3 font-serif text-2xl leading-tight text-ink-900">
-                <Link className="transition hover:text-brand-red" href={product.href}>
-                  {product.name}
-                </Link>
-              </h3>
-              <div className="mt-5 flex items-end justify-between gap-3 border-t border-sand-400 pt-4">
-                <div>
-                  <span className="text-xl font-semibold text-brand-red">${product.price.toFixed(2)}</span>
-                  <span className="ml-1 text-sm text-ink-700">/ {product.unit}</span>
+        {displayProducts.map((product) => {
+          const readiness = productReadiness(product);
+          const needsQuote = product.quoteRecommended || product.stockStatus !== "In stock";
+          const contactHref = `/contact?product=${encodeURIComponent(productSlug(product))}#request-form`;
+
+          return (
+            <article key={product.id} className="group flex h-full flex-col overflow-hidden rounded-lg border border-sand-400 bg-white transition hover:-translate-y-1 hover:shadow-panel">
+              <Link className="relative block h-56 overflow-hidden bg-sand-100" href={product.href}>
+                <Image
+                  alt={product.name}
+                  className="object-cover transition duration-300 group-hover:scale-105"
+                  src={product.imageUrl}
+                  fill
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL={blurPlaceholder()}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                />
+                <span className={`product-readiness ${readiness.className}`}>{readiness.label}</span>
+              </Link>
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink-700">
+                  <span>{product.category}</span>
+                  <span>{product.stockStatus}</span>
                 </div>
-                <Link className="text-sm font-semibold text-ink-900 transition hover:text-brand-red" href={product.href}>
-                  Details
-                </Link>
+                <h3 className="mt-3 font-serif text-2xl leading-tight text-ink-900">
+                  <Link className="transition hover:text-brand-red" href={product.href}>
+                    {product.name}
+                  </Link>
+                </h3>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink-700">{product.customerGoal || product.descriptor}</p>
+                <div className="mt-auto flex items-end justify-between gap-3 border-t border-sand-400 pt-4">
+                  <div>
+                    <span className="text-xl font-semibold text-brand-red">${product.price.toFixed(2)}</span>
+                    <span className="ml-1 text-sm text-ink-700">/ {product.unit}</span>
+                  </div>
+                  <div className="text-right text-xs leading-5 text-ink-700">
+                    <div>{product.leadTime}</div>
+                    <div>MOQ: {product.moq}</div>
+                  </div>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-2">
+                  {needsQuote ? (
+                    <Link className="action-commerce min-h-10 gap-2 px-3 py-2 text-xs" href={contactHref}>
+                      Request quote
+                    </Link>
+                  ) : (
+                    <AddToCartButton className="action-commerce min-h-10 gap-1.5 px-3 py-2 text-xs" compact product={product} />
+                  )}
+                  <Link className="action-secondary min-h-10 px-3 py-2 text-xs" href={product.href}>
+                    Details
+                  </Link>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

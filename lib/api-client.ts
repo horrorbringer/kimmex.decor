@@ -42,5 +42,23 @@ export async function fetchJson<T>(path: string, options?: RequestInit & { timeo
     throw new ApiError(errorData.message || `Request failed: ${response.status}`, response.status, errorData);
   }
 
-  return response.json() as Promise<T>;
+  try {
+    return await response.json() as Promise<T>;
+  } catch {
+    return {} as T;
+  }
+}
+
+export function getApiErrorMessage(error: unknown, fallback = "Request failed. Please try again."): string {
+  if (error instanceof ApiError) {
+    const data = error.data as { errors?: Record<string, string[]>; message?: string } | undefined;
+    const firstValidationMessage = data?.errors ? Object.values(data.errors).flat().find(Boolean) : null;
+    return firstValidationMessage || data?.message || error.message || fallback;
+  }
+
+  if (error instanceof TypeError) {
+    return "Could not connect to the server. Please check your connection.";
+  }
+
+  return error instanceof Error ? error.message : fallback;
 }

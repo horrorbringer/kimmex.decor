@@ -32,6 +32,8 @@
   --focus-ring: color-mix(in srgb, var(--accent) 22%, transparent);
   --shadow-soft: 0 12px 32px rgba(45, 38, 134, 0.08);
   --shadow-panel: 0 20px 60px rgba(45, 38, 134, 0.12);
+  --font-noto-sans-khmer: "Noto Sans Khmer", "Khmer OS System", Arial, Helvetica, sans-serif;
+  --font-noto-serif-khmer: "Noto Serif Khmer", "Khmer OS Muol Light", Georgia, "Times New Roman", serif;
 }
 
 [data-theme="stone"] {
@@ -333,6 +335,136 @@ a {
   color: var(--text-muted);
 }
 
+.rich-content {
+  max-width: none;
+  color: inherit;
+  line-height: 1.75;
+}
+
+.rich-content > *:first-child {
+  margin-top: 0;
+}
+
+.rich-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.rich-content p {
+  margin: 0 0 1rem;
+}
+
+.rich-content h2,
+.rich-content h3,
+.rich-content h4 {
+  color: var(--text);
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: 600;
+  line-height: 1.18;
+  margin: 1.6em 0 0.6em;
+}
+
+.rich-content h2 {
+  font-size: 1.65em;
+}
+
+.rich-content h3 {
+  font-size: 1.35em;
+}
+
+.rich-content h4 {
+  font-size: 1.15em;
+}
+
+.rich-content strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.rich-content a {
+  color: var(--brand-red);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rich-content ul,
+.rich-content ol {
+  margin: 1rem 0;
+  padding-left: 1.35rem;
+}
+
+.rich-content ul {
+  list-style: disc;
+}
+
+.rich-content ol {
+  list-style: decimal;
+}
+
+.rich-content li {
+  margin: 0.35rem 0;
+  padding-left: 0.15rem;
+}
+
+.rich-content blockquote {
+  border-left: 3px solid var(--brand-red);
+  color: var(--text);
+  margin: 1.25rem 0;
+  padding: 0.15rem 0 0.15rem 1rem;
+}
+
+.rich-content code {
+  border-radius: 0.25rem;
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 0.9em;
+  padding: 0.1rem 0.3rem;
+}
+
+.rich-content pre {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface-alt);
+  margin: 1rem 0;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.rich-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.rich-content table {
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  width: 100%;
+}
+
+.rich-content th,
+.rich-content td {
+  border: 1px solid var(--line);
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.rich-content th {
+  background: var(--surface-alt);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.rich-content hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 1.5rem 0;
+}
+
+.rich-content :where(p, li, blockquote, td) {
+  overflow-wrap: anywhere;
+}
+
 .surface-card {
   @apply rounded-lg;
   background: var(--surface);
@@ -374,6 +506,285 @@ a {
   color: var(--accent-hover);
 }
 
+.home-customer-paths {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-customer-path {
+  min-height: 118px;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  padding: 0.85rem;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.home-customer-path:hover {
+  border-color: var(--brand-red);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.home-customer-path span {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--brand-red) 12%, var(--surface));
+  color: var(--brand-red);
+}
+
+.home-customer-path svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.home-customer-path strong,
+.home-customer-path small {
+  display: block;
+}
+
+.home-customer-path strong {
+  margin-top: 0.7rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.home-customer-path small {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.product-intent-link {
+  min-height: 112px;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  padding: 0.9rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.product-intent-link:hover {
+  border-color: var(--brand-red);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+
+.product-intent-link span {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-alt));
+  color: var(--accent);
+}
+
+.product-intent-link svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.product-intent-link strong,
+.product-intent-link small {
+  display: block;
+}
+
+.product-intent-link strong {
+  margin-top: 0.7rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.product-intent-link small {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.product-readiness {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  border-radius: 0.375rem;
+  padding: 0.4rem 0.65rem;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.product-readiness.is-ready {
+  background: #247a4d;
+}
+
+.product-readiness.is-warning {
+  background: #9a5b12;
+}
+
+.product-readiness.is-quote {
+  background: var(--text);
+}
+
+.project-intent-link {
+  min-height: 112px;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  padding: 0.9rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.project-intent-link:hover {
+  border-color: var(--brand-red);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+
+.project-intent-link span {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--brand-red) 10%, var(--surface));
+  color: var(--brand-red);
+}
+
+.project-intent-link svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.project-intent-link strong,
+.project-intent-link small {
+  display: block;
+}
+
+.project-intent-link strong {
+  margin-top: 0.7rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.project-intent-link small {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.project-card-action {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 0.375rem;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.6rem 0.8rem;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.project-card-action:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.project-card-action.is-primary {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+}
+
+.project-card-action svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.contact-context-checklist {
+  border-top: 1px solid color-mix(in srgb, var(--brand-red) 18%, transparent);
+  padding-top: 0.85rem;
+}
+
+.contact-context-checklist p {
+  color: var(--brand-red);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.contact-context-checklist div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.contact-context-checklist span {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--brand-red) 18%, var(--line));
+  border-radius: 0.375rem;
+  background: var(--surface);
+  padding: 0.45rem 0.65rem;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.contact-context-checklist svg {
+  height: 0.9rem;
+  width: 0.9rem;
+  flex-shrink: 0;
+  color: var(--brand-red);
+}
+
+@media (max-width: 639px) {
+  .home-customer-paths {
+    grid-template-columns: 1fr;
+  }
+
+  .home-customer-path,
+  .product-intent-link,
+  .project-intent-link {
+    min-height: 0;
+  }
+}
+
 .resource-action {
   @apply inline-flex min-h-9 items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition;
   border: 1px solid var(--line);
@@ -398,7 +809,8 @@ a {
 .field,
 .select-field,
 .textarea-field {
-  @apply w-full rounded-md px-4 py-3 text-sm outline-none transition;
+  @apply w-full rounded-md px-4 py-3 outline-none transition;
+  font-size: 1rem; /* 16px — prevents iOS Safari viewport zoom on focus */
   background: var(--surface);
   border: 1px solid var(--line);
   color: var(--text);
@@ -433,6 +845,56 @@ a {
 .textarea-field {
   min-height: 9rem;
   resize: vertical;
+}
+
+/* ─── Form Field ──────────────────────────────────────────────────────────────
+   Unified input / select / textarea class used across all form pages.
+   font-size: 16px is the critical rule — iOS Safari zooms the viewport when
+   a focused input has font-size < 16px. Setting it here prevents that zoom
+   without disabling user-scalable, which would break accessibility.
+─────────────────────────────────────────────────────────────────────────────── */
+.form-field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0.625rem 1rem;        /* 10px 16px — comfortable tap target */
+  font-size: 1rem;               /* 16px — prevents iOS zoom on focus */
+  line-height: 1.5;
+  color: var(--text);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-field::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 65%, transparent);
+}
+
+.form-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.form-field.is-error {
+  border-color: #f87171;
+}
+
+.form-field.is-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #ef4444 18%, transparent);
+}
+
+.form-field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Textarea variant */
+textarea.form-field {
+  resize: vertical;
+  min-height: 5rem;
 }
 
 .search-group {
@@ -475,46 +937,145 @@ a {
   @apply inline-flex h-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition;
 }
 
-.header-signin-button {
-  @apply gap-2 border px-4;
+.header-auth-actions {
+  @apply items-center gap-2 rounded-full border p-1;
   border-color: var(--line);
+  background: color-mix(in srgb, var(--surface) 88%, var(--surface-alt));
+}
+
+.header-signin-button {
+  @apply gap-2 px-2.5 pl-2;
   color: var(--text);
-  background: var(--surface);
+  min-width: 132px;
 }
 
 .header-signin-button:hover {
-  border-color: color-mix(in srgb, var(--brand-red) 38%, var(--line));
   color: var(--brand-red);
-  background: color-mix(in srgb, var(--brand-red) 6%, var(--surface));
+  background: var(--surface);
+  box-shadow: 0 8px 18px rgba(23, 19, 57, 0.08);
+}
+
+.header-signin-icon {
+  @apply grid h-8 w-8 shrink-0 place-items-center rounded-full;
+  color: var(--brand-red);
+  background: color-mix(in srgb, var(--brand-red) 9%, var(--surface));
+}
+
+.header-signin-copy {
+  @apply grid min-w-0 text-left leading-none;
+}
+
+.header-signin-copy span,
+.header-signin-copy small {
+  @apply block truncate;
+}
+
+.header-signin-copy span {
+  @apply text-sm font-semibold;
+}
+
+.header-signin-copy small {
+  @apply mt-0.5 text-[10px] font-medium;
+  color: var(--text-muted);
 }
 
 .header-register-button {
   @apply px-4 text-white;
-  min-width: 132px;
+  min-width: 138px;
   background: var(--text);
+  box-shadow: 0 8px 18px rgba(23, 19, 57, 0.12);
 }
 
 .header-register-button:hover {
   background: var(--brand-red);
+  box-shadow: 0 10px 22px rgba(237, 28, 36, 0.2);
 }
 
 .header-account-button {
   @apply gap-2 border py-1 pl-1.5 pr-3;
-  min-width: 164px;
-  max-width: 210px;
+  min-width: 190px;
+  max-width: 244px;
   border-color: var(--line);
   color: var(--text);
   background: var(--surface);
 }
 
-.header-account-button:hover {
+.header-account-button:hover,
+.header-account-button[aria-expanded="true"] {
   border-color: color-mix(in srgb, var(--brand-red) 32%, var(--line));
   background: color-mix(in srgb, var(--brand-red) 5%, var(--surface));
+}
+
+.header-account-button svg {
+  @apply shrink-0 transition;
+  color: var(--text-muted);
+}
+
+.header-account-button svg.is-open {
+  transform: rotate(180deg);
+  color: var(--brand-red);
 }
 
 .header-account-avatar {
   @apply grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold text-white;
   background: var(--brand-red);
+}
+
+.header-account-menu {
+  @apply relative;
+}
+
+.header-account-popover {
+  @apply absolute right-0 top-[calc(100%+10px)] z-50 w-[270px] overflow-hidden rounded-lg border p-1.5;
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: 0 18px 36px rgba(23, 19, 57, 0.16);
+}
+
+.header-account-summary {
+  @apply mb-1 flex items-center gap-3 rounded-md px-2.5 py-2.5;
+  background: var(--surface-alt);
+}
+
+.header-account-summary div {
+  @apply min-w-0;
+}
+
+.header-account-summary strong,
+.header-account-summary small {
+  @apply block truncate;
+}
+
+.header-account-summary strong {
+  @apply text-sm font-semibold;
+  color: var(--text);
+}
+
+.header-account-summary small {
+  @apply mt-0.5 text-xs;
+  color: var(--text-muted);
+}
+
+.header-account-popover a,
+.header-account-popover button {
+  @apply flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-left text-sm font-semibold transition;
+  color: var(--text);
+}
+
+.header-account-popover a:hover,
+.header-account-popover button:hover {
+  background: color-mix(in srgb, var(--brand-red) 6%, var(--surface));
+  color: var(--brand-red);
+}
+
+.header-account-popover svg {
+  @apply shrink-0;
+  color: var(--text-muted);
+}
+
+.header-account-popover a:hover svg,
+.header-account-popover button:hover svg {
+  color: var(--brand-red);
 }
 
 .header-search-panel {
@@ -541,7 +1102,8 @@ a {
 }
 
 .header-search-form input {
-  @apply min-w-0 bg-transparent py-3 text-sm outline-none;
+  @apply min-w-0 bg-transparent py-3 outline-none;
+  font-size: 1rem; /* 16px — prevents iOS Safari viewport zoom on focus */
   color: var(--text);
 }
 
@@ -564,6 +1126,27 @@ a {
   @apply h-4 w-4;
 }
 
+.header-search-suggestions {
+  @apply mx-auto mt-3 flex max-w-3xl flex-wrap items-center gap-2 text-xs;
+  color: var(--text-muted);
+}
+
+.header-search-suggestions span {
+  @apply font-semibold uppercase tracking-[0.16em];
+}
+
+.header-search-suggestions a {
+  @apply rounded-full border px-3 py-1.5 font-semibold transition;
+  border-color: var(--line);
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.header-search-suggestions a:hover {
+  border-color: var(--accent);
+  color: var(--brand-red);
+}
+
 @media (max-width: 520px) {
   .header-search-form {
     grid-template-columns: 20px minmax(0, 1fr) 36px;
@@ -582,6 +1165,60 @@ a {
 
 .panel-shadow {
   box-shadow: var(--shadow-panel);
+}
+
+.mobile-search-form {
+  @apply mb-5 grid grid-cols-[20px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-3;
+  border-color: var(--line);
+  background: var(--surface);
+}
+
+.mobile-search-form:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.mobile-search-form svg {
+  @apply h-4 w-4;
+  color: var(--text-muted);
+}
+
+.mobile-search-form input {
+  @apply min-w-0 bg-transparent py-3 outline-none;
+  font-size: 1rem; /* 16px — prevents iOS Safari viewport zoom on focus */
+  color: var(--text);
+}
+
+.mobile-search-form button {
+  @apply rounded-md px-3 py-2 text-xs font-semibold text-white;
+  background: var(--brand-red);
+}
+
+.mobile-quick-actions {
+  @apply mb-6 grid grid-cols-3 gap-2;
+}
+
+.mobile-quick-actions a,
+.mobile-quick-actions button {
+  @apply relative grid min-h-20 place-items-center gap-1 rounded-lg border p-3 text-center text-xs font-semibold transition;
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.mobile-quick-actions a:hover,
+.mobile-quick-actions button:hover {
+  border-color: var(--accent);
+  color: var(--brand-red);
+}
+
+.mobile-quick-actions svg {
+  @apply h-5 w-5;
+}
+
+.mobile-quick-actions b {
+  @apply absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold text-white;
+  background: var(--brand-red);
 }
 
 .bg-bronze-500,

@@ -8,24 +8,29 @@ type CheckoutItem = {
 };
 
 type CheckoutRequest = {
-  items: CheckoutItem[];
-  customer_name?: string;
-  customer_email?: string;
-  customer_phone?: string;
-  delivery_address?: string;
+  items?: CheckoutItem[];
+  name: string;
+  phone: string;
+  email?: string;
+  delivery_method: "delivery" | "pickup";
+  area?: string;
+  address?: string;
+  map_url?: string;
+  timing: "standard" | "urgent" | "scheduled";
+  preferred_date?: string;
+  support: "none" | "unloading" | "installation";
   notes?: string;
 };
 
-type OrderResponse = {
-  success: boolean;
-  message: string;
-  data?: {
+type LaravelOrderResponse = {
+  data: {
     id: string;
     order_number: string;
     status: string;
     total_amount: number;
-    created_at: string;
+    ordered_at?: string;
   };
+  message: string;
 };
 
 type CheckoutApiOrder = {
@@ -47,7 +52,7 @@ type CartItemForCheckout = {
 export async function submitCheckout(data: CheckoutRequest): Promise<{ order_id: string; order_number: string; total: number }> {
   const token = readApiToken();
   
-  const response = await fetchJson<OrderResponse>("/checkout", {
+  const response = await fetchJson<LaravelOrderResponse>("/checkout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,7 +61,7 @@ export async function submitCheckout(data: CheckoutRequest): Promise<{ order_id:
     body: JSON.stringify(data)
   });
 
-  if (!response.success || !response.data) {
+  if (!response.data) {
     throw new Error(response.message || "Checkout failed");
   }
 
@@ -69,23 +74,47 @@ export async function submitCheckout(data: CheckoutRequest): Promise<{ order_id:
 
 // Legacy API for backward compatibility with checkout-form
 export function hasCheckoutApiItems(items: CartItemForCheckout[]): boolean {
-  return items.length > 0;
+  return items.length > 0 && items.every((item) => isUuid(item.id));
+}
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 export async function submitCheckoutRequest(
-  details: { name: string; phone: string; email: string; address: string },
+  details: {
+    name: string;
+    phone: string;
+    email: string;
+    area: string;
+    address: string;
+    mapLink: string;
+    deliveryMethod: "delivery" | "pickup";
+    timing: "standard" | "urgent" | "scheduled";
+    preferredDate: string;
+    support: "none" | "unloading" | "installation";
+    notes: string;
+  },
   items: CartItemForCheckout[]
 ): Promise<CheckoutApiOrder> {
+  const token = readApiToken();
   const result = await submitCheckout({
     items: items.map((item) => ({
       product_id: item.id,
       quantity: item.quantity,
       unit_price: item.price
     })),
-    customer_name: details.name,
-    customer_phone: details.phone,
-    customer_email: details.email,
-    delivery_address: details.address
+    name: details.name,
+    phone: details.phone,
+    email: details.email || undefined,
+    delivery_method: details.deliveryMethod,
+    area: details.deliveryMethod === "delivery" ? details.area : undefined,
+    address: details.deliveryMethod === "delivery" ? details.address : undefined,
+    map_url: details.mapLink || undefined,
+    timing: details.timing,
+    preferred_date: details.timing === "scheduled" ? details.preferredDate : undefined,
+    support: details.support,
+    notes: details.notes || undefined
   });
 
   return {

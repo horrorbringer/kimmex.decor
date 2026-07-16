@@ -12,9 +12,7 @@ const shimmer = (w: number, h: number) => `
 </svg>`;
 
 const toBase64 = (str: string) =>
-  typeof window === "undefined"
-    ? Buffer.from(str).toString("base64")
-    : window.btoa(str);
+  Buffer.from(str).toString("base64");
 
 export const blurPlaceholder = (width = 800, height = 600) =>
   `data:image/svg+xml;base64,${toBase64(shimmer(width, height))}`;

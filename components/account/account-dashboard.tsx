@@ -2,8 +2,11 @@
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { useLanguage } from "@/components/language-provider";
+import { ApiError } from "@/lib/api-client";
+import { syncCustomerStorage } from "@/lib/api-customer-storage";
 import {
   fetchCurrentCustomer,
+  fetchCustomerInquiries,
   fetchCustomerOrders,
   loginCustomer,
   logoutCustomer,
@@ -13,6 +16,7 @@ import {
   updateCustomerProfile
 } from "@/lib/api-auth";
 import type { ApiOrder, ApiUser } from "@/lib/api-auth";
+import type { ApiInquiry } from "@/lib/api-auth";
 import { migrateCatalogStorage } from "@/lib/catalog-storage-migration";
 import { getCartSubtotal, readCart } from "@/lib/cart-store";
 import type { CartItem } from "@/lib/cart-store";
@@ -55,8 +59,19 @@ type CheckoutRequest = {
   items?: CartItem[];
   subtotal?: number;
 };
+type LocalInquiryRequest = {
+  contextLabel: string | null;
+  createdAt: string;
+  id: string;
+  message: string;
+  projectLocation: string | null;
+  projectSize: string | null;
+  status: string;
+  type: string | null;
+};
 
 const profileKey = "kmd-customer-profile";
+const localInquiryKey = "kmd-last-contact-request";
 const emptyProfile: Profile = { name: "", phone: "", email: "", area: "" };
 const emptyAuthForm: AuthForm = { name: "", email: "", phone: "", password: "" };
 
@@ -83,11 +98,13 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [request, setRequest] = useState<CheckoutRequest | null>(null);
+  const [localInquiry, setLocalInquiry] = useState<LocalInquiryRequest | null>(null);
   const [profile, setProfile] = useState<Profile>(emptyProfile);
   const [profileSaved, setProfileSaved] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [apiUser, setApiUser] = useState<ApiUser | null>(null);
   const [apiOrders, setApiOrders] = useState<ApiOrder[]>([]);
+  const [apiInquiries, setApiInquiries] = useState<ApiInquiry[]>([]);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authForm, setAuthForm] = useState<AuthForm>(emptyAuthForm);
   const [authLoading, setAuthLoading] = useState(false);
@@ -96,12 +113,20 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = params.get("view");
+    if (requestedView === "overview" || requestedView === "orders" || requestedView === "saved" || requestedView === "profile") {
+      setView(requestedView);
+    }
+
     const lastRequest = readJson<CheckoutRequest>("kmd-last-checkout-request");
+    const lastInquiry = readJson<LocalInquiryRequest>(localInquiryKey);
     const savedProfile = readJson<Profile>(profileKey);
     const requestContact = lastRequest?.details || lastRequest?.form;
     setCart(readCart());
     setSavedIds(readWishlist());
     setRequest(lastRequest);
+    setLocalInquiry(lastInquiry);
     const nextProfile = savedProfile || {
       name: "name" in (requestContact || {}) ? lastRequest?.details?.name || "" : lastRequest?.form?.customerName || "",
       phone: formatCambodianPhone(requestContact?.phone || ""),
@@ -111,6 +136,29 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
     setProfile({ ...nextProfile, phone: formatCambodianPhone(nextProfile.phone) });
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+
+    const syncCustomerState = () => {
+      setCart(readCart());
+      setSavedIds(readWishlist());
+      setRequest(readJson<CheckoutRequest>("kmd-last-checkout-request"));
+      setLocalInquiry(readJson<LocalInquiryRequest>(localInquiryKey));
+    };
+
+    window.addEventListener("kmd-cart-updated", syncCustomerState);
+    window.addEventListener("kmd-wishlist-updated", syncCustomerState);
+    window.addEventListener("kmd-inquiry-updated", syncCustomerState);
+    window.addEventListener("storage", syncCustomerState);
+
+    return () => {
+      window.removeEventListener("kmd-cart-updated", syncCustomerState);
+      window.removeEventListener("kmd-wishlist-updated", syncCustomerState);
+      window.removeEventListener("kmd-inquiry-updated", syncCustomerState);
+      window.removeEventListener("storage", syncCustomerState);
+    };
+  }, [loaded]);
 
   useEffect(() => {
     const cachedUser = readApiUser();
@@ -128,11 +176,12 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
 
     let active = true;
     setOrdersLoading(true);
-    Promise.all([fetchCurrentCustomer(), fetchCustomerOrders()])
-      .then(([user, orders]) => {
+    Promise.all([fetchCurrentCustomer(), fetchCustomerOrders(), fetchCustomerInquiries()])
+      .then(([user, orders, inquiries]) => {
         if (!active) return;
         setApiUser(user);
         setApiOrders(orders);
+        setApiInquiries(inquiries);
         setProfile((current) => ({
           ...current,
           name: user.name || current.name,
@@ -172,6 +221,19 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
   const localizedDate = (value?: string) => value
     ? new Intl.DateTimeFormat(language === "km" ? "km-KH" : "en", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value))
     : text("Not available", "មិនមានទិន្នន័យ");
+  const setAccountView = (nextView: View) => {
+    setView(nextView);
+
+    const params = new URLSearchParams(window.location.search);
+    if (nextView === "overview") {
+      params.delete("view");
+    } else {
+      params.set("view", nextView);
+    }
+
+    const query = params.toString();
+    window.history.replaceState(null, "", query ? `/account?${query}` : "/account");
+  };
 
   const saveProfile = async () => {
     setPhoneTouched(true);
@@ -209,9 +271,24 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
       const user = authMode === "login"
         ? await loginCustomer(authForm.email, authForm.password)
         : await registerCustomer({ name: authForm.name, email: authForm.email, phone, password: authForm.password });
-      const orders = await fetchCustomerOrders();
+
+      if (!user) {
+        setAuthForm(emptyAuthForm);
+        setAuthMessage(text("Account created! Please check your email to verify before signing in.", "បង្កើតគណនីដោយជោគជ័យ! សូមពិនិត្យអ៊ីមែលរបស់អ្នកដើម្បីផ្ទៀងផ្ទាត់មុនពេលចូលគណនី។"));
+        return;
+      }
+
+      const token = readApiToken();
+      if (token) {
+        await syncCustomerStorage(token);
+        setCart(readCart());
+        setSavedIds(readWishlist());
+      }
+
+      const [orders, inquiries] = await Promise.all([fetchCustomerOrders(), fetchCustomerInquiries()]);
       setApiUser(user);
       setApiOrders(orders);
+      setApiInquiries(inquiries);
       setProfile((current) => ({
         ...current,
         name: user.name || current.name,
@@ -221,7 +298,18 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
       setAuthForm(emptyAuthForm);
       setAuthMessage(text("Account connected.", "បានភ្ជាប់គណនី។"));
     } catch (error) {
-      setAuthMessage(error instanceof Error ? error.message : text("Could not connect account.", "មិនអាចភ្ជាប់គណនីបានទេ។"));
+      if (error instanceof ApiError && error.status === 429) {
+        setAuthMessage(text("Too many attempts. Please wait a moment.", "ការព្យាយាមច្រើនពេក។ សូមរង់ចាំបន្តិច។"));
+      } else if (error instanceof ApiError && error.status >= 500) {
+        setAuthMessage(error.message || text("Server error. Please try again later.", "កំហុសម៉ាស៊ីនមេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"));
+      } else if (error instanceof TypeError) {
+        setAuthMessage(text("Could not connect to the server. Check your connection.", "មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេបានទេ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក។"));
+      } else if (authMode === "register" && !(error instanceof ApiError && error.status === 422)) {
+        setAuthForm(emptyAuthForm);
+        setAuthMessage(text("Account created! Please check your email to verify before signing in.", "បង្កើតគណនីដោយជោគជ័យ! សូមពិនិត្យអ៊ីមែលរបស់អ្នកដើម្បីផ្ទៀងផ្ទាត់មុនពេលចូលគណនី។"));
+      } else {
+        setAuthMessage(error instanceof Error ? error.message : text("Could not connect account.", "មិនអាចភ្ជាប់គណនីបានទេ។"));
+      }
     } finally {
       setAuthLoading(false);
     }
@@ -232,11 +320,14 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
     await logoutCustomer();
     setApiUser(null);
     setApiOrders([]);
+    setApiInquiries([]);
     setAuthLoading(false);
     setAuthMessage(text("Signed out from this device.", "បានចាកចេញពីឧបករណ៍នេះ។"));
   };
 
   if (!loaded) return <div className="account-loading" />;
+
+  const requestCount = apiOrders.length + apiInquiries.length + (request ? 1 : 0) + (localInquiry ? 1 : 0);
 
   return (
     <div className="account-workspace">
@@ -246,10 +337,10 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
           <div><strong>{customerName}</strong><small>{apiUser ? text("Connected to KMD API", "បានភ្ជាប់ទៅ KMD API") : profile.phone || text("Customer workspace", "ផ្នែកអតិថិជន")}</small></div>
         </div>
         <nav aria-label={text("Account sections", "ផ្នែកគណនី")}>
-          <RailButton active={view === "overview"} icon={<Home />} label={text("Overview", "ទិដ្ឋភាពទូទៅ")} onClick={() => setView("overview")} />
-          <RailButton active={view === "orders"} badge={apiOrders.length ? String(apiOrders.length) : request ? "1" : undefined} icon={<PackageCheck />} label={text("Orders", "ការបញ្ជាទិញ")} onClick={() => setView("orders")} />
-          <RailButton active={view === "saved"} badge={savedIds.length ? String(savedIds.length) : undefined} icon={<Heart />} label={text("Saved", "បានរក្សាទុក")} onClick={() => setView("saved")} />
-          <RailButton active={view === "profile"} icon={<CircleUserRound />} label={text("Profile", "ប្រវត្តិរូប")} onClick={() => setView("profile")} />
+          <RailButton active={view === "overview"} icon={<Home />} label={text("Overview", "ទិដ្ឋភាពទូទៅ")} onClick={() => setAccountView("overview")} />
+          <RailButton active={view === "orders"} badge={requestCount ? String(requestCount) : undefined} icon={<PackageCheck />} label={text("Orders", "ការបញ្ជាទិញ")} onClick={() => setAccountView("orders")} />
+          <RailButton active={view === "saved"} badge={savedIds.length ? String(savedIds.length) : undefined} icon={<Heart />} label={text("Saved", "បានរក្សាទុក")} onClick={() => setAccountView("saved")} />
+          <RailButton active={view === "profile"} icon={<CircleUserRound />} label={text("Profile", "ប្រវត្តិរូប")} onClick={() => setAccountView("profile")} />
         </nav>
         <Link className="account-rail-cart" href="/cart"><ShoppingBag /><span>{text("Cart", "កន្ត្រក")}</span><b>{cartCount}</b></Link>
         <p>{text("Private workspace stored on this device.", "ផ្នែកឯកជនដែលរក្សាទុកលើឧបករណ៍នេះ។")}</p>
@@ -262,19 +353,19 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
 
             <section className="account-focus">
               <div className="account-focus-status"><span><Clock3 /></span><div><p>{text("Current status", "ស្ថានភាពបច្ចុប្បន្ន")}</p><h3>{request ? text("Your order request is under review", "សំណើបញ្ជាទិញរបស់អ្នកកំពុងត្រូវបានពិនិត្យ") : cartCount ? text("Your cart is ready to finish", "កន្ត្រករបស់អ្នករួចរាល់សម្រាប់បញ្ចប់") : text("Ready for your next project", "រួចរាល់សម្រាប់គម្រោងបន្ទាប់របស់អ្នក")}</h3><small>{request ? text("KMD is checking stock, delivery, and final pricing.", "KMD កំពុងពិនិត្យស្តុក ការដឹកជញ្ជូន និងតម្លៃចុងក្រោយ។") : cartCount ? text(`${cartCount} items, estimated at ${formatMoney(cartSubtotal)}.`, `${cartCount} មុខទំនិញ តម្លៃប៉ាន់ស្មាន ${formatMoney(cartSubtotal)}។`) : text("Browse products or save materials to compare later.", "មើលផលិតផល ឬរក្សាទុកសម្ភារៈសម្រាប់ប្រៀបធៀបពេលក្រោយ។")}</small></div></div>
-              <div className="account-focus-action">{request ? <button onClick={() => setView("orders")} type="button">{text("View request", "មើលសំណើ")}<ArrowRight /></button> : cartCount ? <Link href="/checkout">{text("Continue checkout", "បន្តការទូទាត់")}<ArrowRight /></Link> : <Link href="/products">{text("Browse catalog", "មើលកាតាឡុក")}<ArrowRight /></Link>}</div>
+              <div className="account-focus-action">{request ? <button onClick={() => setAccountView("orders")} type="button">{text("View request", "មើលសំណើ")}<ArrowRight /></button> : cartCount ? <Link href="/checkout">{text("Continue checkout", "បន្តការទូទាត់")}<ArrowRight /></Link> : <Link href="/products">{text("Browse catalog", "មើលកាតាឡុក")}<ArrowRight /></Link>}</div>
             </section>
 
             <div className="account-numbers">
-              <button onClick={() => setView("orders")} type="button"><span>{text("Requests", "សំណើ")}</span><strong>{apiOrders.length || (request ? "1" : "0")}</strong><small>{apiUser ? text("Synced from API", "បានធ្វើសមកាលកម្មពី API") : request ? text("In review", "កំពុងពិនិត្យ") : text("No activity", "មិនមានសកម្មភាព")}</small></button>
-              <button onClick={() => setView("saved")} type="button"><span>{text("Saved products", "ផលិតផលបានរក្សាទុក")}</span><strong>{savedIds.length}</strong><small>{text("Project shortlist", "បញ្ជីគម្រោង")}</small></button>
+              <button onClick={() => setAccountView("orders")} type="button"><span>{text("Requests", "សំណើ")}</span><strong>{requestCount}</strong><small>{apiUser ? text("Synced from API", "បានធ្វើសមកាលកម្មពី API") : request ? text("In review", "កំពុងពិនិត្យ") : text("No activity", "មិនមានសកម្មភាព")}</small></button>
+              <button onClick={() => setAccountView("saved")} type="button"><span>{text("Saved products", "ផលិតផលបានរក្សាទុក")}</span><strong>{savedIds.length}</strong><small>{text("Project shortlist", "បញ្ជីគម្រោង")}</small></button>
               <Link href="/cart"><span>{text("Cart value", "តម្លៃកន្ត្រក")}</span><strong>{formatMoney(cartSubtotal)}</strong><small>{text(`${cartCount} items`, `${cartCount} មុខទំនិញ`)}</small></Link>
             </div>
 
             <div className="account-overview-grid">
               <section className="account-activity">
                 <div className="account-section-title"><div><p>{text("Recent activity", "សកម្មភាពថ្មីៗ")}</p><h3>{text("Latest order request", "សំណើបញ្ជាទិញចុងក្រោយ")}</h3></div><PackageCheck /></div>
-                {request ? <div className="account-activity-row"><div><b>{text("Waiting for KMD confirmation", "កំពុងរង់ចាំការបញ្ជាក់ពី KMD")}</b><span>{localizedDate(request.createdAt)} · {request.items?.length || 0} {text("products", "ផលិតផល")}</span></div><strong>{formatMoney(request.subtotal || 0)}</strong><button aria-label={text("View request", "មើលសំណើ")} onClick={() => setView("orders")} type="button"><ArrowRight /></button></div> : <EmptyLine copy={text("Submitted requests will appear here.", "សំណើដែលបានដាក់នឹងបង្ហាញនៅទីនេះ។")} />}
+                {request ? <div className="account-activity-row"><div><b>{text("Waiting for KMD confirmation", "កំពុងរង់ចាំការបញ្ជាក់ពី KMD")}</b><span>{localizedDate(request.createdAt)} · {request.items?.length || 0} {text("products", "ផលិតផល")}</span></div><strong>{formatMoney(request.subtotal || 0)}</strong><button aria-label={text("View request", "មើលសំណើ")} onClick={() => setAccountView("orders")} type="button"><ArrowRight /></button></div> : localInquiry ? <div className="account-activity-row"><div><b>{localInquiry.contextLabel || text("Contact request sent", "បានផ្ញើសំណើទំនាក់ទំនង")}</b><span>{localizedDate(localInquiry.createdAt)} · {localInquiry.status}</span></div><strong>{text("Inquiry", "សំណួរ")}</strong><button aria-label={text("View request", "មើលសំណើ")} onClick={() => setAccountView("orders")} type="button"><ArrowRight /></button></div> : <EmptyLine copy={text("Submitted requests will appear here.", "សំណើដែលបានដាក់នឹងបង្ហាញនៅទីនេះ។")} />}
               </section>
 
               <section className="account-contact-strip">
@@ -288,7 +379,18 @@ export function AccountDashboard({ products }: AccountDashboardProps) {
         {view === "orders" ? (
           <>
             <ViewHeader eyebrow={text("Orders", "ការបញ្ជាទិញ")} title={text("Your order requests", "សំណើបញ្ជាទិញរបស់អ្នក")} copy={text("Every request is confirmed by KMD before payment.", "រាល់សំណើត្រូវបានបញ្ជាក់ដោយ KMD មុនបង់ប្រាក់។")}               action={<Link className="action-secondary gap-2" href="/products">{text("New order", "បញ្ជាទិញថ្មី")}<ArrowRight /></Link>} />
-            {ordersLoading ? <EmptyLine copy={text("Loading your KMD orders...", "កំពុងផ្ទុកការបញ្ជាទិញ KMD របស់អ្នក...")} /> : apiOrders.length ? <ApiOrderList localizedDate={localizedDate} orders={apiOrders} text={text} /> : request ? <OrderDetail localizedDate={localizedDate} request={request} text={text} /> : <AccountEmpty action={text("Browse products", "មើលផលិតផល")} copy={text("Your submitted order requests will appear here.", "សំណើបញ្ជាទិញរបស់អ្នកនឹងបង្ហាញនៅទីនេះ។")} href="/products" icon={<PackageCheck />} title={text("No requests yet", "មិនទាន់មានសំណើ")} />}
+            {ordersLoading ? (
+              <EmptyLine copy={text("Loading your KMD requests...", "កំពុងផ្ទុកសំណើ KMD របស់អ្នក...")} />
+            ) : requestCount ? (
+              <div className="grid gap-6">
+                {apiOrders.length ? <ApiOrderList localizedDate={localizedDate} orders={apiOrders} text={text} /> : null}
+                {apiInquiries.length ? <ApiInquiryList inquiries={apiInquiries} localizedDate={localizedDate} text={text} /> : null}
+                {localInquiry ? <LocalInquiryDetail inquiry={localInquiry} localizedDate={localizedDate} text={text} /> : null}
+                {request ? <OrderDetail localizedDate={localizedDate} request={request} text={text} /> : null}
+              </div>
+            ) : (
+              <AccountEmpty action={text("Browse products", "មើលផលិតផល")} copy={text("Your submitted order requests and inquiries will appear here.", "សំណើបញ្ជាទិញ និងសំណួររបស់អ្នកនឹងបង្ហាញនៅទីនេះ។")} href="/products" icon={<PackageCheck />} title={text("No requests yet", "មិនទាន់មានសំណើ")} />
+            )}
           </>
         ) : null}
 
@@ -415,6 +517,89 @@ function ApiOrderList({ localizedDate, orders, text }: { localizedDate: (value?:
   );
 }
 
+function ApiInquiryList({ inquiries, localizedDate, text }: { inquiries: ApiInquiry[]; localizedDate: (value?: string) => string; text: (english: string, khmer: string) => string }) {
+  return (
+    <section className="account-api-orders">
+      {inquiries.map((inquiry) => (
+        <article key={inquiry.id}>
+          <div className="block">
+            <div className="account-api-order-head">
+              <div>
+                <p>{text("Inquiry", "សំណួរ")} #{inquiry.id.slice(0, 8)}</p>
+                <h3>{inquiry.service?.name || inquiry.project.name || text("KMD request", "សំណើ KMD")}</h3>
+                <span>{localizedDate(inquiry.submitted_at)} · {inquiry.type}</span>
+              </div>
+              <b>{inquiry.status.replace(/_/g, " ")}</b>
+            </div>
+            <div className="account-api-order-items">
+              <span>
+                <strong>{text("Message", "សារ")}</strong>
+                <small>{inquiry.message.split("\n").find(Boolean)?.slice(0, 140) || text("No message summary", "មិនមានសេចក្តីសង្ខេបសារ")}</small>
+              </span>
+              {inquiry.project.location ? (
+                <span>
+                  <strong>{text("Location", "ទីតាំង")}</strong>
+                  <small>{inquiry.project.location}</small>
+                </span>
+              ) : null}
+              {inquiry.project.size ? (
+                <span>
+                  <strong>{text("Size / quantity", "ទំហំ / បរិមាណ")}</strong>
+                  <small>{inquiry.project.size}</small>
+                </span>
+              ) : null}
+            </div>
+            <div className="account-api-order-foot">
+              <span>{inquiry.contacted_at ? text("KMD has contacted you", "KMD បានទាក់ទងអ្នក") : text("Waiting for KMD review", "កំពុងរង់ចាំ KMD ពិនិត្យ")}</span>
+              {inquiry.quoted_price !== null && inquiry.quoted_price !== undefined ? <strong>{formatMoney(inquiry.quoted_price)}</strong> : null}
+            </div>
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function LocalInquiryDetail({ inquiry, localizedDate, text }: { inquiry: LocalInquiryRequest; localizedDate: (value?: string) => string; text: (english: string, khmer: string) => string }) {
+  return (
+    <section className="account-order-sheet">
+      <div className="account-order-summary">
+        <div>
+          <p>{text("Contact request", "សំណើទំនាក់ទំនង")}</p>
+          <h3>{inquiry.contextLabel || text("KMD inquiry", "សំណួរ KMD")}</h3>
+          <span>{localizedDate(inquiry.createdAt)} · #{inquiry.id.slice(0, 8)}</span>
+        </div>
+        <b><Clock3 />{inquiry.status.replace(/_/g, " ")}</b>
+      </div>
+      <div className="account-order-body">
+        <div>
+          <p>{text("Message", "សារ")}</p>
+          <span className="account-muted">{inquiry.message || text("No message summary available.", "មិនមានសេចក្តីសង្ខេបសារ។")}</span>
+        </div>
+        <dl>
+          <p>{text("Request details", "ព័ត៌មានសំណើ")}</p>
+          <div>
+            <dt><PackageCheck />{text("Type", "ប្រភេទ")}</dt>
+            <dd>{inquiry.type || text("Project consultation", "ការប្រឹក្សាគម្រោង")}</dd>
+          </div>
+          <div>
+            <dt><MapPin />{text("Location", "ទីតាំង")}</dt>
+            <dd>{inquiry.projectLocation || text("To be confirmed", "នឹងបញ្ជាក់ពេលក្រោយ")}</dd>
+          </div>
+          <div>
+            <dt><RulerIcon />{text("Size / quantity", "ទំហំ / បរិមាណ")}</dt>
+            <dd>{inquiry.projectSize || text("To be confirmed", "នឹងបញ្ជាក់ពេលក្រោយ")}</dd>
+          </div>
+        </dl>
+      </div>
+      <div className="account-order-footer">
+        <span>{text("Next step", "ជំហានបន្ទាប់")}<small>{text("KMD will review and contact you using the details submitted.", "KMD នឹងពិនិត្យ ហើយទាក់ទងអ្នកតាមព័ត៌មានដែលបានផ្ញើ។")}</small></span>
+        <Link className="action-secondary" href="/contact">{text("Send update", "ផ្ញើបច្ចុប្បន្នភាព")}</Link>
+      </div>
+    </section>
+  );
+}
+
 function OrderDetail({ localizedDate, request, text }: { localizedDate: (value?: string) => string; request: CheckoutRequest; text: (english: string, khmer: string) => string }) {
   const details = request.details;
   const legacy = request.form;
@@ -425,4 +610,8 @@ function OrderDetail({ localizedDate, request, text }: { localizedDate: (value?:
 
 function AccountEmpty({ action, copy, href, icon, title }: { action: string; copy: string; href: string; icon: React.ReactNode; title: string }) {
   return <div className="account-empty"><span>{icon}</span><h3>{title}</h3><p>{copy}</p><Link className="action-commerce gap-2" href={href}>{action}<ArrowRight /></Link></div>;
+}
+
+function RulerIcon() {
+  return <span aria-hidden="true">m2</span>;
 }

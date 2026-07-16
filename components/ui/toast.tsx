@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { X, CheckCircle2, AlertCircle, Info } from "lucide-react";
 
 type ToastType = "success" | "error" | "info" | "warning";
@@ -27,6 +27,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const addToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).slice(2, 9);
     setToasts((prev) => [...prev, { ...toast, id }]);
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((item) => item.id !== id));
+    }, toast.duration ?? 5000);
   }, []);
 
   const removeToast = useCallback((id: string) => {
@@ -36,6 +39,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
+      <ToastEventBridge addToast={addToast} />
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </ToastContext.Provider>
   );
@@ -100,6 +104,22 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
       })}
     </div>
   );
+}
+
+function ToastEventBridge({ addToast }: { addToast: (toast: Omit<Toast, "id">) => void }) {
+  useEffect(() => {
+    const handleToast = (event: Event) => {
+      const detail = (event as CustomEvent<Omit<Toast, "id">>).detail;
+      if (detail?.type && detail.title) {
+        addToast(detail);
+      }
+    };
+
+    window.addEventListener("toast:add", handleToast);
+    return () => window.removeEventListener("toast:add", handleToast);
+  }, [addToast]);
+
+  return null;
 }
 
 export function toast(type: ToastType, title: string, message?: string, duration = 5000) {

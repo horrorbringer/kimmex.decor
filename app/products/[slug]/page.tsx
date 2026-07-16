@@ -1,4 +1,5 @@
 import { ProductDetailActions } from "@/components/cart/product-detail-actions";
+import { RichContent } from "@/components/content/rich-content";
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
@@ -184,27 +185,27 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       </section>
 
       <section className="border-y border-sand-400 bg-sand-200/55">
-        <div className="content-shell grid gap-10 py-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-start lg:py-16">
-          <div>
+        <div className="content-shell py-8 lg:py-10">
+          <div className="max-w-4xl">
             <p className="eyebrow">Product Overview</p>
-            <h2 className="font-serif text-4xl leading-tight text-ink-900 md:text-5xl">A practical fit for the work.</h2>
-            <p className="mt-5 max-w-xl text-base leading-8 text-ink-700">{product.customerGoal}</p>
+            <h2 className="font-serif text-3xl leading-tight text-ink-900 md:text-4xl">A practical fit for the work.</h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-ink-700">{product.customerGoal}</p>
             {product.descriptionHtml ? (
-              <div
-                className="prose prose-sm mt-8 max-w-none text-ink-700"
-                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              <RichContent
+                className="mt-5 text-sm text-ink-700"
+                html={product.descriptionHtml}
               />
             ) : null}
           </div>
 
-          <div className="grid overflow-hidden rounded-lg border border-sand-400 bg-white sm:grid-cols-2">
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {product.keyFeatures.map((feature, index) => (
               <div
                 key={feature}
-                className="flex items-start gap-4 border-b border-sand-400 p-5 last:border-b-0 sm:border-r sm:[&:nth-child(2n)]:border-r-0 sm:[&:nth-last-child(-n+2)]:border-b-0"
+                className="flex min-h-20 items-start gap-3 rounded-lg border border-sand-400 bg-white p-4"
               >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-red/10 text-xs font-semibold text-brand-red">0{index + 1}</span>
-                <p className="pt-0.5 text-sm font-medium leading-6 text-ink-900">{feature}</p>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-red/10 text-[10px] font-semibold text-brand-red">0{index + 1}</span>
+                <p className="text-sm font-medium leading-6 text-ink-900">{feature}</p>
               </div>
             ))}
           </div>

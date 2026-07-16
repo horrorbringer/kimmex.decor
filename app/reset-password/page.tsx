@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="mt-1 w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 focus:border-brand-red focus:outline-none"
+                  className="form-field mt-1"
                   disabled={isLoading}
                 />
               </div>
@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="mt-1 w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 focus:border-brand-red focus:outline-none"
+                  className="form-field mt-1"
                   placeholder="Min 8 characters"
                   disabled={isLoading}
                 />
@@ -122,7 +122,7 @@ export default function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="mt-1 w-full rounded-lg border border-sand-400 bg-white px-4 py-2 text-ink-900 focus:border-brand-red focus:outline-none"
+                  className="form-field mt-1"
                   disabled={isLoading}
                 />
               </div>

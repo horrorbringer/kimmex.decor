@@ -1,6 +1,11 @@
-const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/$/, "");
+const publicApiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "/backend").replace(/\/$/, "");
+const serverApiBaseUrl = (process.env.API_ORIGIN_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/$/, "");
 
 export function apiUrl(path: string): string {
+  const apiBaseUrl = typeof window === "undefined" && publicApiBaseUrl.startsWith("/")
+    ? serverApiBaseUrl
+    : publicApiBaseUrl;
+
   return `${apiBaseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 

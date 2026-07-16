@@ -17,7 +17,7 @@ type InquiryResponse = {
   message?: string;
 };
 
-const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api").replace(/\/$/, "");
+const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "/backend").replace(/\/$/, "");
 const apiTimeoutMs = 12000;
 
 function nullable(value: FormDataEntryValue | null) {

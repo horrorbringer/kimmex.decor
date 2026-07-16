@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const apiImageHost = apiUrl ? new URL(apiUrl).hostname : "api-kmd.kimmex.com.kh";
+const apiOriginUrl = (process.env.API_ORIGIN_URL || "http://api-kmd.kimmex.com.kh/api").replace(/\/$/, "");
+const apiImageHost = apiUrl && /^https?:\/\//.test(apiUrl) ? new URL(apiUrl).hostname : "api-kmd.kimmex.com.kh";
 
 const securityHeaders = [
   {
@@ -67,6 +68,14 @@ const nextConfig: NextConfig = {
             value: "no-store, no-cache, must-revalidate",
           },
         ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/backend/:path*",
+        destination: `${apiOriginUrl}/:path*`,
       },
     ];
   },

@@ -13,12 +13,22 @@ Add these in Vercel Project Settings -> Environment Variables for Production,
 Preview, and Development as needed:
 
 ```bash
-NEXT_PUBLIC_API_URL=https://api-kmd.kimmex.com.kh/api
+NEXT_PUBLIC_API_URL=/backend
+API_ORIGIN_URL=http://api-kmd.kimmex.com.kh/api
 NEXT_PUBLIC_SITE_URL=https://kmdecor.com
 ```
 
-`NEXT_PUBLIC_API_URL` must include `/api`. If it is missing, the app falls back
-to localhost and Vercel pages will not talk to the live Laravel backend.
+`NEXT_PUBLIC_API_URL=/backend` makes the browser call the Vercel site over HTTPS.
+Vercel then rewrites `/backend/*` to `API_ORIGIN_URL`. This avoids browser
+mixed-content blocking while the cPanel API does not have a valid SSL
+certificate.
+
+After the API subdomain has valid SSL, change the variables to:
+
+```bash
+NEXT_PUBLIC_API_URL=https://api-kmd.kimmex.com.kh/api
+API_ORIGIN_URL=https://api-kmd.kimmex.com.kh/api
+```
 
 ## Backend requirements
 

@@ -20,6 +20,7 @@ export type ApiService = {
   is_featured: boolean;
   is_active?: boolean;
   is_published?: boolean;
+  structured_data?: Record<string, unknown> | null;
 };
 
 type ApiCollectionResponse<T> = {
@@ -37,7 +38,8 @@ export function adaptService(service: ApiService): ServiceItem {
     description: service.short_description,
     descriptionHtml: service.description_html ?? service.description ?? undefined,
     href: `/services/${service.slug}`,
-    imageUrl: service.image_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+    imageUrl: service.image_url || "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    structuredData: service.structured_data ?? undefined
   };
 }
 

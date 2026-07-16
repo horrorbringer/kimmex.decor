@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { ProductGallery } from "@/components/products/product-gallery";
-import { StructuredData } from "@/components/structured-data";
+import { RawStructuredData, StructuredData } from "@/components/structured-data";
 import { getCatalogProduct, getCatalogProducts } from "@/lib/api-catalog";
 import { products as fallbackProducts } from "@/lib/homepage-data";
 import {
@@ -24,6 +24,8 @@ type ProductDetailPageProps = {
     slug: string;
   }>;
 };
+
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return fallbackProducts.map((product) => ({
@@ -80,7 +82,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   return (
     <main className="page-shell">
-      <StructuredData
+      {product.structuredData ? <RawStructuredData data={product.structuredData} /> : <StructuredData
         data={{
           type: "product",
           name: product.name,
@@ -98,7 +100,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             url: `https://kmdecor.com${product.href}`,
           },
         }}
-      />
+      />}
       <SiteHeader />
 
       <div className="border-b border-sand-400 bg-sand-50">

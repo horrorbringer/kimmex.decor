@@ -2,10 +2,12 @@ import { RichContent } from "@/components/content/rich-content";
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
+import { RawStructuredData } from "@/components/structured-data";
 import { ServiceFaq } from "@/components/services/service-faq";
 import { getRelatedServiceProducts, getServiceBySlug, getServiceDetail } from "@/lib/service-data";
 import { services } from "@/lib/homepage-data";
 import { getCatalogProducts } from "@/lib/api-catalog";
+import { getCatalogService } from "@/lib/api-services";
 import {
   ArrowDown,
   ArrowLeft,
@@ -29,6 +31,8 @@ type ServiceDetailPageProps = {
     slug: string;
   }>;
 };
+
+export const dynamic = "force-dynamic";
 
 const quotePrepIcons = [Camera, Ruler, MapPin, Truck];
 
@@ -61,12 +65,23 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
 
   if (!service || !detail) notFound();
 
-  const products = await getCatalogProducts();
+  const [products, apiService] = await Promise.all([
+    getCatalogProducts(),
+    getCatalogService(slug),
+  ]);
   const relatedProducts = getRelatedServiceProducts(slug, products);
   const consultationHref = `/contact?service=${encodeURIComponent(service.id)}`;
 
   return (
     <main className="page-shell">
+      <RawStructuredData data={apiService?.structured_data ?? {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: service.title,
+        description: service.description,
+        image: service.imageUrl,
+        url: `https://kmdecor.com/services/${service.id}`,
+      }} />
       <SiteHeader />
 
       <div className="border-b border-sand-400 bg-sand-50">

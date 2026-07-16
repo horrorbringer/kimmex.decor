@@ -79,6 +79,7 @@ export type ApiProduct = {
   images?: ApiProductImage[];
   is_published: boolean;
   is_featured: boolean;
+  structured_data?: Record<string, unknown> | null;
 };
 
 type ApiCollectionResponse<T> = {
@@ -164,7 +165,8 @@ export function adaptProduct(product: ApiProduct): ProductItem {
     materialNotes: listOrFallback(product.material_notes, fallback.materialNotes),
     href: `/products/${product.slug}`,
     imageUrl: images.imageUrl,
-    galleryImages: images.galleryImages
+    galleryImages: images.galleryImages,
+    structuredData: product.structured_data ?? undefined
   };
 }
 

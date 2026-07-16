@@ -13,6 +13,7 @@ export type ProjectDetail = {
   gallery: Array<{ title: string; caption: string; imageUrl: string }>;
   serviceIds: string[];
   productIds: string[];
+  structuredData?: Record<string, unknown>;
 };
 
 export const projectDetails: Record<string, ProjectDetail> = {

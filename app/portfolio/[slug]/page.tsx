@@ -2,6 +2,7 @@ import { RichContent } from "@/components/content/rich-content";
 import { ProductCard } from "@/components/home/product-card";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
+import { RawStructuredData } from "@/components/structured-data";
 import { getPortfolioProject, getPortfolioProjects } from "@/lib/api-portfolio";
 import type { ProjectDetail } from "@/lib/project-data";
 import {
@@ -58,6 +59,14 @@ export default async function PortfolioDetailPage({ params }: PortfolioDetailPag
 
   return (
     <main className="page-shell">
+      <RawStructuredData data={detail.structuredData ?? {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: project.title,
+        description: project.caption,
+        image: project.imageUrl,
+        url: `https://kmdecor.com/portfolio/${project.id}`,
+      }} />
       <SiteHeader />
 
       <div className="border-b border-sand-400 bg-sand-50">

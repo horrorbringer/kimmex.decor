@@ -34,6 +34,26 @@ interface BreadcrumbData {
 
 type StructuredDataProps = OrganizationData | ProductData | BreadcrumbData;
 
+function serializeJsonLd(data: Record<string, unknown>): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+export function RawStructuredData({ data }: { data?: Record<string, unknown> | null }) {
+  if (!data || Object.keys(data).length === 0) return null;
+
+  return (
+    <script
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
+      type="application/ld+json"
+    />
+  );
+}
+
 export function StructuredData({ data }: { data: StructuredDataProps }) {
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -78,7 +98,7 @@ export function StructuredData({ data }: { data: StructuredDataProps }) {
 
   return (
     <script
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       type="application/ld+json"
     />
   );

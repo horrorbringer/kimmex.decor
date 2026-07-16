@@ -5,6 +5,7 @@ export type ServiceItem = {
   descriptionHtml?: string;
   href: string;
   imageUrl: string;
+  structuredData?: Record<string, unknown>;
 };
 
 export type ProductItem = {
@@ -35,6 +36,7 @@ export type ProductItem = {
   href: string;
   imageUrl: string;
   galleryImages: string[];
+  structuredData?: Record<string, unknown>;
 };
 
 export type ProjectItem = {

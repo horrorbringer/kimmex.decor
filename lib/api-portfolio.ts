@@ -66,6 +66,7 @@ export type ApiProject = {
   sort_order: number;
   is_featured: boolean;
   status: string;
+  structured_data?: Record<string, unknown> | null;
 };
 
 type ApiCollectionResponse<T> = {
@@ -176,6 +177,7 @@ function adaptToProjectDetail(project: ApiProject): ProjectDetail {
       : [{ title: project.title, caption: project.overview_text || richContentToText(project.overview), imageUrl: fallbackImage }],
     serviceIds: project.services?.map((s) => s.slug) ?? fallback?.serviceIds ?? [],
     productIds: project.products?.map((p) => p.slug) ?? fallback?.productIds ?? [],
+    structuredData: project.structured_data ?? undefined,
   };
 }
 

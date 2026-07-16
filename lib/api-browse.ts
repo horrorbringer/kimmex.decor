@@ -78,6 +78,17 @@ export async function getCatalogBrands(): Promise<ApiBrand[]> {
   }
 }
 
+export function adaptBrand(brand: ApiBrand) {
+  return {
+    id: brand.id,
+    name: brand.name,
+    slug: brand.slug,
+    description: brand.description,
+    logoUrl: brand.logo_url ?? null,
+    href: brand.website_url || `/products?brand=${encodeURIComponent(brand.slug)}`,
+  };
+}
+
 export async function getCatalogCategories(): Promise<ApiCategory[]> {
   try {
     const response = await fetchJson<ApiCollectionResponse<ApiCategory>>("/categories");

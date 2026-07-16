@@ -1,6 +1,10 @@
 import { ArrowRight, Building2, Home, Lightbulb, PanelsTopLeft } from "lucide-react";
-import { getPortfolioProjects } from "@/lib/api-portfolio";
 import Link from "next/link";
+import type { ProjectItem } from "@/lib/homepage-data";
+
+type FeaturedProjectsSectionProps = {
+  projects: ProjectItem[];
+};
 
 const projectPaths = [
   {
@@ -29,9 +33,7 @@ const projectPaths = [
   },
 ];
 
-export async function FeaturedProjectsSection() {
-  const projects = await getPortfolioProjects({ featured: true });
-
+export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionProps) {
   return (
     <section className="section-shell" id="portfolio">
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">

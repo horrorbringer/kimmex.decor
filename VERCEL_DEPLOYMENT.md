@@ -52,3 +52,20 @@ The API domain must also have a valid SSL certificate for the exact API hostname
 If `NEXT_PUBLIC_API_URL=https://api-kmd.kimmex.com.kh/api`, cPanel AutoSSL must
 cover `api-kmd.kimmex.com.kh`. A certificate for `*.myserverhosts.com` will fail
 browser and Vercel server-side API requests.
+
+## Production checks
+
+After each frontend and backend deployment, check:
+
+```bash
+curl -I https://kmdecor.com
+curl -sS https://kmdecor.com/backend/health
+curl -sS https://kmdecor.com/backend/home
+```
+
+While using the temporary Vercel domain, replace `https://kmdecor.com` with
+`https://kimmex-decor.vercel.app`.
+
+The health endpoint should return `"status":"ok"` and
+`"checks":{"database":true}`. The home endpoint should return backend-managed
+featured products, services, projects, and brands.

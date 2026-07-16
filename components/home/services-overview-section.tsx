@@ -1,6 +1,10 @@
 import { ArrowRight, ClipboardCheck, Ruler, Truck } from "lucide-react";
-import { getCatalogServices } from "@/lib/api-services";
 import Link from "next/link";
+import type { ServiceItem } from "@/lib/homepage-data";
+
+type ServicesOverviewSectionProps = {
+  services: ServiceItem[];
+};
 
 const planningNotes = [
   { label: "Measure", copy: "Share room size or BOQ", icon: Ruler },
@@ -8,9 +12,7 @@ const planningNotes = [
   { label: "Deliver", copy: "Plan installation or supply", icon: Truck },
 ];
 
-export async function ServicesOverviewSection() {
-  const services = await getCatalogServices();
-
+export function ServicesOverviewSection({ services }: ServicesOverviewSectionProps) {
   return (
     <section className="bg-sand-200/55" id="services">
       <div className="section-shell">

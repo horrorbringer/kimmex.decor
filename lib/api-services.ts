@@ -1,7 +1,7 @@
 import { fetchJson } from "@/lib/api-client";
 import { services as fallbackServices, type ServiceItem } from "@/lib/homepage-data";
 
-type ApiService = {
+export type ApiService = {
   id: string;
   name: string;
   name_kh?: string | null;
@@ -30,7 +30,7 @@ type ApiResourceResponse<T> = {
   data: T;
 };
 
-function adaptService(service: ApiService): ServiceItem {
+export function adaptService(service: ApiService): ServiceItem {
   return {
     id: service.slug,
     title: service.name,
@@ -64,5 +64,3 @@ export async function getCatalogService(slug: string): Promise<ApiService | null
     return null;
   }
 }
-
-export type { ApiService };

@@ -37,7 +37,7 @@ type ApiProductImage = {
   sort_order?: number;
 };
 
-type ApiProduct = {
+export type ApiProduct = {
   id: string;
   name: string;
   name_kh?: string | null;
@@ -128,7 +128,7 @@ function productImages(product: ApiProduct, fallback: ProductItem) {
   };
 }
 
-function adaptProduct(product: ApiProduct): ProductItem {
+export function adaptProduct(product: ApiProduct): ProductItem {
   const fallback = fallbackProducts.find((item) => item.href === `/products/${product.slug}`) ?? fallbackProducts[0];
   const images = productImages(product, fallback);
   const currentStockStatus = stockStatus(product.stock_status);
@@ -164,7 +164,7 @@ function adaptProduct(product: ApiProduct): ProductItem {
   };
 }
 
-function resolveCompatibleProductIds(products: ProductItem[]) {
+export function resolveCompatibleProductIds(products: ProductItem[]) {
   const bySlug = new Map(products.map((product) => [product.href.replace("/products/", ""), product.id]));
 
   return products.map((product) => ({

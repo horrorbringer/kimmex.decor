@@ -9,10 +9,10 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { SiteHeader } from "@/components/home/site-header";
 import { StructuredData } from "@/components/structured-data";
 import { TrustHighlightsSection } from "@/components/home/trust-highlights-section";
-import { getCatalogFeaturedProducts } from "@/lib/api-catalog";
+import { getHomepageContent } from "@/lib/api-home";
 
 export default async function Home() {
-  const products = await getCatalogFeaturedProducts(4);
+  const home = await getHomepageContent();
 
   return (
     <main className="page-shell">
@@ -33,11 +33,11 @@ export default async function Home() {
       <SiteHeader />
       <HeroSection />
       <AboutPreviewSection />
-      <ServicesOverviewSection />
-      <ProductShowcaseSection products={products} />
-      <FeaturedProjectsSection />
+      <ServicesOverviewSection services={home.services} />
+      <ProductShowcaseSection products={home.products} />
+      <FeaturedProjectsSection projects={home.projects} />
       <TrustHighlightsSection />
-      <BrandsSection />
+      <BrandsSection brands={home.brands} />
       <InquirySection />
       <SiteFooter />
     </main>

@@ -37,7 +37,7 @@ type ApiMedia = {
   thumb_url: string;
 };
 
-type ApiProject = {
+export type ApiProject = {
   id: string;
   title: string;
   title_kh: string | null;
@@ -83,7 +83,7 @@ type PortfolioProjectResult = {
   products: ProductItem[];
 };
 
-function adaptToProjectItem(project: ApiProject): ProjectItem {
+export function adaptToProjectItem(project: ApiProject): ProjectItem {
   const fallback = fallbackProjects.find((item) => item.id === project.slug);
   const plainOverview = project.overview_text || richContentToText(project.overview) || fallback?.caption || "";
 

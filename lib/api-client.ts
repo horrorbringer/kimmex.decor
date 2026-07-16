@@ -1,4 +1,10 @@
-const publicApiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "/backend").replace(/\/$/, "");
+function normalizePublicApiBaseUrl(value: string | undefined): string {
+  const baseUrl = (value || "/backend").replace(/\/$/, "");
+
+  return /^https?:\/\//.test(baseUrl) || baseUrl.startsWith("/") ? baseUrl : `/${baseUrl}`;
+}
+
+const publicApiBaseUrl = normalizePublicApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 const serverApiBaseUrl = (process.env.API_ORIGIN_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/$/, "");
 
 export function apiUrl(path: string): string {

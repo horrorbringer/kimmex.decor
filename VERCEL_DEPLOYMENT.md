@@ -23,6 +23,9 @@ Vercel then rewrites `/backend/*` to `API_ORIGIN_URL`. This avoids browser
 mixed-content blocking while the cPanel API does not have a valid SSL
 certificate.
 
+Keep the leading slash in `/backend`. The app normalizes this defensively, but
+the intended Vercel value is exactly `/backend`, not `backend`.
+
 After the API subdomain has valid SSL, change the variables to:
 
 ```bash

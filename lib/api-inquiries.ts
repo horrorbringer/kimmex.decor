@@ -17,7 +17,13 @@ type InquiryResponse = {
   message?: string;
 };
 
-const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "/backend").replace(/\/$/, "");
+function normalizePublicApiBaseUrl(value: string | undefined): string {
+  const baseUrl = (value || "/backend").replace(/\/$/, "");
+
+  return /^https?:\/\//.test(baseUrl) || baseUrl.startsWith("/") ? baseUrl : `/${baseUrl}`;
+}
+
+const apiBaseUrl = normalizePublicApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 const apiTimeoutMs = 12000;
 
 function nullable(value: FormDataEntryValue | null) {

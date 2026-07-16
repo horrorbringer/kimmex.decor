@@ -30,8 +30,10 @@ type ApiBrand = {
 
 type ApiProductImage = {
   id: string;
-  product_id: string;
-  image_url: string;
+  product_id?: string;
+  image_url?: string;
+  url?: string;
+  thumb_url?: string;
   alt_text?: string | null;
   is_primary: boolean;
   sort_order?: number;
@@ -119,7 +121,9 @@ function listOrFallback(value: string[] | null | undefined, fallback: string[]) 
 
 function productImages(product: ApiProduct, fallback: ProductItem) {
   const images = product.images ?? [];
-  const urls = images.map((image) => image.image_url).filter(Boolean);
+  const urls = images
+    .map((image) => image.image_url || image.url)
+    .filter((url): url is string => Boolean(url));
   const primary = product.primary_image || urls[0] || fallback.imageUrl;
 
   return {

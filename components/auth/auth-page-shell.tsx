@@ -1,5 +1,4 @@
-import { ArrowLeft, Heart, PackageCheck, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { Heart, PackageCheck, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
 const benefits = [
@@ -15,13 +14,9 @@ export function AuthPageShell({ children, description, eyebrow, title }: {
   title: string;
 }) {
   return (
-    <main className="min-h-[calc(100vh-71px)] bg-sand-50">
-      <div className="content-shell py-6 lg:py-12">
-        <Link className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-ink-700 transition hover:text-brand-red" href="/">
-          <ArrowLeft className="h-4 w-4" /> Back to home
-        </Link>
-
-        <div className="mt-5 grid overflow-hidden rounded-xl border border-sand-400 bg-white shadow-panel lg:grid-cols-[0.85fr_1.15fr]">
+    <main className="min-h-[calc(100vh-73px)] bg-sand-50">
+      <div className="content-shell py-6 sm:py-8 lg:py-12">
+        <div className="grid overflow-hidden rounded-xl border border-sand-400 bg-white shadow-panel lg:grid-cols-[0.85fr_1.15fr]">
           <aside className="hidden bg-[var(--text)] p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-12">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/55">KM Decor account</p>

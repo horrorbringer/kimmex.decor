@@ -1,7 +1,5 @@
 "use client";
 
-import { SiteHeader } from "@/components/home/site-header";
-import { SiteFooter } from "@/components/home/site-footer";
 import { FormEvent, useState } from "react";
 import { requestPasswordReset } from "@/lib/api-email-verification";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
@@ -30,11 +28,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <>
-      <SiteHeader />
-      <main className="page-shell min-h-screen bg-gradient-to-br from-sand-50 to-sand-100">
-        <div className="section-shell flex min-h-[60vh] items-center justify-center">
-          <div className="w-full max-w-md">
+    <main className="content-shell flex min-h-[calc(100vh-73px)] items-center justify-center py-8 sm:py-12">
+          <div className="w-full max-w-md rounded-xl border border-sand-300 bg-white p-6 shadow-panel sm:p-8">
             <h1 className="font-serif text-4xl text-ink-900">Reset your password</h1>
             <p className="mt-2 text-ink-700">
               Enter your email and we'll send you a reset link.
@@ -90,9 +85,6 @@ export default function ForgotPasswordPage() {
               </p>
             </form>
           </div>
-        </div>
-      </main>
-      <SiteFooter />
-    </>
+    </main>
   );
 }

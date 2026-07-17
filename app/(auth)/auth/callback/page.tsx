@@ -36,11 +36,11 @@ export default function AuthCallbackPage() {
   }, [searchParams, router, setAuth]);
 
   return (
-    <div className="page-shell min-h-screen flex items-center justify-center bg-sand-50">
+    <main className="content-shell flex min-h-[calc(100vh-73px)] items-center justify-center py-8">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
         <p className="text-ink-700">Completing sign in...</p>
       </div>
-    </div>
+    </main>
   );
 }

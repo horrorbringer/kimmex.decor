@@ -1,8 +1,6 @@
 "use client";
 
 import { verifyEmailWithLink } from "@/lib/api-email-verification";
-import { SiteHeader } from "@/components/home/site-header";
-import { SiteFooter } from "@/components/home/site-footer";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -56,11 +54,8 @@ export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
   }, [resolvedParams, router, searchParams]);
 
   return (
-    <>
-      <SiteHeader />
-      <main className="page-shell min-h-screen bg-gradient-to-br from-sand-50 to-sand-100">
-        <div className="section-shell">
-          <div className="mx-auto max-w-md py-24">
+    <main className="content-shell flex min-h-[calc(100vh-73px)] items-center justify-center py-8 sm:py-12">
+          <div className="w-full max-w-md rounded-xl border border-sand-300 bg-white p-6 shadow-panel sm:p-8">
             {status === "loading" && (
               <div className="text-center">
                 <Loader2 className="h-12 w-12 animate-spin text-brand-red mx-auto mb-4" />
@@ -101,9 +96,6 @@ export default function VerifyEmailPage({ params }: VerifyEmailPageProps) {
               </div>
             )}
           </div>
-        </div>
-      </main>
-      <SiteFooter />
-    </>
+    </main>
   );
 }

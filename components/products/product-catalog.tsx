@@ -66,6 +66,23 @@ export function ProductCatalog({ products, categories, brands, availability }: P
   }, [products]);
 
   useEffect(() => {
+    if (!filtersOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFiltersOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [filtersOpen]);
+
+  useEffect(() => {
     if (!hasHydrated) return;
 
     const params = new URLSearchParams();
@@ -198,8 +215,8 @@ export function ProductCatalog({ products, categories, brands, availability }: P
         </div>
       </div>
 
-      <div className="surface-card mb-6 grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-end">
-        <label className="control-label">
+      <div className="surface-card mb-6 grid grid-cols-[minmax(0,1fr)_auto] gap-3 p-4 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-end">
+        <label className="control-label col-span-2 md:col-span-1">
           Search products
           <span className="search-group grid-cols-[auto_1fr] items-center px-4">
             <Search className="h-4 w-4 text-ink-700" />
@@ -221,7 +238,13 @@ export function ProductCatalog({ products, categories, brands, availability }: P
           </select>
         </label>
         <div className="flex gap-2">
-          <button className="action-secondary h-[46px] flex-1 lg:hidden" onClick={() => setFiltersOpen((open) => !open)} type="button">
+          <button
+            aria-expanded={filtersOpen}
+            aria-haspopup="dialog"
+            className="action-secondary h-[48px] min-w-[104px] flex-1 lg:hidden"
+            onClick={() => setFiltersOpen(true)}
+            type="button"
+          >
             <SlidersHorizontal className="mr-2 h-4 w-4" />
             Filters
             {selectedBrands.length + selectedAvailability.length > 0 ? ` (${selectedBrands.length + selectedAvailability.length})` : ""}
@@ -234,8 +257,9 @@ export function ProductCatalog({ products, categories, brands, availability }: P
         </div>
       </div>
 
-      <div className="mb-6 grid gap-3 md:grid-cols-4">
-        {buyingModes.map((mode) => {
+      <div className="-mx-4 mb-6 overflow-x-auto px-4 pb-2 md:mx-0 md:overflow-visible md:px-0">
+        <div className="flex min-w-max gap-2 md:grid md:min-w-0 md:grid-cols-4 md:gap-3">
+          {buyingModes.map((mode) => {
           const count = mode === "Ready to order"
             ? productCounts.readyToOrder
             : mode === "Needs quote"
@@ -247,7 +271,7 @@ export function ProductCatalog({ products, categories, brands, availability }: P
           return (
             <button
               key={mode}
-              className={`rounded-lg border p-4 text-left transition ${
+              className={`min-w-[170px] rounded-lg border px-4 py-3 text-left transition md:min-w-0 md:p-4 ${
                 buyingMode === mode
                   ? "border-brand-red bg-brand-red text-white shadow-panel"
                   : "border-sand-400 bg-white text-ink-900 hover:border-brand-red hover:bg-sand-50"
@@ -261,12 +285,13 @@ export function ProductCatalog({ products, categories, brands, availability }: P
               <strong className="mt-2 block text-lg">{mode}</strong>
               <small className={buyingMode === mode ? "text-white/75" : "text-ink-700"}>{count} {count === 1 ? "item" : "items"}</small>
             </button>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside className={`${filtersOpen ? "grid" : "hidden"} gap-4 self-start lg:grid`}>
+        <aside className="hidden gap-4 self-start lg:grid">
           <FilterGroup title="Brands">
             {brands.map((brand) => (
               <label key={brand} className="flex items-center gap-2 text-sm text-ink-700">
@@ -396,6 +421,80 @@ export function ProductCatalog({ products, categories, brands, availability }: P
           )}
         </div>
       </div>
+
+      {filtersOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end bg-black/40 backdrop-blur-[2px] lg:hidden"
+          onClick={() => setFiltersOpen(false)}
+          role="presentation"
+        >
+          <div
+            aria-label="Product filters"
+            aria-modal="true"
+            className="flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-sand-50 shadow-panel"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-sand-400" />
+            <div className="flex items-center justify-between border-b border-sand-400 px-5 py-4">
+              <div>
+                <h2 className="font-serif text-2xl text-ink-900">Filter products</h2>
+                <p className="mt-1 text-xs text-ink-700">
+                  {selectedBrands.length + selectedAvailability.length > 0
+                    ? `${selectedBrands.length + selectedAvailability.length} selected`
+                    : "Choose brand or availability"}
+                </p>
+              </div>
+              <button
+                aria-label="Close filters"
+                autoFocus
+                className="grid h-11 w-11 place-items-center rounded-full border border-sand-400 text-ink-900"
+                onClick={() => setFiltersOpen(false)}
+                type="button"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid flex-1 gap-6 overflow-y-auto px-5 py-5">
+              <MobileFilterGroup title="Brands">
+                {brands.map((brand) => (
+                  <label key={brand} className="mobile-filter-option">
+                    <input checked={selectedBrands.includes(brand)} className="filter-checkbox" onChange={() => toggleBrand(brand)} type="checkbox" />
+                    <span>{brand}</span>
+                  </label>
+                ))}
+              </MobileFilterGroup>
+
+              <MobileFilterGroup title="Availability">
+                {availability.map((item) => (
+                  <label key={item} className="mobile-filter-option">
+                    <input checked={selectedAvailability.includes(item)} className="filter-checkbox" onChange={() => toggleAvailability(item)} type="checkbox" />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </MobileFilterGroup>
+            </div>
+
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 border-t border-sand-400 bg-white px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              <button
+                className="action-secondary min-h-12 px-4"
+                disabled={selectedBrands.length + selectedAvailability.length === 0}
+                onClick={() => {
+                  setSelectedBrands([]);
+                  setSelectedAvailability([]);
+                }}
+                type="button"
+              >
+                Clear
+              </button>
+              <button className="action-commerce min-h-12" onClick={() => setFiltersOpen(false)} type="button">
+                Show {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -414,6 +513,15 @@ function FilterGroup({ children, title }: { children: ReactNode; title: string }
       <div className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-900">{title}</div>
       <div className="mt-4 grid gap-2">{children}</div>
     </div>
+  );
+}
+
+function MobileFilterGroup({ children, title }: { children: ReactNode; title: string }) {
+  return (
+    <fieldset>
+      <legend className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-900">{title}</legend>
+      <div className="mt-3 grid grid-cols-2 gap-2">{children}</div>
+    </fieldset>
   );
 }
 

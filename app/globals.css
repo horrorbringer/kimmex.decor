@@ -997,6 +997,23 @@ textarea.form-field {
   width: 1rem;
 }
 
+.mobile-filter-option {
+  @apply flex min-h-12 items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium transition;
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.mobile-filter-option:has(input:checked) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  color: var(--accent);
+}
+
+.mobile-filter-option .filter-checkbox {
+  @apply h-5 w-5 shrink-0;
+}
+
 .panel-shadow {
   box-shadow: var(--shadow-panel);
 }

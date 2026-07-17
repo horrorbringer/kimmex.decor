@@ -24,20 +24,14 @@ export function ProductGallery({ badge, category, images, productName, sku, spec
   const [zoomOpen, setZoomOpen] = useState(false);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const usableImages = images.filter(Boolean);
-  const primaryImage = usableImages[0];
-  const detailImage = usableImages[1] ?? primaryImage;
-  const installedImage = usableImages[2] ?? usableImages[1] ?? primaryImage;
-  const additionalViews: GalleryView[] = usableImages.slice(3).map((imageUrl, index) => ({
-    label: `Gallery ${index + 1}`,
+  const imageViews: GalleryView[] = usableImages.map((imageUrl, index) => ({
+    label: index === 0 ? "Product" : `Image ${index + 1}`,
     imageUrl,
-    mode: "gallery"
+    mode: index === 0 ? "product" : "gallery"
   }));
   const views: GalleryView[] = [
-    { label: "Product", imageUrl: primaryImage, mode: "product" },
-    { label: "Detail", imageUrl: detailImage, mode: "detail" },
+    ...imageViews,
     { label: "Specifications", mode: "specifications" },
-    { label: "Installed", imageUrl: installedImage, mode: "installed" },
-    ...additionalViews
   ];
   const thumbnailViews = views.slice(0, 4);
   const additionalCount = Math.max(views.length - thumbnailViews.length, 0);

@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/home/site-header";
 import { SiteFooter } from "@/components/home/site-footer";
 import { Suspense } from "react";
 import SearchPageClient from "./search-client";
+import { SearchResultsSkeleton } from "@/components/ui/loading-skeleton";
 
 export const metadata = {
   title: "Search",
@@ -13,7 +14,7 @@ export default function SearchPage() {
     <>
       <SiteHeader />
       <main className="page-shell min-h-screen">
-        <Suspense fallback={<div className="section-shell py-12 text-center">Loading search...</div>}>
+        <Suspense fallback={<SearchResultsSkeleton />}>
           <SearchPageClient />
         </Suspense>
       </main>

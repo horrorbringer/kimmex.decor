@@ -7,6 +7,7 @@ import type { Order, ReorderSkippedItem } from "@/lib/api-orders";
 import { getApiErrorMessage } from "@/lib/api-client";
 import { useAuth } from "@/lib/auth-context";
 import { ArrowLeft, Calendar, CheckCircle2, Clock3, CreditCard, Loader2, Mail, MapPin, Package, RefreshCw, Phone, Truck } from "lucide-react";
+import { OrderDetailSkeleton } from "@/components/ui/loading-skeleton";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -64,15 +65,7 @@ export default function OrderDetailPage() {
   }, [id, authLoading, isAuthenticated, router]);
 
   if (authLoading || loading) {
-    return (
-      <>
-        <SiteHeader />
-        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sand-50 to-sand-100">
-          <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
-        </main>
-        <SiteFooter />
-      </>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (error || !order) {

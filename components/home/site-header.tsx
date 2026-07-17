@@ -54,6 +54,8 @@ export function SiteHeader() {
   const pathname = usePathname();
   const closeCart = useCallback(() => setCartOpen(false), []);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileDialogRef = useRef<HTMLDivElement>(null);
   const userInitial = user?.name?.trim().charAt(0).toUpperCase() || user?.email?.trim().charAt(0).toUpperCase() || "U";
   const handleSignOut = useCallback(() => {
     clearAuth();
@@ -96,16 +98,41 @@ export function SiteHeader() {
     if (!mobileMenuOpen) return;
 
     const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMobileMenuOpen(false);
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = mobileDialogRef.current;
+    const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])";
+    const focusableElements = () => Array.from(dialog?.querySelectorAll<HTMLElement>(focusableSelector) ?? []);
+    const focusTimer = window.setTimeout(() => focusableElements()[0]?.focus(), 0);
+
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const elements = focusableElements();
+      if (elements.length === 0) return;
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
+    window.addEventListener("keydown", handleDialogKeyDown);
 
     return () => {
+      window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("keydown", handleDialogKeyDown);
+      (previousFocus ?? mobileMenuButtonRef.current)?.focus();
     };
   }, [mobileMenuOpen]);
 
@@ -173,6 +200,7 @@ export function SiteHeader() {
 
         <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
           <button
+            ref={mobileMenuButtonRef}
             aria-expanded={searchOpen}
             aria-label={text("Search products", "ស្វែងរកផលិតផល")}
             className={`header-tool-button ${searchOpen ? "is-active" : ""}`}
@@ -312,6 +340,7 @@ export function SiteHeader() {
           role="presentation"
         >
           <div
+            ref={mobileDialogRef}
             aria-label="Mobile navigation"
             aria-modal="true"
             className="panel-shadow ml-auto flex h-full w-[min(90vw,400px)] flex-col bg-sand-50 animate-slide-in-right"
@@ -333,34 +362,7 @@ export function SiteHeader() {
               </button>
             </div>
 
-            <div className="border-b border-sand-400 px-5 py-4">
-              <LanguageSwitcher variant="panel" />
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-5 py-6">
-              <form action="/search" className="mobile-search-form">
-                <Search />
-                <label className="sr-only" htmlFor="mobile-site-search">{text("Search KM Decor", "ស្វែងរក KM Decor")}</label>
-                <input id="mobile-site-search" name="q" placeholder={text("Search products or services", "ស្វែងរកផលិតផល ឬសេវាកម្ម")} type="search" />
-                <button type="submit">{text("Go", "ស្វែងរក")}</button>
-              </form>
-
-              <div className="mobile-quick-actions">
-                <Link href="/account" onClick={() => setMobileMenuOpen(false)}>
-                  <UserRound />
-                  <span>{text("Account", "គណនី")}</span>
-                </Link>
-                <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)}>
-                  <Heart />
-                  <span>{text("Wishlist", "ចំណូលចិត្ត")}</span>
-                </Link>
-                <button onClick={() => { setMobileMenuOpen(false); setCartOpen(true); }} type="button">
-                  <ShoppingBag />
-                  <span>{text("Cart", "កន្ត្រក")}</span>
-                  {mounted && cartCount > 0 ? <b>{cartCount > 99 ? "99+" : cartCount}</b> : null}
-                </button>
-              </div>
-
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-700">{text("Explore", "ស្វែងយល់")}</p>
               <nav className="grid" aria-label="Mobile main navigation">
                 {mainNav.map((item, index) => {
@@ -370,7 +372,7 @@ export function SiteHeader() {
                     <Link
                       key={item.href}
                       aria-current={isActive ? "page" : undefined}
-                      className={`group flex items-center justify-between border-b border-sand-400/70 py-4 transition ${
+                      className={`group flex min-h-14 items-center justify-between border-b border-sand-400/70 py-3 transition ${
                         isActive ? "text-brand-red" : "text-ink-900 hover:text-brand-red"
                       }`}
                       href={item.href}
@@ -386,35 +388,51 @@ export function SiteHeader() {
                 })}
               </nav>
 
-              <div className="mt-7 rounded-lg bg-[var(--text)] p-5 text-white">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60">{text("Planning a project?", "កំពុងរៀបចំគម្រោង?")}</p>
-                <p className="mt-2 font-serif text-xl leading-snug">{text("Get product and installation guidance from our team.", "ទទួលការណែនាំអំពីផលិតផល និងការដំឡើងពីក្រុមការងាររបស់យើង។")}</p>
+              <div className="mt-7">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-700">{text("Your space", "សម្រាប់អ្នក")}</p>
+                <div className="grid gap-1">
+                  <Link className="mobile-drawer-link" href="/wishlist" onClick={() => setMobileMenuOpen(false)}>
+                    <Heart />
+                    <span>{text("Wishlist", "ចំណូលចិត្ត")}</span>
+                    <ArrowUpRight />
+                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link className="mobile-drawer-link" href="/account" onClick={() => setMobileMenuOpen(false)}>
+                        <UserRound />
+                        <span>{text("Account dashboard", "ផ្ទាំងគណនី")}</span>
+                        <ArrowUpRight />
+                      </Link>
+                      <Link className="mobile-drawer-link" href="/orders" onClick={() => setMobileMenuOpen(false)}>
+                        <PackageCheck />
+                        <span>{text("Orders", "ការបញ្ជាទិញ")}</span>
+                        <ArrowUpRight />
+                      </Link>
+                      <button className="mobile-drawer-link" onClick={handleSignOut} type="button">
+                        <LogOut />
+                        <span>{text("Sign out", "ចាកចេញ")}</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link className="mobile-drawer-link" href="/login" onClick={() => setMobileMenuOpen(false)}>
+                        <UserRound />
+                        <span>{text("Sign in", "ចូល")}</span>
+                        <ArrowUpRight />
+                      </Link>
+                      <Link className="mobile-drawer-link" href="/register" onClick={() => setMobileMenuOpen(false)}>
+                        <UserRound />
+                        <span>{text("Create account", "បង្កើតគណនី")}</span>
+                        <ArrowUpRight />
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 border-t border-sand-400 bg-sand-100">
-              {isAuthenticated ? (
-                <>
-                  <Link className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/account" onClick={() => setMobileMenuOpen(false)}>
-                    <UserRound size={17} strokeWidth={2} />
-                    {user?.name ?? text("Account", "គណនី")}
-                  </Link>
-                  <button className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" onClick={handleSignOut} type="button">
-                    <LogOut size={17} strokeWidth={2} />
-                    {text("Sign out", "ចាកចេញ")}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link className="flex items-center justify-center gap-2 border-r border-sand-400 px-3 py-4 text-sm font-semibold text-ink-900" href="/login" onClick={() => setMobileMenuOpen(false)}>
-                    <UserRound size={17} strokeWidth={2} />
-                    {text("Sign in", "ចូល")}
-                  </Link>
-                  <Link className="flex items-center justify-center gap-2 px-3 py-4 text-sm font-semibold text-ink-900" href="/register" onClick={() => setMobileMenuOpen(false)}>
-                    {text("Register", "ចុះឈ្មោះ")}
-                  </Link>
-                </>
-              )}
+            <div className="border-t border-sand-400 bg-sand-100 px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <LanguageSwitcher variant="panel" />
             </div>
           </div>
         </div>

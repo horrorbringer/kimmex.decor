@@ -1167,58 +1167,22 @@ textarea.form-field {
   box-shadow: var(--shadow-panel);
 }
 
-.mobile-search-form {
-  @apply mb-5 grid grid-cols-[20px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border px-3;
-  border-color: var(--line);
-  background: var(--surface);
-}
-
-.mobile-search-form:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--focus-ring);
-}
-
-.mobile-search-form svg {
-  @apply h-4 w-4;
-  color: var(--text-muted);
-}
-
-.mobile-search-form input {
-  @apply min-w-0 bg-transparent py-3 outline-none;
-  font-size: 1rem; /* 16px — prevents iOS Safari viewport zoom on focus */
+.mobile-drawer-link {
+  @apply grid min-h-12 w-full grid-cols-[20px_minmax(0,1fr)_18px] items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition;
   color: var(--text);
 }
 
-.mobile-search-form button {
-  @apply rounded-md px-3 py-2 text-xs font-semibold text-white;
-  background: var(--brand-red);
-}
-
-.mobile-quick-actions {
-  @apply mb-6 grid grid-cols-3 gap-2;
-}
-
-.mobile-quick-actions a,
-.mobile-quick-actions button {
-  @apply relative grid min-h-20 place-items-center gap-1 rounded-lg border p-3 text-center text-xs font-semibold transition;
-  border-color: var(--line);
-  background: var(--surface);
-  color: var(--text);
-}
-
-.mobile-quick-actions a:hover,
-.mobile-quick-actions button:hover {
-  border-color: var(--accent);
+.mobile-drawer-link:hover {
+  background: var(--surface-alt);
   color: var(--brand-red);
 }
 
-.mobile-quick-actions svg {
-  @apply h-5 w-5;
+.mobile-drawer-link svg {
+  @apply h-4 w-4;
 }
 
-.mobile-quick-actions b {
-  @apply absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[10px] font-bold text-white;
-  background: var(--brand-red);
+.mobile-drawer-link svg:last-child {
+  color: var(--text-muted);
 }
 
 .bg-bronze-500,

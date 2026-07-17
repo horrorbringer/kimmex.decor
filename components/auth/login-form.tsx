@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Loader2, Mail } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 
 export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
@@ -20,6 +20,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const [canResendVerification, setCanResendVerification] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -106,9 +107,9 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-4">
+        <div aria-live="polite" className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
           <div className="flex gap-3">
             <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
             <p className="text-sm text-red-800">{error}</p>
@@ -128,7 +129,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
       )}
 
       {success && (
-        <div className="flex gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
+        <div aria-live="polite" className="flex gap-3 rounded-lg border border-green-200 bg-green-50 p-4" role="status">
           <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-600" />
           <p className="text-sm text-green-800">{success}</p>
         </div>
@@ -140,6 +141,8 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         </label>
         <input
           id="email"
+          autoComplete="email"
+          autoFocus
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -154,17 +157,29 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <label htmlFor="password" className="block text-sm font-medium text-ink-900">
           Password
         </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="form-field mt-1"
-          placeholder="••••••••"
-          disabled={isLoading}
-        />
-        <div className="mt-1 text-right">
+        <div className="relative mt-1">
+          <input
+            id="password"
+            autoComplete="current-password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="form-field pr-12"
+            placeholder="Enter your password"
+            disabled={isLoading}
+          />
+          <button
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute inset-y-0 right-0 grid w-12 place-items-center text-ink-700 transition hover:text-ink-900"
+            onClick={() => setShowPassword((visible) => !visible)}
+            tabIndex={-1}
+            type="button"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+        <div className="mt-2 text-right">
           <Link href="/forgot-password" className="text-xs font-semibold text-brand-red hover:underline">
             Forgot password?
           </Link>
@@ -174,7 +189,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
       <button
         type="submit"
         disabled={isLoading}
-        className="action-primary w-full rounded-lg border-0 py-2 disabled:opacity-60"
+        className="action-primary min-h-12 w-full rounded-lg border-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? (
           <>
@@ -199,7 +214,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         type="button"
         onClick={handleGoogleLogin}
         disabled={isLoading}
-        className="action-secondary w-full rounded-lg border border-sand-400 bg-white py-2 flex items-center justify-center gap-2 disabled:opacity-60"
+        className="action-secondary min-h-12 w-full rounded-lg border border-sand-400 bg-white flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path

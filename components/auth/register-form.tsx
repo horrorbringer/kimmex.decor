@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, Phone } from "lucide-react";
+import { Check, CheckCircle2, Eye, EyeOff, Loader2, Phone } from "lucide-react";
 import { ApiError } from "@/lib/api-client";
 import { register } from "@/lib/api-auth";
 import { syncCustomerStorage } from "@/lib/api-customer-storage";
@@ -26,6 +26,14 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showPasswords, setShowPasswords] = useState(false);
+  const passwordChecks = {
+    length: password.length >= 8,
+    letter: /[A-Za-z]/.test(password),
+    number: /\d/.test(password),
+  };
+  const passwordValid = Object.values(passwordChecks).every(Boolean);
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
 
   function clearFieldError(field: keyof FieldErrors) {
     setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -43,9 +51,15 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
       return;
     }
 
-    if (password.length < 8) {
-      setFieldErrors({ password: ["Password must be at least 8 characters"] });
-      setErrorMsg("Password must be at least 8 characters");
+    if (!passwordValid) {
+      setFieldErrors({ password: ["Use at least 8 characters with a letter and number"] });
+      setErrorMsg("Please create a stronger password");
+      return;
+    }
+
+    if (phone && !isValidCambodianPhone(phone)) {
+      setFieldErrors({ phone: ["Enter a valid Cambodian phone number"] });
+      setErrorMsg("Please check your phone number");
       return;
     }
 
@@ -86,7 +100,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
 
   if (successMsg) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-center">
+      <div aria-live="polite" className="rounded-lg border border-green-200 bg-green-50 p-6 text-center" role="status">
         <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-green-600" />
         <p className="font-semibold text-green-800">{successMsg}</p>
       </div>
@@ -94,9 +108,9 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {errorMsg && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div aria-live="polite" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
           {errorMsg}
         </div>
       )}
@@ -107,6 +121,8 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
         </label>
         <input
           id="reg-fullName"
+          autoComplete="name"
+          autoFocus
           type="text"
           value={fullName}
           onChange={(e) => { setFullName(e.target.value); clearFieldError("name"); }}
@@ -124,6 +140,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
         </label>
         <input
           id="reg-email"
+          autoComplete="email"
           type="email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); clearFieldError("email"); }}
@@ -146,6 +163,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
           </span>
           <input
             id="reg-phone"
+            autoComplete="tel-national"
             type="tel"
             value={phone}
             onChange={(e) => { setPhone(formatCambodianPhone(e.target.value)); clearFieldError("phone"); }}
@@ -163,47 +181,55 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
         )}
       </div>
 
-      <div>
-        <label htmlFor="reg-password" className="block text-sm font-medium text-ink-900">
-          Password
-        </label>
-        <input
-          id="reg-password"
-          type="password"
-          value={password}
-          onChange={(e) => { setPassword(e.target.value); clearFieldError("password"); }}
-          required
-          className={`form-field mt-1 ${fieldErrors.password ? "is-error" : ""}`}
-          placeholder="••••••••"
-          disabled={isLoading}
-        />
-        {fieldErrors.password ? (
-          <p className="mt-1 text-sm text-red-600">{fieldErrors.password[0]}</p>
-        ) : (
-          <p className="mt-1 text-xs text-ink-700">At least 8 characters, 1 number, 1 letter</p>
-        )}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="reg-password" className="block text-sm font-medium text-ink-900">Password</label>
+          <div className="relative mt-1">
+            <input
+              id="reg-password"
+              autoComplete="new-password"
+              type={showPasswords ? "text" : "password"}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); clearFieldError("password"); }}
+              required
+              className={`form-field pr-12 ${fieldErrors.password ? "is-error" : ""}`}
+              placeholder="Create password"
+              disabled={isLoading}
+            />
+            <button aria-label={showPasswords ? "Hide passwords" : "Show passwords"} className="absolute inset-y-0 right-0 grid w-12 place-items-center text-ink-700" onClick={() => setShowPasswords((visible) => !visible)} tabIndex={-1} type="button">
+              {showPasswords ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="reg-confirmPassword" className="block text-sm font-medium text-ink-900">Confirm password</label>
+          <input
+            id="reg-confirmPassword"
+            autoComplete="new-password"
+            type={showPasswords ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className={`form-field mt-1 ${confirmPassword && !passwordsMatch ? "is-error" : ""}`}
+            placeholder="Repeat password"
+            disabled={isLoading}
+          />
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="reg-confirmPassword" className="block text-sm font-medium text-ink-900">
-          Confirm Password
-        </label>
-        <input
-          id="reg-confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          className="form-field mt-1"
-          placeholder="••••••••"
-          disabled={isLoading}
-        />
+      <div className="grid grid-cols-3 gap-2 text-[11px] font-medium">
+        <PasswordRule met={passwordChecks.length} label="8+ characters" />
+        <PasswordRule met={passwordChecks.letter} label="One letter" />
+        <PasswordRule met={passwordChecks.number} label="One number" />
       </div>
+      {fieldErrors.password ? <p className="-mt-3 text-sm text-red-600">{fieldErrors.password[0]}</p> : null}
+      {confirmPassword ? <p className={`-mt-3 text-xs ${passwordsMatch ? "text-green-700" : "text-red-600"}`}>{passwordsMatch ? "Passwords match" : "Passwords do not match"}</p> : null}
 
       <button
         type="submit"
         disabled={isLoading}
-        className="action-primary w-full rounded-lg border-0 py-2 disabled:opacity-60"
+        className="action-primary min-h-12 w-full rounded-lg border-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? (
           <>
@@ -222,5 +248,13 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
         </Link>
       </p>
     </form>
+  );
+}
+
+function PasswordRule({ label, met }: { label: string; met: boolean }) {
+  return (
+    <span className={`flex items-center gap-1.5 rounded-md px-2 py-2 ${met ? "bg-green-50 text-green-700" : "bg-sand-100 text-ink-700"}`}>
+      <Check className="h-3 w-3 shrink-0" /> {label}
+    </span>
   );
 }

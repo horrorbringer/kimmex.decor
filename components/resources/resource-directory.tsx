@@ -182,10 +182,11 @@ export function ResourceDirectory() {
     <div className="surface-card overflow-hidden">
       <div className="border-b border-sand-400 p-4">
         <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto] lg:items-center">
-          <label className="relative block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-700" />
+          <label className="search-group grid-cols-[20px_minmax(0,1fr)] items-center gap-2 px-4">
+            <Search className="h-4 w-4 text-ink-700" aria-hidden="true" />
             <input
-              className="w-full rounded-md border border-sand-400 bg-white py-3 pl-10 pr-3 text-base sm:text-sm text-ink-900 outline-none transition placeholder:text-ink-700 focus:border-brand-red"
+              aria-label="Search resources"
+              className="field"
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search resources"
               type="search"

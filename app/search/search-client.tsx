@@ -98,7 +98,7 @@ export default function SearchPageClient() {
             <label className="search-group grid-cols-[auto_1fr] items-center px-4">
               <Search className="h-4 w-4 text-ink-700" />
             <input
-              type="text"
+              type="search"
               name="q"
               defaultValue={query}
                 placeholder="Search products, services, brands, categories..."

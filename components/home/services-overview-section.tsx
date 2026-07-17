@@ -1,6 +1,8 @@
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ServiceItem } from "@/lib/homepage-data";
+import { blurPlaceholder } from "@/lib/blur-placeholder";
 
 type ServicesOverviewSectionProps = {
   services: ServiceItem[];
@@ -31,9 +33,14 @@ export function ServicesOverviewSection({ services }: ServicesOverviewSectionPro
               className="group overflow-hidden rounded-lg border border-sand-400 bg-white shadow-soft transition hover:-translate-y-1 hover:shadow-panel"
             >
               <Link className="relative block h-64 overflow-hidden bg-ink-900" href={service.href}>
-                <img
+                <Image
                   alt={service.title}
-                  className="absolute inset-0 h-full w-full object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                  className="object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                  fill
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL={blurPlaceholder()}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                   src={service.imageUrl}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />

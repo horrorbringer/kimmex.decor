@@ -18,7 +18,7 @@ type ApiHomeResponse = {
 
 export async function getHomepageContent() {
   try {
-    const response = await fetchJson<ApiHomeResponse>("/home");
+    const response = await fetchJson<ApiHomeResponse>("/home", { next: { revalidate: 60 } });
 
     return {
       products: resolveCompatibleProductIds((response.data.featured_products ?? []).map(adaptProduct)),

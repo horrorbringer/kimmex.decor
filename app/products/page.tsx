@@ -14,9 +14,12 @@ export const metadata = {
 const availability = ["In stock", "Preorder", "Low stock"] satisfies ProductItem["stockStatus"][];
 
 export default async function ProductsPage() {
-  const products = await getCatalogProducts();
+  const [products, apiCategories] = await Promise.all([
+    getCatalogProducts(),
+    getCatalogCategories(),
+  ]);
   const brands = Array.from(new Set(products.map((product) => product.brand)));
-  const categories = await getCatalogCategories(products);
+  const categories = apiCategories.length > 0 ? apiCategories : Array.from(new Set(products.map((product) => product.category)));
 
   return (
     <main className="page-shell">

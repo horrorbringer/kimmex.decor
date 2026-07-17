@@ -1,6 +1,8 @@
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ProjectItem } from "@/lib/homepage-data";
+import { blurPlaceholder } from "@/lib/blur-placeholder";
 
 type FeaturedProjectsSectionProps = {
   projects: ProjectItem[];
@@ -32,9 +34,14 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
             }`}
           >
             <Link className="absolute inset-0" href={project.href} aria-label={`View ${project.title}`}>
-              <img
+              <Image
                 alt={project.title}
-                className="h-full w-full object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                className="object-cover opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-70"
+                fill
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL={blurPlaceholder()}
+                sizes={index === 0 ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 1024px) 100vw, 33vw"}
                 src={project.imageUrl}
               />
             </Link>

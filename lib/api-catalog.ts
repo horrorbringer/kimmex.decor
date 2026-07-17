@@ -181,7 +181,7 @@ export function resolveCompatibleProductIds(products: ProductItem[]) {
 
 export async function getCatalogProducts(): Promise<ProductItem[]> {
   try {
-    const response = await fetchJson<ApiCollectionResponse<ApiProduct>>("/products?per_page=100");
+    const response = await fetchJson<ApiCollectionResponse<ApiProduct>>("/products?per_page=100", { next: { revalidate: 60 } });
     return resolveCompatibleProductIds(response.data.map(adaptProduct));
   } catch (error) {
     reportError(error, { component: "api-catalog", action: "getCatalogProducts" });
@@ -207,12 +207,13 @@ export async function getCatalogProduct(slug: string): Promise<ProductItem | nul
   }
 }
 
-export async function getCatalogCategories(products: ProductItem[]): Promise<string[]> {
+export async function getCatalogCategories(products: ProductItem[] = []): Promise<string[]> {
   try {
-    const response = await fetchJson<ApiCollectionResponse<ApiCategory>>("/categories");
+    const response = await fetchJson<ApiCollectionResponse<ApiCategory>>("/categories", { next: { revalidate: 60 } });
     const categoryNames = response.data.map((category) => category.name).filter(Boolean);
     return categoryNames.length > 0 ? categoryNames : fallbackCategories;
   } catch {
-    return Array.from(new Set(products.map((product) => product.category))) || fallbackCategories;
+    const productCategories = Array.from(new Set(products.map((product) => product.category)));
+    return productCategories.length > 0 ? productCategories : fallbackCategories;
   }
 }

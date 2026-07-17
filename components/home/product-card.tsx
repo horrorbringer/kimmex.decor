@@ -39,10 +39,10 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
   return (
     <article className="surface-card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-panel">
-      <Link className="relative block overflow-hidden" href={product.href}>
+      <Link className={`relative block overflow-hidden ${compact ? "h-48" : "h-56"}`} href={product.href}>
         <Image
           alt={product.name}
-          className={`${compact ? "h-48" : "h-56"} w-full object-cover transition duration-300 group-hover:scale-105`}
+          className="object-cover transition duration-300 group-hover:scale-105"
           src={product.imageUrl}
           fill
           loading="lazy"

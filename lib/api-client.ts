@@ -33,7 +33,12 @@ export function setOnUnauthorized(handler: () => void): void {
   onUnauthorized = handler;
 }
 
-export async function fetchJson<T>(path: string, options?: RequestInit & { timeout?: number }): Promise<T> {
+type FetchJsonOptions = RequestInit & {
+  timeout?: number;
+  next?: { revalidate?: number | false; tags?: string[] };
+};
+
+export async function fetchJson<T>(path: string, options?: FetchJsonOptions): Promise<T> {
   const timeoutMs = options?.timeout ?? 5000;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);

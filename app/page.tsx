@@ -9,7 +9,7 @@ import { StructuredData } from "@/components/structured-data";
 import { TrustHighlightsSection } from "@/components/home/trust-highlights-section";
 import { getHomepageContent } from "@/lib/api-home";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Home() {
   const home = await getHomepageContent();

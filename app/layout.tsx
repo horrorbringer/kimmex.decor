@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { LanguageProvider } from "@/components/language-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/components/ui/toast";
@@ -14,7 +13,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#061b73",
+  themeColor: "#0b1f4d",
 };
 
 export const metadata: Metadata = {
@@ -59,7 +58,6 @@ export default function RootLayout({
           <AuthProvider>
             <ToastProvider>
               {children}
-              <ThemeSwitcher />
               <ErrorTracker />
               <PwaServiceWorker />
             </ToastProvider>

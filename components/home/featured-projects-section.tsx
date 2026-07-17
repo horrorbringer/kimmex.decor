@@ -1,37 +1,10 @@
-import { ArrowRight, Building2, Home, Lightbulb, PanelsTopLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ProjectItem } from "@/lib/homepage-data";
 
 type FeaturedProjectsSectionProps = {
   projects: ProjectItem[];
 };
-
-const projectPaths = [
-  {
-    label: "Residential",
-    copy: "Homes, bedrooms, kitchens, and living spaces.",
-    href: "/portfolio#projects",
-    icon: Home,
-  },
-  {
-    label: "Commercial",
-    copy: "Shops, offices, and customer-facing interiors.",
-    href: "/portfolio#projects",
-    icon: Building2,
-  },
-  {
-    label: "Smart living",
-    copy: "Lighting, locks, controls, and convenience upgrades.",
-    href: "/portfolio#projects",
-    icon: Lightbulb,
-  },
-  {
-    label: "Fit-out",
-    copy: "Ceiling, partition, furniture, and finish scope.",
-    href: "/portfolio#projects",
-    icon: PanelsTopLeft,
-  },
-];
 
 export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionProps) {
   return (
@@ -48,26 +21,6 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
           View Portfolio
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
-      </div>
-
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {projectPaths.map((path) => {
-          const Icon = path.icon;
-
-          return (
-            <Link key={path.label} className="project-intent-link" href={path.href}>
-              <span>
-                <Icon aria-hidden="true" />
-              </span>
-              <strong>{path.label}</strong>
-              <small>{path.copy}</small>
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="mt-8 rounded-lg border border-sand-400 bg-sand-50 p-4 text-sm leading-6 text-ink-700">
-        Pick a reference, then share your room size, location, preferred finish, and what should change for your space.
       </div>
 
       <div className="mt-10 grid gap-5 lg:grid-cols-3">

@@ -1,5 +1,5 @@
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
-import { ArrowRight, ClipboardList, PackageCheck, Search, TriangleAlert } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { ProductItem } from "@/lib/homepage-data";
 import { getCatalogCategories } from "@/lib/api-browse";
 import { blurPlaceholder } from "@/lib/blur-placeholder";
@@ -16,33 +16,6 @@ const fallbackProductGroups = [
   { label: "Frames", copy: "Ceiling and partition systems", href: "/products?category=Cline%20%26%20Partition%20Frame" },
   { label: "Decor Boards", copy: "MDF, plywood, and finish boards", href: "/products?category=Decor%20Materials" },
   { label: "Sanitaryware", copy: "Bathroom fixtures and fittings", href: "/products?category=Sanitary%20Ware" }
-];
-
-const productPaths = [
-  {
-    label: "Ready to order",
-    copy: "In-stock items for faster cart requests.",
-    href: "/products?mode=Ready%20to%20order#catalog",
-    icon: PackageCheck,
-  },
-  {
-    label: "Needs quote",
-    copy: "Confirm stock, quantity, and delivery.",
-    href: "/products?mode=Needs%20quote#catalog",
-    icon: ClipboardList,
-  },
-  {
-    label: "Low stock / preorder",
-    copy: "Plan lead time before ordering.",
-    href: "/products?mode=Preorder%20or%20low%20stock#catalog",
-    icon: TriangleAlert,
-  },
-  {
-    label: "Search catalog",
-    copy: "Find products, categories, and services.",
-    href: "/search",
-    icon: Search,
-  },
 ];
 
 function productSlug(product: ProductItem) {
@@ -93,22 +66,6 @@ export async function ProductShowcaseSection({ products }: ProductShowcaseSectio
           View All Products
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
-      </div>
-
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {productPaths.map((path) => {
-          const Icon = path.icon;
-
-          return (
-            <Link key={path.label} className="product-intent-link" href={path.href}>
-              <span>
-                <Icon aria-hidden="true" />
-              </span>
-              <strong>{path.label}</strong>
-              <small>{path.copy}</small>
-            </Link>
-          );
-        })}
       </div>
 
       <div className="mt-8 grid overflow-hidden rounded-lg border border-sand-400 bg-white sm:grid-cols-2 lg:grid-cols-4">

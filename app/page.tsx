@@ -1,8 +1,6 @@
-import { AboutPreviewSection } from "@/components/home/about-preview-section";
 import { BrandsSection } from "@/components/home/brands-section";
 import { FeaturedProjectsSection } from "@/components/home/featured-projects-section";
 import { HeroSection } from "@/components/home/hero-section";
-import { InquirySection } from "@/components/home/inquiry-section";
 import { ProductShowcaseSection } from "@/components/home/product-showcase-section";
 import { ServicesOverviewSection } from "@/components/home/services-overview-section";
 import { SiteFooter } from "@/components/home/site-footer";
@@ -34,13 +32,11 @@ export default async function Home() {
       />
       <SiteHeader />
       <HeroSection />
-      <AboutPreviewSection />
       <ServicesOverviewSection services={home.services} />
       <ProductShowcaseSection products={home.products} />
       <FeaturedProjectsSection projects={home.projects} />
       <TrustHighlightsSection />
       <BrandsSection brands={home.brands} />
-      <InquirySection />
       <SiteFooter />
     </main>
   );

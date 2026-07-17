@@ -1,16 +1,10 @@
-import { ArrowRight, ClipboardCheck, Ruler, Truck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ServiceItem } from "@/lib/homepage-data";
 
 type ServicesOverviewSectionProps = {
   services: ServiceItem[];
 };
-
-const planningNotes = [
-  { label: "Measure", copy: "Share room size or BOQ", icon: Ruler },
-  { label: "Confirm", copy: "Check material and scope", icon: ClipboardCheck },
-  { label: "Deliver", copy: "Plan installation or supply", icon: Truck },
-];
 
 export function ServicesOverviewSection({ services }: ServicesOverviewSectionProps) {
   return (
@@ -28,24 +22,6 @@ export function ServicesOverviewSection({ services }: ServicesOverviewSectionPro
             View All Services
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
-        </div>
-
-        <div className="mt-8 grid gap-3 rounded-lg border border-sand-400 bg-white p-3 sm:grid-cols-3">
-          {planningNotes.map((note) => {
-            const Icon = note.icon;
-
-            return (
-              <div key={note.label} className="flex min-h-20 items-center gap-3 rounded-md bg-sand-50 px-4 py-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-brand-red/10 text-brand-red">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-ink-900">{note.label}</p>
-                  <p className="mt-1 text-xs leading-5 text-ink-700">{note.copy}</p>
-                </div>
-              </div>
-            );
-          })}
         </div>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
